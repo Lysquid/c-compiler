@@ -9,16 +9,15 @@ class ASTVisitor : public ifccBaseVisitor
 {
 public:
     antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
-    antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override;
-    antlrcpp::Any visitStatements(ifccParser::StatementsContext *ctx) override;
-    antlrcpp::Any visitDeclarationStatement(ifccParser::DeclarationStatementContext *ctx) override;
-    antlrcpp::Any visitDefinitionStatement(ifccParser::DefinitionStatementContext *ctx) override;
-    antlrcpp::Any visitAssignementStatement(ifccParser::AssignementStatementContext *ctx) override;
-    antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override;
-    antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override;
-    antlrcpp::Any visitSignExpr(ifccParser::SignExprContext *ctx) override;
-    antlrcpp::Any visitAdd_sub(ifccParser::Add_subContext *ctx) override;
-    antlrcpp::Any visitMult_div(ifccParser::Mult_divContext *ctx) override;
+    antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override;
+    antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *ctx) override;
+    antlrcpp::Any visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx) override;
+    antlrcpp::Any visitAssignment(ifccParser::AssignmentContext *ctx) override;
+    antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
+    antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override;
+    antlrcpp::Any visitSign(ifccParser::SignContext *ctx) override;
+    antlrcpp::Any visitAddSub(ifccParser::AddSubContext *ctx) override;
+    antlrcpp::Any visitMulDiv(ifccParser::MulDivContext *ctx) override;
     antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
 
     CFG* getCFG() { return cfg; }

@@ -8,8 +8,6 @@
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
 
-#include "CodeGenVisitor.h"
-#include "SymbolVisitor.h"
 #include "ASTVisitor.h"
 #include "CFG.h"
 
@@ -50,14 +48,6 @@ int main(int argn, const char **argv)
   av.visit(tree);
 
   av.getCFG()->gen_asm(cout);
-
-  // SymbolVisitor sv;
-  // sv.visit(tree);
-  // std::map<std::string, int> st = sv.getSymbolTable();
-  
-  // CodeGenVisitor v;
-  // v.setSymbolTable(st);
-  // v.visit(tree);
 
   return 0;
 }

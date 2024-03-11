@@ -5,19 +5,14 @@ antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx)
     auto *main = new BasicBlock(this->cfg, "main");
     this->cfg->add_bb(main);
     this->cfg->current_bb = main;
-    this->visit(ctx->statements());
-    this->visit(ctx->return_stmt());
-    return 0;
-}
-
-antlrcpp::Any ASTVisitor::visitStatements(ifccParser::StatementsContext *ctx)
-{
-    for (ifccParser::StatementContext *statement : ctx->statement())
+    for (ifccParser::StatementContext* statement: ctx->statement()) {
         this->visit(statement);
+    }
+    this->visit(ctx->ret());
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitDeclarationStatement(ifccParser::DeclarationStatementContext *ctx)
+antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
 {
     std::vector<antlr4::tree::TerminalNode *> vars = ctx->VAR();
     std::map<std::string, int> SymbolIndex = cfg->getSymbolIndex();
@@ -37,7 +32,7 @@ antlrcpp::Any ASTVisitor::visitDeclarationStatement(ifccParser::DeclarationState
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitDefinitionStatement(ifccParser::DefinitionStatementContext *ctx)
+antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx)
 {
     std::string var = ctx->VAR()->getText();
 
@@ -57,7 +52,7 @@ antlrcpp::Any ASTVisitor::visitDefinitionStatement(ifccParser::DefinitionStateme
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitAssignementStatement(ifccParser::AssignementStatementContext *ctx)
+antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx)
 {
     std::string var = ctx->VAR()->getText();
     if (!cfg->getSymbolIndex().count(var))
@@ -70,7 +65,7 @@ antlrcpp::Any ASTVisitor::visitAssignementStatement(ifccParser::AssignementState
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitVarExpr(ifccParser::VarExprContext *ctx)
+antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx)
 {
     std::string var = ctx->VAR()->getText();
 
@@ -82,7 +77,7 @@ antlrcpp::Any ASTVisitor::visitVarExpr(ifccParser::VarExprContext *ctx)
     return cfg->getSymbolIndex()[var];
 }
 
-antlrcpp::Any ASTVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
+antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
 {
     int value = stoi(ctx->CONST()->getText());
     int addr = cfg->create_new_tempvar();
@@ -90,7 +85,7 @@ antlrcpp::Any ASTVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
     return addr;
 }
 
-antlrcpp::Any ASTVisitor::visitSignExpr(ifccParser::SignExprContext *ctx)
+antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx)
 {
     int addr = this->visit(ctx->expr());
     std::string op = ctx->ADD_SUB()->getText();
@@ -103,7 +98,7 @@ antlrcpp::Any ASTVisitor::visitSignExpr(ifccParser::SignExprContext *ctx)
     return addr;
 }
 
-antlrcpp::Any ASTVisitor::visitAdd_sub(ifccParser::Add_subContext *ctx)
+antlrcpp::Any ASTVisitor::visitAddSub(ifccParser::AddSubContext *ctx)
 {
     int addr1 = this->visit(ctx->expr(0));
     int addr2 = this->visit(ctx->expr(1));
@@ -121,11 +116,11 @@ antlrcpp::Any ASTVisitor::visitAdd_sub(ifccParser::Add_subContext *ctx)
     return addr3;
 }
 
-antlrcpp::Any ASTVisitor::visitMult_div(ifccParser::Mult_divContext *ctx)
+antlrcpp::Any ASTVisitor::visitMulDiv(ifccParser::MulDivContext *ctx)
 {
     int addr1 = this->visit(ctx->expr(0));
     int addr2 = this->visit(ctx->expr(1));
-    std::string op = ctx->MULT_DIV()->getText();
+    std::string op = ctx->MUL_DIV()->getText();
     int addr3 = cfg->create_new_tempvar();
 
     if (op == "*")
@@ -144,7 +139,7 @@ antlrcpp::Any ASTVisitor::visitPar(ifccParser::ParContext *ctx)
     return this->visit(ctx->expr());
 }
 
-antlrcpp::Any ASTVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
+antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx)
 {
     int addr = this->visit(ctx->expr());
     cfg->current_bb->add_IRInstr(IRInstr::Operation::ret, {std::to_string(addr)});
