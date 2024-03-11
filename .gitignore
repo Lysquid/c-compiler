@@ -1,6 +1,5 @@
-compiler/build
-compiler/demo
-compiler/generated
+build
+src/generated
 ifcc-test-output
 ret42*
 a.out
