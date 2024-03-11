@@ -12,8 +12,7 @@ void IRInstr::gen_asm(std::ostream &o)
     switch (this->op)
     {
     case ldconst:
-        o << "    movl " << params[0] << "(%rbp), %eax\n";
-        o << "    movl %eax, " << params[1] << "(%rbp)\n";
+        o << "    movl $" << params[0] << ", " << params[1] << "(%rbp)\n";
         break;
     case copy:
         o << "    movl " << params[0] << "(%rbp), %eax\n";
@@ -32,6 +31,12 @@ void IRInstr::gen_asm(std::ostream &o)
     case mul:
         o << "    movl " << params[0] << "(%rbp), %eax\n";
         o << "    imull " << params[1] << "(%rbp), %eax\n";
+        o << "    movl %eax, " << params[2] << "(%rbp)\n";
+        break;
+    case div:
+        o << "    movl " << params[0] << "(%rbp), %eax\n";
+        o << "    cltd\n";
+        o << "    idivl " << params[1] << "(%rbp)\n";
         o << "    movl %eax, " << params[2] << "(%rbp)\n";
         break;
     case opposite:
@@ -71,7 +76,7 @@ void BasicBlock::gen_asm(std::ostream &o)
 
     if(!exit_true)
     {
-        cfg->gen_asm_epilogue(o);
+        return;
     } else if (!exit_false)
     {
         o << "    jmp " << exit_true->get_label() << "\n";
@@ -101,9 +106,9 @@ void CFG::add_to_symbol_table(std::string name)
     nextFreeSymbolIndex -= 4;
 }
 
-int CFG::create_new_tempvar(int value)
+int CFG::create_new_tempvar()
 {
-    std::string name = std::to_string(value);
+    std::string name = std::to_string(nextFreeSymbolIndex-4);
     add_to_symbol_table(name);
     return SymbolIndex[name];
 }
@@ -122,19 +127,29 @@ std::string CFG::new_BB_name()
 
 void CFG::gen_asm_prologue(std::ostream &o)
 {
-    std::cout<< ".globl main\n" ;
-    std::cout<< " main: \n" ;
-    std::cout << "    pushq %rbp\n";
-    std::cout << "    movq %rsp, %rbp\n";
+    o << ".globl main\n" ;
+    o << " main: \n" ;
+    o << "    pushq %rbp\n";
+    o << "    movq %rsp, %rbp\n";
 }
 
 void CFG::gen_asm_epilogue(std::ostream &o)
 {
-    std::cout << "    popq %rbp\n";
-    std::cout << "    ret\n";
+    o << "    popq %rbp\n";
+    o << "    ret\n";
 }
 
 std::string CFG::IR_reg_to_asm(std::string reg)
 {
     return std::to_string(SymbolIndex[reg]) + "(%rbp)";
+}
+
+void CFG::gen_asm(std::ostream &o)
+{
+    this->gen_asm_prologue(o);
+    for (auto bb : bbs)
+    {
+        bb->gen_asm(o);
+    }
+    this->gen_asm_epilogue(o);
 }

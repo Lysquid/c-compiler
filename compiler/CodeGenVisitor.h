@@ -73,6 +73,8 @@ public:
         virtual antlrcpp::Any visitMult_div(ifccParser::Mult_divContext *ctx) override;
         virtual antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
 
+        CFG* getCFG() { return cfg; }
+
 private:
         CFG* cfg = new CFG();
 

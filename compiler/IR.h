@@ -117,7 +117,7 @@ public:
 
 	// symbol table methods
 	void add_to_symbol_table(std::string name);
-	int create_new_tempvar(int value);
+	int create_new_tempvar();
 	int get_var_index(std::string name);
 
 	// basic block management
@@ -128,8 +128,8 @@ public:
 
 protected:
 	std::map<std::string, int> SymbolIndex; /**< part of the symbol table  */
-	int nextFreeSymbolIndex = -4;	  /**< to allocate new symbols in the symbol table */
-	int nextBBnumber = 1;			  /**< just for naming */
+	int nextFreeSymbolIndex;	  /**< to allocate new symbols in the symbol table */
+	int nextBBnumber;			  /**< just for naming */
 
 	std::vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 };
