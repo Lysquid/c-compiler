@@ -30,7 +30,7 @@ public:
 
     antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
 
-    int getNumberOfErrors() { return errors; }
+    int getNumberOfErrors() const { return errors; }
 
     CFG *getCFG() { return cfg; }
 

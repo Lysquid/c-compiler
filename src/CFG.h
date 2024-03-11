@@ -40,17 +40,18 @@ public:
 
     int create_new_tempvar();
 
-    int get_var_index(string name);
+    int get_var_index(string var);
+
+    bool symbol_in_table(string symbol);
 
     // basic block management
     string new_BB_name();
 
     BasicBlock *current_bb;
 
-    map<string, int> getSymbolIndex() { return SymbolIndex; }
 
 protected:
-    map<string, int> SymbolIndex; /**< part of the symbol table  */
+    map<string, int> symbol_index; /**< part of the symbol table  */
     int nextFreeSymbolIndex;      /**< to allocate new symbols in the symbol table */
     int nextBBnumber;              /**< just for naming */
 

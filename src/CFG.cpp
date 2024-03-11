@@ -10,18 +10,22 @@ void CFG::add_bb(BasicBlock *bb) {
 }
 
 void CFG::add_to_symbol_table(string name) {
-    SymbolIndex[name] = nextFreeSymbolIndex;
+    symbol_index[name] = nextFreeSymbolIndex;
     nextFreeSymbolIndex -= 4;
 }
 
 int CFG::create_new_tempvar() {
     string name = to_string(nextFreeSymbolIndex - 4);
     add_to_symbol_table(name);
-    return SymbolIndex[name];
+    return symbol_index[name];
 }
 
-int CFG::get_var_index(string name) {
-    return SymbolIndex[name];
+int CFG::get_var_index(string var) {
+    return symbol_index[var];
+}
+
+bool CFG::symbol_in_table(std::string symbol) {
+    return symbol_index.find(symbol) == symbol_index.end();
 }
 
 string CFG::new_BB_name() {
@@ -43,7 +47,7 @@ void CFG::gen_asm_epilogue(ostream &o) {
 }
 
 string CFG::IR_reg_to_asm(string reg) {
-    return to_string(SymbolIndex[reg]) + "(%rbp)";
+    return to_string(symbol_index[reg]) + "(%rbp)";
 }
 
 void CFG::gen_asm(ostream &o) {

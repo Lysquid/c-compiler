@@ -12,14 +12,12 @@ antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx) {
 }
 
 antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx) {
-    vector < antlr4::tree::TerminalNode * > vars = ctx->VAR();
-    map<string, int> SymbolIndex = cfg->getSymbolIndex();
-    for (antlr4::tree::TerminalNode *node: vars) {
+    for (antlr4::tree::TerminalNode *node: ctx->VAR()) {
         string var = node->getText();
-        if (SymbolIndex.find(var) == SymbolIndex.end()) {
+        if (!cfg->symbol_in_table(var)) {
             cfg->add_to_symbol_table(var);
         } else {
-            cerr << "Error: variable " << var << " already declared" << endl;
+            cerr << "ERROR: variable " << var << " already declared" << endl;
             errors++;
         }
     }
@@ -29,38 +27,36 @@ antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx) 
 antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx) {
     string var = ctx->VAR()->getText();
 
-    if (!cfg->getSymbolIndex().count(var)) {
+    if (!cfg->symbol_in_table(var)) {
         cfg->add_to_symbol_table(var);
     } else {
-        cerr << cfg->getSymbolIndex().size() << endl;
-        cout << cfg->getSymbolIndex()[var] << endl;
-        cerr << "Error: variable " << var << " already declared" << endl;
+        cerr << "ERROR: variable " << var << " already declared" << endl;
         errors++;
     }
     int addr = this->visit(ctx->expr());
-    cfg->current_bb->add_instr(new CopyInstr(addr, cfg->getSymbolIndex()[var]));
+    cfg->current_bb->add_instr(new CopyInstr(addr, cfg->get_var_index(var)));
     return 0;
 }
 
 antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx) {
     string var = ctx->VAR()->getText();
-    if (!cfg->getSymbolIndex().count(var)) {
-        cerr << "Error: variable " << var << " not initialized" << endl;
+    if (!cfg->symbol_in_table(var)) {
+        cerr << "ERROR: variable " << var << " not initialized" << endl;
         errors++;
     }
     int addr = this->visit(ctx->expr());
-    cfg->current_bb->add_instr(new CopyInstr(addr, cfg->getSymbolIndex()[var]));
+    cfg->current_bb->add_instr(new CopyInstr(addr, cfg->get_var_index(var)));
     return 0;
 }
 
 antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx) {
     string var = ctx->VAR()->getText();
 
-    if (!cfg->getSymbolIndex().count(var)) {
-        cerr << "Error: variable " << var << " not found" << endl;
+    if (!cfg->symbol_in_table(var)) {
+        cerr << "ERROR: variable " << var << " not found" << endl;
         errors++;
     }
-    return cfg->getSymbolIndex()[var];
+    return cfg->get_var_index(var);
 }
 
 antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx) {
