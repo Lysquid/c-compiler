@@ -14,9 +14,10 @@ public:
 		TYPE_INT
 	} typeName;
 
-    Type();
-    ~Type();
-    Type(typeName type);
+    Type(typeName type){
+        this->type = type;
+    };
+
     void printType(std::ostream &o){
         switch (type)
         {
@@ -29,8 +30,21 @@ public:
         }
     };
 
+    std::string getType(){
+        switch (type)
+        {
+        case TYPE_INT:
+            return "int";
+            break;
+        
+        default:
+            return "";
+            break;
+        }
+    }
+
 private:
-    int type;
+    typeName type;
 };
 
 
