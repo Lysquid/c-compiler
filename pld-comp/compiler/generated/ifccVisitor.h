@@ -37,11 +37,9 @@ public:
 
     virtual antlrcpp::Any visitMult_div(ifccParser::Mult_divContext *context) = 0;
 
-    virtual antlrcpp::Any visitSignVarExpr(ifccParser::SignVarExprContext *context) = 0;
+    virtual antlrcpp::Any visitSignExpr(ifccParser::SignExprContext *context) = 0;
 
     virtual antlrcpp::Any visitAdd_sub(ifccParser::Add_subContext *context) = 0;
-
-    virtual antlrcpp::Any visitSignConstExpr(ifccParser::SignConstExprContext *context) = 0;
 
     virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *context) = 0;
 

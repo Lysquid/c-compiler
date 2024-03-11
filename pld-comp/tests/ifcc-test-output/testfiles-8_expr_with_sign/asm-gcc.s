@@ -11,27 +11,28 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	movl	$10, -20(%rbp)
+	movl	$-10, -20(%rbp)
 	movl	$10, -16(%rbp)
-	movl	$5, -12(%rbp)
-	movl	-20(%rbp), %edx
+	movl	$-5, -12(%rbp)
 	movl	-16(%rbp), %eax
-	addl	%eax, %edx
-	movl	-12(%rbp), %eax
-	addl	%edx, %eax
+	subl	-20(%rbp), %eax
+	subl	-12(%rbp), %eax
 	movl	-16(%rbp), %ecx
 	movl	-12(%rbp), %edx
 	addl	%edx, %ecx
 	movl	-20(%rbp), %edx
 	addl	%ecx, %edx
 	subl	%edx, %eax
-	leal	-13(%rax), %edx
+	leal	-33(%rax), %edx
 	movl	-20(%rbp), %eax
 	addl	%edx, %eax
 	movl	%eax, -8(%rbp)
+	movl	-12(%rbp), %eax
+	negl	%eax
+	movl	%eax, %esi
 	movl	-20(%rbp), %eax
 	cltd
-	idivl	-12(%rbp)
+	idivl	%esi
 	imull	-16(%rbp), %eax
 	movl	%eax, %ecx
 	movl	-20(%rbp), %eax
@@ -40,13 +41,15 @@ main:
 	idivl	-12(%rbp)
 	imull	-20(%rbp), %eax
 	addl	%eax, %ecx
-	movl	-20(%rbp), %edx
-	movl	-16(%rbp), %eax
-	addl	%eax, %edx
+	movl	-20(%rbp), %eax
+	subl	-16(%rbp), %eax
+	movl	%eax, %edx
 	movl	-12(%rbp), %eax
 	addl	%edx, %eax
 	subl	-8(%rbp), %eax
-	imull	-20(%rbp), %eax
+	movl	-20(%rbp), %edx
+	negl	%edx
+	imull	%edx, %eax
 	addl	%ecx, %eax
 	movl	%eax, -4(%rbp)
 	movl	-4(%rbp), %eax

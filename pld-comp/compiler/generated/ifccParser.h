@@ -13,8 +13,8 @@ class  ifccParser : public antlr4::Parser {
 public:
   enum {
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
-    T__7 = 8, RETURN = 9, CONST = 10, INT = 11, VAR = 12, SIGN = 13, ADD_SUB = 14, 
-    MULT_DIV = 15, COMMENT = 16, DIRECTIVE = 17, WS = 18
+    T__7 = 8, RETURN = 9, CONST = 10, INT = 11, VAR = 12, ADD_SUB = 13, 
+    MULT_DIV = 14, COMMENT = 15, DIRECTIVE = 16, WS = 17
   };
 
   enum {
@@ -162,12 +162,12 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  SignVarExprContext : public ExprContext {
+  class  SignExprContext : public ExprContext {
   public:
-    SignVarExprContext(ExprContext *ctx);
+    SignExprContext(ExprContext *ctx);
 
-    antlr4::tree::TerminalNode *SIGN();
-    antlr4::tree::TerminalNode *VAR();
+    antlr4::tree::TerminalNode *ADD_SUB();
+    ExprContext *expr();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
@@ -178,15 +178,6 @@ public:
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     antlr4::tree::TerminalNode *ADD_SUB();
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  SignConstExprContext : public ExprContext {
-  public:
-    SignConstExprContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *SIGN();
-    antlr4::tree::TerminalNode *CONST();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 

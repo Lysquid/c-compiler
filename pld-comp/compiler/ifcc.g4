@@ -13,12 +13,11 @@ statement
     ;
 
 expr 
-    : CONST # constExpr 
-    | SIGN CONST # signConstExpr
-    | VAR  # varExpr
-    | SIGN VAR # signVarExpr
+    : ADD_SUB expr # signExpr
     | expr MULT_DIV expr # mult_div
     | expr ADD_SUB expr # add_sub
+    | CONST # constExpr 
+    | VAR  # varExpr
     | '(' expr ')' # par
     ;
 
@@ -29,15 +28,13 @@ CONST : [0-9]+ ;
 INT : 'int' ;
 VAR : [a-zA-Z][a-zA-Z0-9]* ;
 
-SIGN
-    : '+'
-    | '-'
-    ;
 
 ADD_SUB
     : '+' 
     | '-' 
     ;
+
+
 
 MULT_DIV
     : '*' 

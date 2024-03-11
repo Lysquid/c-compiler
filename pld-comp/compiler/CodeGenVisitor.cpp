@@ -72,26 +72,6 @@ antlrcpp::Any CodeGenVisitor::visitVarExpr(ifccParser::VarExprContext *ctx)
     return symbolTable[var];
 }
 
-antlrcpp::Any CodeGenVisitor::visitSignVarExpr(ifccParser::SignVarExprContext *ctx) 
-{
-    std::string var = ctx->VAR()->getText();
-    std::string sign = ctx->SIGN()->getText();
-
-    if(sign == "-1") {
-        index -= 4;
-        std::cout << "    movl " << symbolTable[var] << "(%rbp), %eax\n";
-        std::cout << "    negl %eax\n";
-        std::cout << "    movl %eax, " << index << "(%rbp)\n";
-        return index;
-    }
-    
-    if( symbolTable.find(var) == symbolTable.end() ) {
-        std::cerr << "Error: variable " << var << " not found" << std::endl;
-        exit(1);
-    }
-
-    return symbolTable[var];
-}
 
 antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
@@ -101,15 +81,19 @@ antlrcpp::Any CodeGenVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx)
     return index;
 }
 
-antlrcpp::Any CodeGenVisitor::visitSignConstExpr(ifccParser::SignConstExprContext *ctx) 
+antlrcpp::Any CodeGenVisitor::visitSignExpr(ifccParser::SignExprContext *ctx) 
 {
-    int value = stoi(ctx->CONST()->getText());
-    std::string sign = ctx->SIGN()->getText();
+    int addr = this->visit( ctx->expr() );
+    std::string op = ctx->ADD_SUB()->getText();
+    if(op == "-") {
+        index -= 4;
+        std::cout << "    movl " << addr << "(%rbp), %eax\n";
+        std::cout << "    negl %eax\n";
+        std::cout << "    movl %eax, " << index << "(%rbp)\n";
+        return index;
+    }
 
-    if(sign == "-") value = -value;
-    index -= 4;
-    std::cout << "    movl $" << value << ", " << index << "(%rbp)\n";
-    return index;
+    return addr;
 }
 
 antlrcpp::Any CodeGenVisitor::visitAdd_sub(ifccParser::Add_subContext *ctx) 
@@ -239,29 +223,18 @@ antlrcpp::Any SymbolVisitor::visitVarExpr(ifccParser::VarExprContext *ctx)
     return 0;
 }
 
-antlrcpp::Any SymbolVisitor::visitSignVarExpr(ifccParser::SignVarExprContext *ctx) 
-{
-    std::string var = ctx->VAR()->getText();
-    if( symbolTable.find(var) == symbolTable.end() ) {
-        std::cerr << "Error: variable " << var << " not found" << std::endl;
-        exit(1);
-    } else if (numberTable[var] == -1) {
-        std::cerr << "Error: variable " << var << " not assigned" << std::endl;
-        exit(1);
-    }
-    numberTable[var] += 1;
-    return 0;
-}
 
 antlrcpp::Any SymbolVisitor::visitConstExpr(ifccParser::ConstExprContext *ctx) 
 {
     return 0;
 }
 
-antlrcpp::Any SymbolVisitor::visitSignConstExpr(ifccParser::SignConstExprContext *ctx) 
+antlrcpp::Any SymbolVisitor::visitSignExpr(ifccParser::SignExprContext *ctx) 
 {
+    this->visit( ctx->expr() );
     return 0;
 }
+
 
 antlrcpp::Any SymbolVisitor::visitAdd_sub(ifccParser::Add_subContext *ctx) 
 {

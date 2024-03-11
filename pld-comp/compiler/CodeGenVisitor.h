@@ -13,9 +13,8 @@ public:
         virtual antlrcpp::Any visitDefinitionStatement(ifccParser::DefinitionStatementContext *ctx) override;
         virtual antlrcpp::Any visitAssignementStatement(ifccParser::AssignementStatementContext *ctx) override;
         virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override;
-        virtual antlrcpp::Any visitSignVarExpr(ifccParser::SignVarExprContext *ctx) override;
         virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override;
-        virtual antlrcpp::Any visitSignConstExpr(ifccParser::SignConstExprContext *ctx) override;
+        virtual antlrcpp::Any visitSignExpr(ifccParser::SignExprContext *ctx) override;
         virtual antlrcpp::Any visitAdd_sub(ifccParser::Add_subContext *ctx) override;
         virtual antlrcpp::Any visitMult_div(ifccParser::Mult_divContext *ctx) override;
         virtual antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
@@ -42,9 +41,8 @@ public:
         virtual antlrcpp::Any visitDefinitionStatement(ifccParser::DefinitionStatementContext *ctx) override;
         virtual antlrcpp::Any visitAssignementStatement(ifccParser::AssignementStatementContext *ctx) override;
         virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override;
-        virtual antlrcpp::Any visitSignVarExpr(ifccParser::SignVarExprContext *ctx) override;
         virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override;
-        virtual antlrcpp::Any visitSignConstExpr(ifccParser::SignConstExprContext *ctx) override;
+        virtual antlrcpp::Any visitSignExpr(ifccParser::SignExprContext *ctx) override;
         virtual antlrcpp::Any visitAdd_sub(ifccParser::Add_subContext *ctx) override;
         virtual antlrcpp::Any visitMult_div(ifccParser::Mult_divContext *ctx) override;
         virtual antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;

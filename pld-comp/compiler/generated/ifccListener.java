@@ -109,6 +109,18 @@ public interface ifccListener extends ParseTreeListener {
 	 */
 	void exitMult_div(ifccParser.Mult_divContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code signExpr}
+	 * labeled alternative in {@link ifccParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterSignExpr(ifccParser.SignExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code signExpr}
+	 * labeled alternative in {@link ifccParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitSignExpr(ifccParser.SignExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code add_sub}
 	 * labeled alternative in {@link ifccParser#expr}.
 	 * @param ctx the parse tree
