@@ -8,7 +8,7 @@
 
 // Declarations from the parser -- replace with your own
 #include "type.h"
-#include "symbole.h"
+//#include "symbole.h"
 
 class BasicBlock;
 class CFG;

@@ -1,0 +1,10 @@
+compiler/build
+compiler/demo
+compiler/generated
+ifcc-test-output
+ret42*
+a.out
+ifcc
+config.mk
+.vscode
+.idea
