@@ -3,6 +3,6 @@ int main() {
     a = -10;
     int b = 10;
     int c = -5;
-    d = -a+b+-c-(+b+c+a)+10-23+a;
+    d = -a+b+-c+-(+b+c+a)+10-23+a;
     return d;
 }

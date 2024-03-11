@@ -51,6 +51,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitUnaryExpr(ifccParser::UnaryExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitSignExpr(ifccParser::SignExprContext *ctx) override {
     return visitChildren(ctx);
   }

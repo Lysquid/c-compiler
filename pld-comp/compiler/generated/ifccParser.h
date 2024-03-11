@@ -14,7 +14,7 @@ public:
   enum {
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
     T__7 = 8, RETURN = 9, CONST = 10, INT = 11, VAR = 12, ADD_SUB = 13, 
-    MULT_DIV = 14, COMMENT = 15, DIRECTIVE = 16, WS = 17
+    MULT_DIV = 14, UNARY_OP = 15, COMMENT = 16, DIRECTIVE = 17, WS = 18
   };
 
   enum {
@@ -159,6 +159,15 @@ public:
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
     antlr4::tree::TerminalNode *MULT_DIV();
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  UnaryExprContext : public ExprContext {
+  public:
+    UnaryExprContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *UNARY_OP();
+    ExprContext *expr();
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 

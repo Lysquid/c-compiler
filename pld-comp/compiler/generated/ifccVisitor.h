@@ -37,6 +37,8 @@ public:
 
     virtual antlrcpp::Any visitMult_div(ifccParser::Mult_divContext *context) = 0;
 
+    virtual antlrcpp::Any visitUnaryExpr(ifccParser::UnaryExprContext *context) = 0;
+
     virtual antlrcpp::Any visitSignExpr(ifccParser::SignExprContext *context) = 0;
 
     virtual antlrcpp::Any visitAdd_sub(ifccParser::Add_subContext *context) = 0;
