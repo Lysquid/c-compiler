@@ -2,7 +2,7 @@
 
 antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
-    BasicBlock *main = new BasicBlock(this->cfg, "main");
+    auto *main = new BasicBlock(this->cfg, "main");
     this->cfg->add_bb(main);
     this->cfg->current_bb = main;
     this->visit(ctx->statements());
