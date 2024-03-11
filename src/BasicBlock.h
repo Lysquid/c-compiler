@@ -36,26 +36,28 @@ Possible optimization:
 	   followed by a conditional jump to the exit_false branch
 */
 
-class BasicBlock
-{
+class BasicBlock {
 public:
     BasicBlock(CFG *cfg, std::string entry_label);
+
     void gen_asm(std::ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
     void add_IRInstr(IRInstr::Operation op, std::vector<std::string> params);
 
     std::string get_label() { return label; }
+
     void set_exit_true(BasicBlock *bb) { exit_true = bb; }
+
     void set_exit_false(BasicBlock *bb) { exit_false = bb; }
 
     // No encapsulation whatsoever here. Feel free to do better.
 
-    BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
-    BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
-    std::string label;			  /**< label of the BB, also will be the label in the generated code */
-    CFG *cfg;				  /** < the CFG where this block belongs */
+    BasicBlock *exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
+    BasicBlock *exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
+    std::string label;              /**< label of the BB, also will be the label in the generated code */
+    CFG *cfg;                  /** < the CFG where this block belongs */
     std::vector<IRInstr *> instrs; /** < the instructions themselves. */
-    std::string test_var_name;	  /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
+    std::string test_var_name;      /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
 protected:
 };
 
