@@ -404,7 +404,7 @@ antlrcpp::Any ASTVisitor::visitAdd_sub(ifccParser::Add_subContext *ctx)
     {
         cfg->current_bb->add_IRInstr(IRInstr::Operation::sub, {std::to_string(addr1), std::to_string(addr2), std::to_string(addr3)});
     }
-    return 0;
+    return addr3;
 }
 
 antlrcpp::Any ASTVisitor::visitMult_div(ifccParser::Mult_divContext *ctx)
@@ -422,7 +422,7 @@ antlrcpp::Any ASTVisitor::visitMult_div(ifccParser::Mult_divContext *ctx)
     {
         cfg->current_bb->add_IRInstr(IRInstr::Operation::div, {std::to_string(addr1), std::to_string(addr2), std::to_string(addr3)});
     }
-    return 0;
+    return addr3;
 }
 
 antlrcpp::Any ASTVisitor::visitPar(ifccParser::ParContext *ctx)
