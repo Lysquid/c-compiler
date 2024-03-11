@@ -6,12 +6,9 @@
 #include "antlr4-runtime.h"
 #include "generated/ifccLexer.h"
 #include "generated/ifccParser.h"
-#include "generated/ifccBaseVisitor.h"
 
 #include "ASTVisitor.h"
-#include "CFG.h"
 
-using namespace antlr4;
 using namespace std;
 
 int main(int argn, const char **argv) {
@@ -24,15 +21,15 @@ int main(int argn, const char **argv) {
         exit(1);
     }
 
-    ANTLRInputStream input(in.str());
+    antlr4::ANTLRInputStream input(in.str());
 
     ifccLexer lexer(&input);
-    CommonTokenStream tokens(&lexer);
+    antlr4::CommonTokenStream tokens(&lexer);
 
     tokens.fill();
 
     ifccParser parser(&tokens);
-    tree::ParseTree *tree = parser.axiom();
+    antlr4::tree::ParseTree *tree = parser.axiom();
 
     if (parser.getNumberOfSyntaxErrors() != 0) {
         cerr << "error: syntax error during parsing" << endl;

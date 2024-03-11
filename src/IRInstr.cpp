@@ -1,12 +1,14 @@
 #include "IRInstr.h"
 
-IRInstr::IRInstr(BasicBlock *bb_, Operation op, std::vector<std::string> params) {
+using namespace std;
+
+IRInstr::IRInstr(BasicBlock *bb_, Operation op, vector<string> params) {
     this->bb = bb_;
     this->op = op;
     this->params = params;
 }
 
-void IRInstr::gen_asm(std::ostream &o) {
+void IRInstr::gen_asm(ostream &o) {
     switch (this->op) {
         case ldconst:
             o << "    movl $" << params[0] << ", " << params[1] << "(%rbp)\n";
