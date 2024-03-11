@@ -31,13 +31,18 @@ int main(int argn, const char **argv) {
     ifccParser parser(&tokens);
     antlr4::tree::ParseTree *tree = parser.axiom();
 
-    if (parser.getNumberOfSyntaxErrors() != 0) {
+    if (parser.getNumberOfSyntaxErrors() > 0) {
         cerr << "error: syntax error during parsing" << endl;
         exit(1);
     }
 
     ASTVisitor av;
     av.visit(tree);
+
+    if (av.getNumberOfErrors() > 0) {
+        cerr << "Stopping due to errors" << endl;
+        exit(1);
+    }
 
     av.getCFG()->gen_asm(cout);
 
