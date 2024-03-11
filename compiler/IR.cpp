@@ -34,6 +34,14 @@ void IRInstr::gen_asm(std::ostream &o)
         o << "    imull " << params[1] << "(%rbp), %eax\n";
         o << "    movl %eax, " << params[2] << "(%rbp)\n";
         break;
+    case opposite:
+        o << "    movl " << params[0] << "(%rbp), %eax\n";
+        o << "    negl %eax\n";
+        o << "    movl %eax, " << params[1] << "(%rbp)\n";
+        break;
+    case ret:
+        o << "    movl " << params[0] << "(%rbp), %eax\n";
+        break;
     default:
         o << "Unknown operation\n";
         break;
@@ -93,12 +101,11 @@ void CFG::add_to_symbol_table(std::string name)
     nextFreeSymbolIndex -= 4;
 }
 
-std::string CFG::create_new_tempvar()
+int CFG::create_new_tempvar(int value)
 {
-    std::string name = std::to_string(nextFreeSymbolIndex);
+    std::string name = std::to_string(value);
     add_to_symbol_table(name);
-    nextFreeSymbolIndex -= 4;
-    return name;
+    return SymbolIndex[name];
 }
 
 int CFG::get_var_index(std::string name)

@@ -57,7 +57,7 @@ private:
         std::map<std::string, int> numberTable;
 };
 
-class IRVisitor : public ifccBaseVisitor
+class ASTVisitor : public ifccBaseVisitor
 {
 public:
         virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
@@ -77,3 +77,4 @@ private:
         CFG* cfg = new CFG();
 
 };
+

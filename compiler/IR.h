@@ -26,7 +26,9 @@ public:
 		add,
 		sub,
 		mul,
-		div
+		div,
+		opposite,
+		ret
 	} Operation;
 
 	/**  constructor */
@@ -115,17 +117,19 @@ public:
 
 	// symbol table methods
 	void add_to_symbol_table(std::string name);
-	std::string create_new_tempvar();
+	int create_new_tempvar(int value);
 	int get_var_index(std::string name);
 
 	// basic block management
 	std::string new_BB_name();
 	BasicBlock *current_bb;
 
+	std::map<std::string, int> getSymbolIndex() { return SymbolIndex; }
+
 protected:
 	std::map<std::string, int> SymbolIndex; /**< part of the symbol table  */
-	int nextFreeSymbolIndex;	  /**< to allocate new symbols in the symbol table */
-	int nextBBnumber;			  /**< just for naming */
+	int nextFreeSymbolIndex = -4;	  /**< to allocate new symbols in the symbol table */
+	int nextBBnumber = 1;			  /**< just for naming */
 
 	std::vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 };
