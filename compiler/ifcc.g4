@@ -19,6 +19,7 @@ expr
     | expr ADD_SUB expr # add_sub
     | CONST # constExpr
     | VAR  # varExpr
+    | '(' expr ')' # par
     ;
 
 return_stmt: RETURN expr ';' ;

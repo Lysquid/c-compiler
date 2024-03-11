@@ -1,6 +1,6 @@
 #include "IR.h"
 
-IRInstr::IRInstr(BasicBlock *bb_, Operation op, Type t, vector<string> params)
+IRInstr::IRInstr(BasicBlock *bb_, Operation op, Type t, std::vector<std::string> params)
 {
     this->bb = bb_;
     this->op = op;
@@ -8,7 +8,7 @@ IRInstr::IRInstr(BasicBlock *bb_, Operation op, Type t, vector<string> params)
     this->params = params;
 }
 
-void IRInstr::gen_asm(ostream &o)
+void IRInstr::gen_asm(std::ostream &o)
 {
     switch (this->op)
     {
@@ -41,7 +41,7 @@ void IRInstr::gen_asm(ostream &o)
     }
 }
 
-BasicBlock::BasicBlock(CFG *cfg, string entry_label)
+BasicBlock::BasicBlock(CFG *cfg, std::string entry_label)
 {
     this->cfg = cfg;
     this->exit_true = nullptr;
@@ -50,12 +50,12 @@ BasicBlock::BasicBlock(CFG *cfg, string entry_label)
     this->test_var_name = "$0";
 }
 
-void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, vector<string> params)
+void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, std::vector<std::string> params)
 {
     this->instrs.push_back(new IRInstr(this, op, t, params));
 }
 
-void BasicBlock::gen_asm(ostream &o)
+void BasicBlock::gen_asm(std::ostream &o)
 {
     for (auto instr : instrs)
     {
@@ -76,12 +76,8 @@ void BasicBlock::gen_asm(ostream &o)
     }
 }
 
-void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, string d, string x, string y)
+void BasicBlock::add_IRInstr(IRInstr::Operation op, Type t, std::vector<std::string> params)
 {
-    vector<string> params;
-    params.push_back(d);
-    params.push_back(x);
-    params.push_back(y);
     this->add_IRInstr(op, t, params);
 }
 
@@ -96,39 +92,39 @@ void CFG::add_bb(BasicBlock *bb)
     bbs.push_back(bb);
 }
 
-void CFG::add_to_symbol_table(string name, Type t)
+void CFG::add_to_symbol_table(std::string name, Type t)
 {
     SymbolType[name] = t;
     SymbolIndex[name] = nextFreeSymbolIndex;
     nextFreeSymbolIndex -= 4;
 }
 
-string CFG::create_new_tempvar(Type t)
+std::string CFG::create_new_tempvar(Type t)
 {
-    string name = t + to_string(nextFreeSymbolIndex);
+    std::string name = t + to_std::string(nextFreeSymbolIndex);
     add_to_symbol_table(name, t);
     nextFreeSymbolIndex -= 4;
     return name;
 }
 
-int CFG::get_var_index(string name)
+int CFG::get_var_index(std::string name)
 {
     return SymbolIndex[name];
 }
 
-Type CFG::get_var_type(string name)
+Type CFG::get_var_type(std::string name)
 {
     return SymbolType[name];
 }
 
-string CFG::new_BB_name()
+std::string CFG::new_BB_name()
 {
-    string name = "Block" + nextBBnumber;
+    std::string name = "Block" + nextBBnumber;
     nextBBnumber++;
     return name;
 }
 
-void CFG::gen_asm_prologue(ostream &o)
+void CFG::gen_asm_prologue(std::ostream &o)
 {
     std::cout<< ".globl main\n" ;
     std::cout<< " main: \n" ;
@@ -136,13 +132,13 @@ void CFG::gen_asm_prologue(ostream &o)
     std::cout << "    movq %rsp, %rbp\n";
 }
 
-void CFG::gen_asm_epilogue(ostream &o)
+void CFG::gen_asm_epilogue(std::ostream &o)
 {
     std::cout << "    popq %rbp\n";
     std::cout << "    ret\n";
 }
 
-string CFG::IR_reg_to_asm(string reg)
+std::string CFG::IR_reg_to_asm(std::string reg)
 {
-    return to_string(SymbolIndex[reg]) + "(%rbp)";
+    return to_std::string(SymbolIndex[reg]) + "(%rbp)";
 }

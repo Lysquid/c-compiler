@@ -271,7 +271,7 @@ antlrcpp::Any SymbolVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ct
 
 antlrcpp::Any IRVisitor::visitProg(ifccParser::ProgContext *ctx) 
 {
-    this->CFG->add_bb(new BasicBlock(this->CFG, "entry"));
+    this->cfg->add_bb(new BasicBlock(this->cfg, "entry"));
 
     this->visit( ctx->statements() );
     this->visit( ctx->return_stmt() );

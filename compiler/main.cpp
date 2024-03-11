@@ -9,6 +9,7 @@
 #include "generated/ifccBaseVisitor.h"
 
 #include "CodeGenVisitor.h"
+#include "IR.h"
 
 using namespace antlr4;
 using namespace std;

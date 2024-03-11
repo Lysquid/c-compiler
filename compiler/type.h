@@ -11,7 +11,7 @@ class Type
 public: 
     typedef enum
 	{
-		int
+		TYPE_INT
 	} typeName;
 
     Type();
@@ -20,7 +20,7 @@ public:
     void printType(std::ostream &o){
         switch (type)
         {
-        case int:
+        case TYPE_INT:
             o << "int";
             break;
         

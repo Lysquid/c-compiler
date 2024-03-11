@@ -74,6 +74,6 @@ public:
         virtual antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
 
 private:
-        CFG* CFG = new CFG();
+        CFG* cfg = new CFG();
 
 };
