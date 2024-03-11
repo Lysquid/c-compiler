@@ -1,3 +1,0 @@
-Error: variable a already declared
-
-exit status: 1
