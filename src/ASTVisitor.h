@@ -4,6 +4,7 @@
 #include "generated/ifccBaseVisitor.h"
 #include "CFG.h"
 
+using namespace std;
 
 class ASTVisitor : public ifccBaseVisitor {
 public:

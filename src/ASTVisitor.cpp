@@ -1,7 +1,5 @@
 #include "ASTVisitor.h"
 
-using namespace std;
-
 antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx) {
     auto *main = new BasicBlock(this->cfg, "main");
     this->cfg->add_bb(main);
@@ -40,8 +38,7 @@ antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssi
         exit(1);
     }
     int addr = this->visit(ctx->expr());
-    cfg->current_bb->add_IRInstr(IRInstr::Operation::copy,
-                                 {to_string(addr), to_string(cfg->getSymbolIndex()[var])});
+    cfg->current_bb->add_instr(new CopyInstr(addr, cfg->getSymbolIndex()[var]));
     return 0;
 }
 
@@ -52,8 +49,7 @@ antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx) {
         exit(1);
     }
     int addr = this->visit(ctx->expr());
-    cfg->current_bb->add_IRInstr(IRInstr::Operation::copy,
-                                 {to_string(addr), to_string(cfg->getSymbolIndex()[var])});
+    cfg->current_bb->add_instr(new CopyInstr(addr, cfg->getSymbolIndex()[var]));
     return 0;
 }
 
@@ -70,7 +66,7 @@ antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx) {
 antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx) {
     int value = stoi(ctx->CONST()->getText());
     int addr = cfg->create_new_tempvar();
-    cfg->current_bb->add_IRInstr(IRInstr::Operation::ldconst, {to_string(value), to_string(addr)});
+    cfg->current_bb->add_instr(new ConstInstr(value, addr));
     return addr;
 }
 
@@ -79,7 +75,7 @@ antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
     string op = ctx->ADD_SUB()->getText();
     if (op == "-") {
         int addr2 = cfg->create_new_tempvar();
-        cfg->current_bb->add_IRInstr(IRInstr::Operation::opposite, {to_string(addr), to_string(addr2)});
+        cfg->current_bb->add_instr(new NegInstr(addr, addr2));
         return addr2;
     }
     return addr;
@@ -92,11 +88,9 @@ antlrcpp::Any ASTVisitor::visitAddSub(ifccParser::AddSubContext *ctx) {
     int addr3 = cfg->create_new_tempvar();
 
     if (op == "+") {
-        cfg->current_bb->add_IRInstr(IRInstr::Operation::add,
-                                     {to_string(addr1), to_string(addr2), to_string(addr3)});
+        cfg->current_bb->add_instr(new AddInstr(addr1, addr2, addr3));
     } else {
-        cfg->current_bb->add_IRInstr(IRInstr::Operation::sub,
-                                     {to_string(addr1), to_string(addr2), to_string(addr3)});
+        cfg->current_bb->add_instr(new SubInstr(addr1, addr2, addr3));
     }
     return addr3;
 }
@@ -108,11 +102,9 @@ antlrcpp::Any ASTVisitor::visitMulDiv(ifccParser::MulDivContext *ctx) {
     int addr3 = cfg->create_new_tempvar();
 
     if (op == "*") {
-        cfg->current_bb->add_IRInstr(IRInstr::Operation::mul,
-                                     {to_string(addr1), to_string(addr2), to_string(addr3)});
+        cfg->current_bb->add_instr(new MulInstr(addr1, addr2, addr3));
     } else {
-        cfg->current_bb->add_IRInstr(IRInstr::Operation::div,
-                                     {to_string(addr1), to_string(addr2), to_string(addr3)});
+        cfg->current_bb->add_instr(new DivInstr(addr1, addr2, addr3));
     }
     return addr3;
 }
@@ -123,6 +115,6 @@ antlrcpp::Any ASTVisitor::visitPar(ifccParser::ParContext *ctx) {
 
 antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx) {
     int addr = this->visit(ctx->expr());
-    cfg->current_bb->add_IRInstr(IRInstr::Operation::ret, {to_string(addr)});
+    cfg->current_bb->add_instr(new RetInstr(addr));
     return 0;
 }

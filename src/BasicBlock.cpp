@@ -1,7 +1,5 @@
 #include "BasicBlock.h"
 
-using namespace std;
-
 BasicBlock::BasicBlock(CFG *cfg, string entry_label) {
     this->cfg = cfg;
     this->exit_true = nullptr;
@@ -10,8 +8,8 @@ BasicBlock::BasicBlock(CFG *cfg, string entry_label) {
     this->test_var_name = "$0";
 }
 
-void BasicBlock::add_IRInstr(IRInstr::Operation op, vector<string> params) {
-    this->instrs.push_back(new IRInstr(this, op, params));
+void BasicBlock::add_instr(Instr* instr) {
+    this->instrs.push_back(instr);
 }
 
 void BasicBlock::gen_asm(ostream &o) {

@@ -1,7 +1,5 @@
 #include "CFG.h"
 
-using namespace std;
-
 CFG::CFG() {
     nextFreeSymbolIndex = -4;
     nextBBnumber = 0;
