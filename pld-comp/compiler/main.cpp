@@ -43,8 +43,12 @@ int main(int argn, const char **argv)
       exit(1);
   }
 
+  SymbolVisitor sv;
+  sv.visit(tree);
+  std::map<std::string, int> st = sv.getSymbolTable();
   
   CodeGenVisitor v;
+  v.setSymbolTable(st);
   v.visit(tree);
 
   return 0;
