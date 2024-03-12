@@ -25,7 +25,7 @@ int CFG::get_var_index(string var) {
 }
 
 bool CFG::symbol_in_table(std::string symbol) {
-    return symbol_index.find(symbol) == symbol_index.end();
+    return symbol_index.find(symbol) != symbol_index.end();
 }
 
 string CFG::new_BB_name() {

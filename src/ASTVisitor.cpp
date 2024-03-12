@@ -109,6 +109,26 @@ antlrcpp::Any ASTVisitor::visitPar(ifccParser::ParContext *ctx) {
     return this->visit(ctx->expr());
 }
 
+
+antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx){
+  int term1 = this->visit(ctx->expr(0));
+  int term2 = this->visit(ctx->expr(1));
+  string op = ctx->COMP()->getText();
+
+  if (op == "<=") {
+      cfg->current_bb->add_instr(new LessEqCmpInstr(term1, term2));
+  } else if(op == ">=") {
+      cfg->current_bb->add_instr(new GreaterEqCmpInstr(term1, term2));
+  } else if(op == "<") {
+      cfg->current_bb->add_instr(new LessCmpInstr(term1, term2));
+  } else if(op == ">") {
+      cfg->current_bb->add_instr(new GreaterCmpInstr(term1, term2));
+  }
+
+  return 0;
+}
+
+
 antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx) {
     int addr = this->visit(ctx->expr());
     cfg->current_bb->add_instr(new RetInstr(addr));
