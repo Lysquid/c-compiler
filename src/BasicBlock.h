@@ -7,6 +7,7 @@
 #include <initializer_list>
 
 #include "Instr.h"
+#include "IRVisitor.h"
 
 using namespace std;
 
@@ -42,7 +43,7 @@ class BasicBlock {
 public:
     BasicBlock(CFG *cfg, string entry_label);
 
-    void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
+    void accept(IRVisitor &visitor);
 
     void add_instr(Instr *instr);
 
@@ -52,6 +53,7 @@ public:
 
     void set_exit_false(BasicBlock *bb) { exit_false = bb; }
 
+
     // No encapsulation whatsoever here. Feel free to do better.
 
     BasicBlock *exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
@@ -60,6 +62,5 @@ public:
     CFG *cfg;                  /** < the CFG where this block belongs */
     vector<Instr *> instrs; /** < the instructions themselves. */
     string test_var_name;      /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
-protected:
 };
 
