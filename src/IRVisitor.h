@@ -29,6 +29,8 @@ public:
 
     virtual void visit(NegInstr &i) = 0;
 
+    virtual void visit(CmpInstr &i) = 0;
+
     virtual void visit(RetInstr &i) = 0;
 
 protected:

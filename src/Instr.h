@@ -93,44 +93,25 @@ public:
     int dest;
 };
 
-class LessEqCmpInstr : public Instr {
+class CmpInstr : public Instr {
 public:
-    LessEqCmpInstr(int term1, int term2) : term1(term1), term2(term2) {}
+
+    enum cmp_type {
+        e,
+        g,
+        ge,
+        l,
+        le,
+    };
+
+    CmpInstr(int term1, int term2, int dest, cmp_type cmp) : term1(term1), term2(term2), dest(dest), cmp(cmp) {}
 
     void accept(IRVisitor &visitor) override;
 
     int term1;
     int term2;
-};
-
-class GreaterEqCmpInstr : public Instr {
-public:
-    GreaterEqCmpInstr(int term1, int term2) : term1(term1), term2(term2) {}
-
-    void accept(IRVisitor &visitor) override;
-
-    int term1;
-    int term2;
-};
-
-class LessCmpInstr : public Instr {
-public:
-    LessCmpInstr(int term1, int term2) : term1(term1), term2(term2) {}
-
-    void accept(IRVisitor &visitor) override;
-
-    int term1;
-    int term2;
-};
-
-class GreaterCmpInstr : public Instr {
-public:
-    GreaterCmpInstr(int term1, int term2) : term1(term1), term2(term2) {}
-
-    void accept(IRVisitor &visitor) override;
-
-    int term1;
-    int term2;
+    int dest;
+    cmp_type cmp;
 };
 
 class RetInstr : public Instr {

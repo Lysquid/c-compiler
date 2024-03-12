@@ -26,7 +26,7 @@ expr
 ADD_SUB : '+' | '-' ;
 MUL_DIV : '*' | '/' ;
 UNARY_OP : '!' ;
-COMP : '<=' | '>=' | '<' | '>';
+COMP : '==' | '<=' | '>=' | '<' | '>';
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;

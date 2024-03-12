@@ -25,6 +25,8 @@ public:
 
     void visit(NegInstr &i) override;
 
+    void visit(CmpInstr &i) override;
+
     void visit(RetInstr &i) override;
 
 private:
@@ -32,4 +34,5 @@ private:
     void gen_prologue();
 
     void gen_epilogue();
+
 };
