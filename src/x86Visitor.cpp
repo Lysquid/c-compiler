@@ -75,6 +75,32 @@ void x86Visitor::visit(NegInstr &i) {
     o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }
 
+void x86Visitor::visit(CmpInstr &i) {
+    o << "    movl " << i.term1 << "(%rbp), %eax\n";
+    o << "    cmpl " << i.term2 << "(%rbp), %eax\n";
+    o << "    set";
+    switch (i.cmp) {
+        case CmpInstr::e:
+            o << "e";
+            break;
+        case CmpInstr::g:
+            o << "g";
+            break;
+        case CmpInstr::ge:
+            o << "ge";
+            break;
+        case CmpInstr::l:
+            o << "l";
+            break;
+        case CmpInstr::le:
+            o << "le";
+            break;
+    }
+    o << " %al\n";
+    o << "    movzbl %al, %eax\n";
+    o << "    movl %eax, " << i.dest << "(%rbp)\n";
+}
+
 void x86Visitor::visit(RetInstr &i) {
     o << "    movl " << i.var << "(%rbp), %eax\n";
 }

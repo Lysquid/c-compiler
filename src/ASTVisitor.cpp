@@ -111,21 +111,23 @@ antlrcpp::Any ASTVisitor::visitPar(ifccParser::ParContext *ctx) {
 
 
 antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx){
-  int term1 = this->visit(ctx->expr(0));
-  int term2 = this->visit(ctx->expr(1));
-  string op = ctx->COMP()->getText();
+    int term1 = this->visit(ctx->expr(0));
+    int term2 = this->visit(ctx->expr(1));
+    string op = ctx->COMP()->getText();
+    int res = cfg->create_new_tempvar();
 
-//  if (op == "<=") {
-//      cfg->current_bb->add_instr(new LessEqCmpInstr(term1, term2));
-//  } else if(op == ">=") {
-//      cfg->current_bb->add_instr(new GreaterEqCmpInstr(term1, term2));
-//  } else if(op == "<") {
-//      cfg->current_bb->add_instr(new LessCmpInstr(term1, term2));
-//  } else if(op == ">") {
-//      cfg->current_bb->add_instr(new GreaterCmpInstr(term1, term2));
-//  }
-
-  return 0;
+    if (op == "<=") {
+        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::le));
+    } else if(op == ">=") {
+        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::ge));
+    } else if(op == "<") {
+        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::l));
+    } else if(op == ">") {
+        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::g));
+    } else if (op == "==") {
+        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::e));
+    }
+    return res;
 }
 
 

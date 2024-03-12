@@ -35,18 +35,6 @@ void RetInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
-//void LessEqCmpInstr::gen_asm(std::ostream &o) {
-//    o << "    movl " << term1 << "(%rbp), %eax\n";
-//    o << "    cmpl " << term2 << "(%rbp), %eax\n";
-//    o << "    setle " << "%al\n";
-//    o << "    movzbl " << "%al, %eax\n";
-//}
-//void GreaterEqCmpInstr::gen_asm(std::ostream &o) {
-//
-//}
-//void LessCmpInstr::gen_asm(std::ostream &o) {
-//
-//}
-//void GreaterCmpInstr::gen_asm(std::ostream &o) {
-//
-//}
+void CmpInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
