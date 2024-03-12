@@ -8,6 +8,7 @@
 #include "generated/ifccParser.h"
 
 #include "ASTVisitor.h"
+#include "x86Visitor.h"
 
 using namespace std;
 
@@ -44,7 +45,8 @@ int main(int argn, const char **argv) {
         exit(1);
     }
 
-    av.getCFG()->gen_asm(cout);
+    x86Visitor xv(cout);
+    xv.visit(*av.getCFG());
 
     return 0;
 }

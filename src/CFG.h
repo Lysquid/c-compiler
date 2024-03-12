@@ -11,6 +11,8 @@
 
 using namespace std;
 
+class IRVisitor;
+
 /** The class for the control flow graph, also includes the symbol table */
 
 /* A few important comments:
@@ -26,14 +28,8 @@ public:
 
     void add_bb(BasicBlock *bb);
 
-    // x86 code generation: could be encapsulated in a processor class in a retargetable compiler
-    void gen_asm(ostream &o);
-
-    string IR_reg_to_asm(
-            string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
-    void gen_asm_prologue(ostream &o);
-
-    void gen_asm_epilogue(ostream &o);
+    // < helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24
+    string IR_reg_to_asm(string reg);
 
     // symbol table methods
     void add_to_symbol_table(string name);
@@ -49,11 +45,11 @@ public:
 
     BasicBlock *current_bb;
 
+    vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 
 protected:
     map<string, int> symbol_index; /**< part of the symbol table  */
-    int nextFreeSymbolIndex;      /**< to allocate new symbols in the symbol table */
-    int nextBBnumber;              /**< just for naming */
+    int next_free_symbol_index;      /**< to allocate new symbols in the symbol table */
+    int next_bb_number;              /**< just for naming */
 
-    vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 };
