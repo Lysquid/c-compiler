@@ -100,6 +100,50 @@ private:
     int dest;
 };
 
+class LessEqCmpInstr : public Instr {
+public:
+    LessEqCmpInstr(int term1, int term2) : term1(term1), term2(term2) {}
+
+    void gen_asm(std::ostream &o) override;
+
+private:
+    int term1;
+    int term2;
+};
+
+class GreaterEqCmpInstr : public Instr {
+public:
+    GreaterEqCmpInstr(int term1, int term2) : term1(term1), term2(term2) {}
+
+    void gen_asm(std::ostream &o) override;
+
+private:
+    int term1;
+    int term2;
+};
+
+class LessCmpInstr : public Instr {
+public:
+    LessCmpInstr(int term1, int term2) : term1(term1), term2(term2) {}
+
+    void gen_asm(std::ostream &o) override;
+
+private:
+    int term1;
+    int term2;
+};
+
+class GreaterCmpInstr : public Instr {
+public:
+    GreaterCmpInstr(int term1, int term2) : term1(term1), term2(term2) {}
+
+    void gen_asm(std::ostream &o) override;
+
+private:
+    int term1;
+    int term2;
+};
+
 class RetInstr : public Instr {
 public:
     explicit RetInstr(int var) : var(var) {}

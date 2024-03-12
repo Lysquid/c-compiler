@@ -28,6 +28,8 @@ public:
 
     antlrcpp::Any visitMulDiv(ifccParser::MulDivContext *ctx) override;
 
+    antlrcpp::Any visitComparison(ifccParser::ComparisonContext *ctx) override;
+
     antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
 
     int getNumberOfErrors() const { return errors; }
@@ -39,4 +41,3 @@ private:
     CFG *cfg = new CFG();
 
 };
-

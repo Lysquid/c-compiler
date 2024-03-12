@@ -4,7 +4,7 @@ axiom : prog EOF ;
 
 prog : INT 'main' '(' ')' '{' statement* ret '}' ;
 
-statement 
+statement
     : INT VAR (',' VAR)* ';'    # declaration
     | INT VAR '=' expr ';'      # declarationAssignment
     | VAR '=' expr ';'          # assignment
@@ -17,6 +17,7 @@ expr
     | UNARY_OP expr     # unary
     | expr MUL_DIV expr # mulDiv
     | expr ADD_SUB expr # addSub
+    | expr COMP expr    # comparison
     | CONST             # const
     | VAR               # var
     | '(' expr ')'      # par
@@ -25,6 +26,7 @@ expr
 ADD_SUB : '+' | '-' ;
 MUL_DIV : '*' | '/' ;
 UNARY_OP : '!' ;
+COMP : '<=' | '>=' | '<' | '>';
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;

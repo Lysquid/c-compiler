@@ -42,6 +42,22 @@ void NegInstr::gen_asm(std::ostream &o) {
     o << "    movl %eax, " << dest << "(%rbp)\n";
 }
 
+void LessEqCmpInstr::gen_asm(std::ostream &o) {
+    o << "    movl " << term1 << "(%rbp), %eax\n";
+    o << "    cmpl " << term2 << "(%rbp), %eax\n";
+    o << "    setle " << "%al\n";
+    o << "    movzbl " << "%al, %eax\n";
+}
+void GreaterEqCmpInstr::gen_asm(std::ostream &o) {
+
+}
+void LessCmpInstr::gen_asm(std::ostream &o) {
+
+}
+void GreaterCmpInstr::gen_asm(std::ostream &o) {
+
+}
+
 void RetInstr::gen_asm(std::ostream &o) {
     o << "    movl " << var << "(%rbp), %eax\n";
 }
