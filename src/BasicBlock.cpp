@@ -1,7 +1,6 @@
 #include "BasicBlock.h"
 
-BasicBlock::BasicBlock(CFG *cfg, string entry_label) {
-    this->cfg = cfg;
+BasicBlock::BasicBlock(string entry_label) {
     this->exit_true = nullptr;
     this->exit_false = nullptr;
     this->label = entry_label;
