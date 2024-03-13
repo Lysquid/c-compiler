@@ -18,32 +18,58 @@ antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx){
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitIfcond(ifccParser::IfcondContext *ctx) {
-    auto *ifblock = new BasicBlock(cfg->new_BB_name());
 
+antlrcpp::Any ASTVisitor::visitIfcond(ifccParser::IfcondContext *ctx) {
+    if(ctx->block().size() == 2){
+      visitIfElsecond(ctx);
+    } else {
+      visitIfNoElsecond(ctx);
+    }
+    return 0;
+}
+
+antlrcpp::Any ASTVisitor::visitIfElsecond(ifccParser::IfcondContext *ctx){
+    auto *ifblock = new BasicBlock(cfg->new_BB_name());
     auto *endifblock = new BasicBlock(cfg->new_BB_name());
+    auto *elseblock = new BasicBlock(cfg->new_BB_name());
 
     current_bb->set_exit_true(ifblock);
-
-
     ifblock->set_exit_true(endifblock);
 
+    current_bb->set_exit_false(elseblock);
+    elseblock->set_exit_true(endifblock);
     cfg->add_bb(ifblock); // then
 
-    this->visit(ctx->expr()); // le test
-    current_bb->set_exit_false(endifblock); // s'il n'y a pas de else, on saute à endifblock
+    current_bb->test_var_index = this->visit(ctx->expr()); // le test, on stocke le resultat de la visite dans test_var_index
+
     current_bb = ifblock;
     this->visit(ctx->block(0)); // le bloc if
 
+    cfg->add_bb(elseblock); // else
 
-    if(ctx->block().size() == 2){
-        auto *elseblock = new BasicBlock(cfg->new_BB_name());
-        current_bb->set_exit_false(elseblock);
-        elseblock->set_exit_true(endifblock);
-        cfg->add_bb(elseblock); // else
-        current_bb = elseblock;
-        this->visit(ctx->block(1)); // le bloc else
-    }
+    current_bb = elseblock;
+    this->visit(ctx->block(1)); // le bloc else
+
+    cfg->add_bb(endifblock); // endif
+    current_bb = endifblock;
+
+    return 0;
+}
+
+antlrcpp::Any ASTVisitor::visitIfNoElsecond(ifccParser::IfcondContext *ctx){
+    auto *ifblock = new BasicBlock(cfg->new_BB_name());
+    auto *endifblock = new BasicBlock(cfg->new_BB_name());
+
+    current_bb->set_exit_true(ifblock);
+    ifblock->set_exit_true(endifblock);
+    cfg->add_bb(ifblock); // then
+
+    current_bb->set_exit_false(endifblock); // s'il n'y a pas de else, on saute à endifblock
+
+    current_bb->test_var_index = this->visit(ctx->expr()); // le test, on stocke le resultat de la visite dans test_var_index
+
+    current_bb = ifblock;
+    this->visit(ctx->block(0)); // le bloc if
 
     cfg->add_bb(endifblock); // endif
     current_bb = endifblock;
