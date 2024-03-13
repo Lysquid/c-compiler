@@ -15,38 +15,16 @@
 #
 
 import argparse
-import glob
 import os
 import shutil
 import sys
 import subprocess
-
-
-def command(string, logfile=None):
-    """execute `string` as a shell command, optionnaly logging stdout+stderr to a file. return exit status.)"""
-    if args.verbose:
-        print("ifcc-test.py: " + string)
-    try:
-        output = subprocess.check_output(string, stderr=subprocess.STDOUT, shell=True)
-        ret = 0
-    except subprocess.CalledProcessError as e:
-        ret = e.returncode
-        output = e.output
-
-    if logfile:
-        f = open(logfile, 'w')
-        print(output.decode(sys.stdout.encoding) + '\n' + 'exit status: ' + str(ret), file=f)
-        f.close()
-
-    return ret
-
-
-def dumpfile(name):
-    print(open(name).read(), end='')
-
+import asyncio
+from pathlib import Path
+import filecmp
 
 ######################################################################################
-## ARGPARSE step: make sense of our command-line arguments
+# ARGPARSE step: make sense of our command-line arguments
 
 argparser = argparse.ArgumentParser(
     description="Compile multiple programs with both GCC and IFCC, run them, and compare the results.",
@@ -76,10 +54,10 @@ if "ifcc-test-output" in orig_cwd:
 
 if os.path.isdir('ifcc-test-output'):
     # cleanup previous output directory
-    command('rm -rf ifcc-test-output')
+    subprocess.call('rm -rf ifcc-test-output', shell=True)
 os.mkdir('ifcc-test-output')
 
-## Then we process the inputs arguments i.e. filenames or subtrees
+# Then we process the inputs arguments i.e. filenames or subtrees
 inputfilenames = []
 for path in args.input:
     path = os.path.normpath(path)  # collapse redundant slashes etc.
@@ -96,17 +74,17 @@ for path in args.input:
         print("error: cannot read input path `" + path + "'")
         sys.exit(1)
 
-## debug: after treewalk
+# debug: after treewalk
 if args.debug:
     print("debug: list of files after tree walk:", " ".join(inputfilenames))
 
-## sanity check
+# sanity check
 if len(inputfilenames) == 0:
     print("error: found no test-case in: " + " ".join(args.input))
     sys.exit(1)
 
-## Here we check that  we can actually read the files.  Our goal is to
-## fail as early as possible when the CLI arguments are wrong.
+# Here we check that  we can actually read the files.  Our goal is to
+# fail as early as possible when the CLI arguments are wrong.
 for inputfilename in inputfilenames:
     try:
         f = open(inputfilename, "r")
@@ -115,8 +93,8 @@ for inputfilename in inputfilenames:
         print("error: " + e.args[1] + ": " + inputfilename)
         sys.exit(1)
 
-## Last but not least: we now locate the "wrapper script" that we will
-## use to invoke ifcc
+# Last but not least: we now locate the "wrapper script" that we will
+# use to invoke ifcc
 if args.wrapper:
     wrapper = os.path.realpath(os.getcwd() + "/" + args.wrapper)
 else:
@@ -130,7 +108,7 @@ if args.debug:
     print("debug: wrapper path: " + wrapper)
 
 ######################################################################################
-## PREPARE step: copy all test-cases under ifcc-test-output
+# PREPARE step: copy all test-cases under ifcc-test-output
 
 jobs = []
 
@@ -142,95 +120,135 @@ for inputfilename in inputfilenames:
         print('error: input filename is within output directory: ' + inputfilename)
         exit(1)
 
-    ## each test-case gets copied and processed in its own subdirectory:
-    ## ../somedir/subdir/file.c becomes ./ifcc-test-output/somedir-subdir-file/input.c
+    # each test-case gets copied and processed in its own subdirectory:
+    # ../somedir/subdir/file.c becomes ./ifcc-test-output/somedir-subdir-file/input.c
     subdir = 'ifcc-test-output/' + inputfilename.strip("./")[:-2].replace('/', '-')
     os.mkdir(subdir)
     shutil.copyfile(inputfilename, subdir + '/input.c')
-    jobs.append(subdir)
+    jobs.append(Path(subdir))
 
-## eliminate duplicate paths from the 'jobs' list
+# eliminate duplicate paths from the 'jobs' list
 unique_jobs = []
 for j in jobs:
-    for d in unique_jobs:
-        if os.path.samefile(j, d):
-            break  # and skip the 'else' branch
-    else:
+    if not j in unique_jobs:
         unique_jobs.append(j)
 jobs = sorted(unique_jobs)
 # debug: after deduplication
 if args.debug:
-    print("debug: list of test-cases after deduplication:", " ".join(jobs))
+    print("debug: list of test-cases after deduplication:", " ".join(map(str, jobs)))
 
 ######################################################################################
-## TEST step: actually compile all test-cases with both compilers
+# TEST step: actually compile all test-cases with both compilers
 
-failed = 0
 
-for jobname in jobs:
-    os.chdir(orig_cwd)
+semaphore = asyncio.Semaphore(10)
 
-    print('TEST-CASE: ' + jobname)
-    os.chdir(jobname)
 
-    ## Reference compiler = GCC
-    gccstatus = command("gcc -S -o asm-gcc.s input.c", "gcc-compile.txt")
-    if gccstatus == 0:
-        # test-case is a valid program. we should run it
-        gccstatus = command("gcc -o exe-gcc asm-gcc.s", "gcc-link.txt")
-    if gccstatus == 0:  # then both compile and link stage went well
-        exegccstatus = command("./exe-gcc", "gcc-execute.txt")
-        if args.verbose >= 2:
-            dumpfile("gcc-execute.txt")
+def test_result(ok: bool, job_path: Path, message: str = None):
+    print(f"TEST-CASE: {job_path}")
+    print(f"TEST {'OK' if ok else 'FAIL'}{ f' ({message})' if message else ''}")
+    return ok
 
-    ## IFCC compiler
-    ifccstatus = command(wrapper + " asm-ifcc.s input.c", "ifcc-compile.txt")
 
-    if gccstatus != 0 and ifccstatus != 0:
-        ## ifcc correctly rejects invalid program -> test-case ok
-        print("TEST OK (both failed)")
-        continue
-    elif gccstatus != 0 and ifccstatus == 0:
-        ## ifcc wrongly accepts invalid program -> error
-        print("TEST FAIL (your compiler accepts an invalid program)")
-        failed += 1
-        continue
-    elif gccstatus == 0 and ifccstatus != 0:
-        ## ifcc wrongly rejects valid program -> error
-        print("TEST FAIL (your compiler rejects a valid program)")
-        failed += 1
-        if args.verbose:
-            dumpfile("ifcc-compile.txt")
-        continue
-    else:
-        ## ifcc accepts to compile valid program -> let's link it
-        ldstatus = command("gcc -o exe-ifcc asm-ifcc.s", "ifcc-link.txt")
-        if ldstatus:
-            print("TEST FAIL (your compiler produces incorrect assembly)")
-            failed += 1
+async def job(p: Path, semaphore: asyncio.Semaphore):
+
+    async with semaphore:
+
+        # Reference compiler = GCC
+        gcc_comp = await asyncio.create_subprocess_exec(
+            "gcc", "-S", "-o",
+            p / "asm-gcc.s",
+            p / "input.c",
+            stderr=(p / "gcc-compile.txt").open("w")
+        )
+        # IFCC compiler
+        ifcc_comp = await asyncio.create_subprocess_exec(
+            Path.cwd() /"ifcc", p / "input.c",
+            stdout=(p / "asm-ifcc.s").open("w"),
+            stderr=(p / "ifcc-compile.txt").open("w")
+        )
+        await gcc_comp.wait()
+        await ifcc_comp.wait()
+
+        # ifcc correctly rejects invalid program -> test-case ok
+        if gcc_comp.returncode != 0 and ifcc_comp.returncode != 0:
+            return test_result(True, p, "both failed")
+
+        # ifcc wrongly accepts invalid program -> error
+        if gcc_comp.returncode != 0 and ifcc_comp.returncode == 0:
+            return test_result(False, p, "your compiler accepts an invalid program")
+
+        # ifcc wrongly rejects valid program -> error
+        if gcc_comp.returncode == 0 and ifcc_comp.returncode != 0:
+            ok = test_result(False, p, "your compiler rejects a valid program")
             if args.verbose:
-                dumpfile("ifcc-link.txt")
-            continue
+                print((p / "ifcc-compile.txt").read_text())
+            return ok
 
-    ## both compilers  did produce an  executable, so now we  run both
-    ## these executables and compare the results.
+        # ifcc accepts to compile valid program -> let's link it
+        gcc_link = await asyncio.create_subprocess_exec(
+            "gcc", "-o",
+            p / "exe-gcc",
+            p / "asm-gcc.s",
+            stderr=(p / "gcc-link.txt").open("w")
+        )
+        ifcc_link = await asyncio.create_subprocess_exec(
+            "gcc", "-o",
+            p / "exe-ifcc",
+            p / "asm-ifcc.s",
+            stderr=(p / "ifcc-link.txt").open("w")
+        )
+        await gcc_link.wait()
+        await ifcc_link.wait()
 
-    command("./exe-ifcc", "ifcc-execute.txt")
-    if open("gcc-execute.txt").read() != open("ifcc-execute.txt").read():
-        print("TEST FAIL (different results at execution)")
-        failed += 1
-        if args.verbose:
-            print("GCC:")
-            dumpfile("gcc-execute.txt")
-            print("you:")
-            dumpfile("ifcc-execute.txt")
-        continue
+        if ifcc_link.returncode:
+            ok = test_result(False, p, "your compiler produces incorrect assembly")
+            if args.verbose:
+                print((p / "ifcc-link.txt").read_text())
+            return ok
 
-    ## last but not least
-    print("TEST OK")
+        # both compilers  did produce an  executable, so now we  run both
+        # these executables and compare the results.
+        gcc_out = p / "gcc-execute.txt"
+        ifcc_out = p / "ifcc-execute.txt"
+        gcc_exec = await asyncio.create_subprocess_exec(
+            p / "exe-gcc",
+            stdout=gcc_out.open("w")
+        )
+        ifcc_exec = await asyncio.create_subprocess_exec(
+            p / "exe-ifcc",
+            stdout=ifcc_out.open("w")
+        )
+        await gcc_exec.wait()
+        await ifcc_exec.wait()
+
+        if gcc_exec.returncode != ifcc_exec.returncode:
+            return test_result(False, p, "different return codes at execution")
+
+        if not filecmp.cmp(gcc_out, ifcc_out):
+            ok = test_result(False, p, "different stdout at execution")
+            if args.verbose:
+                print("GCC:")
+                print(gcc_out.read_text())
+                print("IFCC:")
+                print(ifcc_out.read_text())
+            return ok
+
+        # last but not least
+        return test_result(True, p)
+
+
+async def main():
+    res = await asyncio.gather(*(job(j, semaphore) for j in jobs))
+    return res.count(False)
+
+
+failed = asyncio.run(main())
 
 print("-------")
 if failed:
     print(f"{failed} test{'s' if failed > 1 else ''} failed")
 else:
     print("All tests passed")
+
+
