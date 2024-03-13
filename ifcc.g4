@@ -14,9 +14,9 @@ statement
     : RETURN expr ';' # ret
     | INT VAR (',' VAR)* ';'    # declaration
     | INT VAR '=' expr ';'      # declarationAssignment
+    | VAR '(' (expr (',' expr)*)? ')' ';' # callVoidFunction
     | expr ';'                  # expression
     | 'if' '(' expr ')'  block  ('else'  block )? # ifcond
-    | VAR '(' (expr (',' expr)*)? ')' ';' # callVoidFunction
     | 'putchar(' expr ')' ';'   # putchar
     ;
 

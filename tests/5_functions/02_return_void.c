@@ -20,6 +20,5 @@ void func4(int a, int b)
 
 int main()
 {
-    func4(1, 2);
-    return func3(1, 2);
+    return func4(1, 2);
 }
