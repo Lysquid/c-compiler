@@ -12,7 +12,7 @@ statement
     | INT VAR '=' expr ';'      # declarationAssignment
     | expr ';'                  # expression
     | 'putchar(' expr ')' ';'   # putchar
-    | 'if' '(' expr ')' '{' block '}' ('else' '{' block '}')? # ifcond
+    | 'if' '(' expr ')'  block  ('else'  block )? # ifcond
     ;
 
 expr
