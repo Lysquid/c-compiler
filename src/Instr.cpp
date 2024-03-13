@@ -46,3 +46,24 @@ void CmpInstr::accept(IRVisitor &visitor) {
 void BitInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
+
+void PutcharInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
+void GetcharInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
+
+void CopyparamInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
+void SetparamInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
+void CallfunctionInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}

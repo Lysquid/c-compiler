@@ -36,6 +36,16 @@ public:
     virtual void visit(BitInstr &i) = 0;
 
     virtual void visit(RetInstr &i) = 0;
+    
+    virtual void visit(PutcharInstr &i) = 0;
+
+    virtual void visit(GetcharInstr &i) = 0;
+    
+    virtual void visit(CopyparamInstr &i) = 0;
+
+    virtual void visit(SetparamInstr &i) = 0;
+
+    virtual void visit(CallfunctionInstr &i) = 0;
 
 protected:
     ostream &o;
