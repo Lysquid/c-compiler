@@ -7,7 +7,7 @@ prog : INT 'main' '(' ')' '{' statement* ret '}' ;
 statement
     : INT VAR (',' VAR)* ';'    # declaration
     | INT VAR '=' expr ';'      # declarationAssignment
-    | VAR '=' expr ';'          # assignment
+    | expr ';' # expression
     ;
 
 ret: RETURN expr ';' ;
@@ -18,6 +18,7 @@ expr
     | expr MUL_DIV expr # mulDiv
     | expr ADD_SUB expr # addSub
     | expr COMP expr    # comparison
+    | VAR '=' expr      # assignment
     | CONST             # const
     | VAR               # var
     | '(' expr ')'      # par

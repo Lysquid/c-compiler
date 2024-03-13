@@ -38,6 +38,11 @@ antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssi
     return 0;
 }
 
+antlrcpp::Any ASTVisitor::visitExpression(ifccParser::ExpressionContext *ctx) {
+    this->visit(ctx->expr());
+    return 0;
+}
+
 antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx) {
     string var = ctx->VAR()->getText();
     if (!cfg->symbol_in_table(var)) {
@@ -46,7 +51,7 @@ antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx) {
     }
     int addr = this->visit(ctx->expr());
     current_bb->add_instr(new CopyInstr(addr, cfg->get_var_index(var)));
-    return 0;
+    return addr;
 }
 
 antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx) {
