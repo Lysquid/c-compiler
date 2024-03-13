@@ -33,6 +33,7 @@ expr
     | VAR '=' expr      # assignment
     | 'getchar()'       # getchar
     | CONST             # const
+    | CARAC             # carac
     | VAR               # var
     | '(' expr ')'      # par
     ;
@@ -47,6 +48,7 @@ BIT_XOR : '^' ;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
+CARAC : '\'' . '\'' ;
 INT : 'int' ;
 VOID : 'void' ;
 

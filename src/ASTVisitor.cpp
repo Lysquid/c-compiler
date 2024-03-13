@@ -43,7 +43,7 @@ antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
     int i = 0;
     for (antlr4::tree::TerminalNode *node : ctx->VAR())
     {
-        string var = node->getText();
+                string var = node->getText();
         if (!current_bb->symbol_in_table(var))
         {
             current_bb->add_to_symbol_table(var);
@@ -58,6 +58,58 @@ antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
     }
     return 0;
 }
+
+antlrcpp::Any ASTVisitor::visitIfcond(ifccParser::IfcondContext *ctx) {
+    auto *ifblock = new BasicBlock(cfg->new_BB_name());
+
+    auto *endifblock = new BasicBlock(cfg->new_BB_name());
+
+    current_bb->set_exit_true(ifblock);
+
+
+    ifblock->set_exit_true(endifblock);
+
+    cfg->add_bb(ifblock); // then
+
+    this->visit(ctx->expr()); // le test
+    current_bb->set_exit_false(endifblock); // s'il n'y a pas de else, on saute à endifblock
+    current_bb = ifblock;
+    this->visit(ctx->block(0)); // le bloc if
+
+
+    if(ctx->block().size() == 2){
+        auto *elseblock = new BasicBlock(cfg->new_BB_name());
+        current_bb->set_exit_false(elseblock);
+        elseblock->set_exit_true(endifblock);
+        cfg->add_bb(elseblock); // else
+        current_bb = elseblock;
+        this->visit(ctx->block(1)); // le bloc else
+    }
+
+    cfg->add_bb(endifblock); // endif
+    current_bb = endifblock;
+
+    return 0;
+}
+
+antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
+{
+    for (antlr4::tree::TerminalNode *node : ctx->VAR())
+    {
+        string var = node->getText();
+        if (!current_bb->symbol_in_table(var))
+        {
+            current_bb->add_to_symbol_table(var);
+        }
+        else
+        {
+            cerr << "ERROR: variable " << var << " already declared" << endl;
+            errors++;
+        }
+    }
+    return 0;
+}
+
 
 antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx)
 {
@@ -244,8 +296,31 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
     
 }
 
-antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx)
-{
+
+antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx) {
+    int value = stoi(ctx->CONST()->getText());
+    int addr = cfg->create_new_tempvar();
+    current_bb->add_instr(new ConstInstr(value, addr));
+    return addr;
+}
+
+antlrcpp::Any ASTVisitor::visitCarac(ifccParser::CaracContext *ctx) {
+    string carac = ctx->CARAC()->getText();
+    const char* charConv = carac.c_str();
+    int value = charConv[1];
+    int addr = cfg->create_new_tempvar();
+    current_bb->add_instr(new ConstInstr(value, addr));
+    return addr;
+}
+
+
+antlrcpp::Any ASTVisitor::visitGetchar(ifccParser::GetcharContext *ctx) {
+    int addr = cfg->create_new_tempvar();
+    current_bb->add_instr(new GetcharInstr(addr));
+    return addr;
+}
+
+antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
     int addr = this->visit(ctx->expr());
     string op = ctx->ADD_SUB()->getText();
     if (op == "-")

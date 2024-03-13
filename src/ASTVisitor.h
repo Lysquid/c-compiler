@@ -19,6 +19,8 @@ public:
 
     antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
 
+    antlrcpp::Any visitIfcond(ifccParser::IfcondContext *ctx) override;
+
     antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override;
 
     antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *ctx) override;
@@ -38,6 +40,8 @@ public:
     antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override;
 
     antlrcpp::Any visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) override;
+
+    antlrcpp::Any visitCarac(ifccParser::CaracContext *ctx) override;
 
     antlrcpp::Any visitSign(ifccParser::SignContext *ctx) override;
 
