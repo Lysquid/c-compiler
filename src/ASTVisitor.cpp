@@ -78,6 +78,14 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx) {
     return addr;
 }
 
+antlrcpp::Any ASTVisitor::visitCarac(ifccParser::CaracContext *ctx) {
+    string carac = ctx->CARAC()->getText();
+    const char* charConv = carac.c_str();
+    int value = charConv[1];
+    int addr = cfg->create_new_tempvar();
+    current_bb->add_instr(new ConstInstr(value, addr));
+
+
 antlrcpp::Any ASTVisitor::visitGetchar(ifccParser::GetcharContext *ctx) {
     int addr = cfg->create_new_tempvar();
     current_bb->add_instr(new GetcharInstr(addr));
