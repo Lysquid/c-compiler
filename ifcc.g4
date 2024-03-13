@@ -23,6 +23,7 @@ expr
     | expr COMP expr    # comparison
     | VAR '=' expr      # assignment
     | CONST             # const
+    | CARAC             # carac
     | VAR               # var
     | '(' expr ')'      # par
     ;
@@ -37,6 +38,7 @@ BIT_XOR : '^' ;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
+CARAC : '\'' . '\'' ;
 INT : 'int' ;
 VAR : [a-zA-Z][a-zA-Z0-9]* ;
 COMMENT : '/*' .*? '*/' -> skip ;

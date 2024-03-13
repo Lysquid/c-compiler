@@ -24,6 +24,8 @@ public:
 
     antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override;
 
+    antlrcpp::Any visitCarac(ifccParser::CaracContext *ctx) override;
+
     antlrcpp::Any visitSign(ifccParser::SignContext *ctx) override;
 
     antlrcpp::Any visitAddSub(ifccParser::AddSubContext *ctx) override;
