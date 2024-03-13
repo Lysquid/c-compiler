@@ -2,8 +2,8 @@
 
 antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx) {
     auto *main = new BasicBlock("main");
-    this->cfg->add_bb(main);
-    this->cfg->current_bb = main;
+    cfg->add_bb(main);
+    current_bb = main;
     for (ifccParser::StatementContext *statement: ctx->statement()) {
         this->visit(statement);
     }
@@ -34,7 +34,7 @@ antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssi
         errors++;
     }
     int addr = this->visit(ctx->expr());
-    cfg->current_bb->add_instr(new CopyInstr(addr, cfg->get_var_index(var)));
+    current_bb->add_instr(new CopyInstr(addr, cfg->get_var_index(var)));
     return 0;
 }
 
@@ -45,7 +45,7 @@ antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx) {
         errors++;
     }
     int addr = this->visit(ctx->expr());
-    cfg->current_bb->add_instr(new CopyInstr(addr, cfg->get_var_index(var)));
+    current_bb->add_instr(new CopyInstr(addr, cfg->get_var_index(var)));
     return 0;
 }
 
@@ -62,7 +62,7 @@ antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx) {
 antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx) {
     int value = stoi(ctx->CONST()->getText());
     int addr = cfg->create_new_tempvar();
-    cfg->current_bb->add_instr(new ConstInstr(value, addr));
+    current_bb->add_instr(new ConstInstr(value, addr));
     return addr;
 }
 
@@ -71,7 +71,7 @@ antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
     string op = ctx->ADD_SUB()->getText();
     if (op == "-") {
         int addr2 = cfg->create_new_tempvar();
-        cfg->current_bb->add_instr(new NegInstr(addr, addr2));
+        current_bb->add_instr(new NegInstr(addr, addr2));
         return addr2;
     }
     return addr;
@@ -84,9 +84,9 @@ antlrcpp::Any ASTVisitor::visitAddSub(ifccParser::AddSubContext *ctx) {
     int addr3 = cfg->create_new_tempvar();
 
     if (op == "+") {
-        cfg->current_bb->add_instr(new AddInstr(addr1, addr2, addr3));
+        current_bb->add_instr(new AddInstr(addr1, addr2, addr3));
     } else {
-        cfg->current_bb->add_instr(new SubInstr(addr1, addr2, addr3));
+        current_bb->add_instr(new SubInstr(addr1, addr2, addr3));
     }
     return addr3;
 }
@@ -98,9 +98,9 @@ antlrcpp::Any ASTVisitor::visitMulDiv(ifccParser::MulDivContext *ctx) {
     int addr3 = cfg->create_new_tempvar();
 
     if (op == "*") {
-        cfg->current_bb->add_instr(new MulInstr(addr1, addr2, addr3));
+        current_bb->add_instr(new MulInstr(addr1, addr2, addr3));
     } else {
-        cfg->current_bb->add_instr(new DivInstr(addr1, addr2, addr3));
+        current_bb->add_instr(new DivInstr(addr1, addr2, addr3));
     }
     return addr3;
 }
@@ -117,15 +117,15 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx){
     int res = cfg->create_new_tempvar();
 
     if (op == "<=") {
-        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::le));
+        current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::le));
     } else if(op == ">=") {
-        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::ge));
+        current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::ge));
     } else if(op == "<") {
-        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::l));
+        current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::l));
     } else if(op == ">") {
-        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::g));
+        current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::g));
     } else if (op == "==") {
-        cfg->current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::e));
+        current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::e));
     }
     return res;
 }
@@ -133,6 +133,6 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx){
 
 antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx) {
     int addr = this->visit(ctx->expr());
-    cfg->current_bb->add_instr(new RetInstr(addr));
+    current_bb->add_instr(new RetInstr(addr));
     return 0;
 }

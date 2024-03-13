@@ -43,7 +43,6 @@ public:
     // basic block management
     string new_BB_name();
 
-    BasicBlock *current_bb;
 
     vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 

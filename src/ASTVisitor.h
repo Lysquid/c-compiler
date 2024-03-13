@@ -39,5 +39,6 @@ public:
 private:
     int errors = 0;
     CFG *cfg = new CFG();
+    BasicBlock *current_bb;
 
 };
