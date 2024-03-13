@@ -101,6 +101,23 @@ void x86Visitor::visit(CmpInstr &i) {
     o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }
 
+void x86Visitor::visit(BitInstr &i) {
+    o << "    movl " << i.term1 << "(%rbp), %eax\n";
+    switch (i.bitOp) {
+        case BitInstr::And:
+            o << "    andl ";
+            break;
+        case BitInstr::Or:
+            o << "    orl ";
+            break;
+        case BitInstr::Xor:
+            o << "    xorl ";
+            break;
+    }
+    o << i.term2 << "(%rbp), %eax\n";
+    o << "    movl %eax, " << i.dest << "(%rbp)\n";
+}
+
 void x86Visitor::visit(RetInstr &i) {
     o << "    movl " << i.var << "(%rbp), %eax\n";
 }

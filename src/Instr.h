@@ -114,6 +114,25 @@ public:
     cmp_type cmp;
 };
 
+class BitInstr : public Instr {
+public:
+
+    enum bit_type {
+        And,
+        Or,
+        Xor,
+    };
+
+    BitInstr(int term1, int term2, int dest, bit_type bitOp) : term1(term1), term2(term2), dest(dest), bitOp(bitOp) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int term1;
+    int term2;
+    int dest;
+    bit_type bitOp;
+};
+
 class RetInstr : public Instr {
 public:
     explicit RetInstr(int var) : var(var) {}
