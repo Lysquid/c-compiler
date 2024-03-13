@@ -34,11 +34,17 @@ public:
     // symbol table methods
     void add_to_symbol_table(string name);
 
+    void use_symbol(string name);
+
+    vector<string> get_unused_symbols();
+
     int create_new_tempvar();
 
     int get_var_index(string var);
 
     bool symbol_in_table(string symbol);
+
+    int get_size_symbol_table() {return -next_free_symbol_index;};
 
     // basic block management
     string new_BB_name();
@@ -48,7 +54,8 @@ public:
 
 protected:
     map<string, int> symbol_index; /**< part of the symbol table  */
-    int next_free_symbol_index;      /**< to allocate new symbols in the symbol table */
-    int next_bb_number;              /**< just for naming */
+    int next_free_symbol_index = -4;      /**< to allocate new symbols in the symbol table */
+    int next_bb_number = 1;              /**< just for naming */
+    map<string, bool> is_symbol_used; /**< usage of symbols of the symbol table  */
 
 };

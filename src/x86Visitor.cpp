@@ -1,22 +1,25 @@
 #include "x86Visitor.h"
 
 void x86Visitor::visit(CFG &cfg) {
-    gen_prologue();
+    gen_prologue(cfg);
     for (auto bb: cfg.bbs) {
         bb->accept(*this);
     }
     gen_epilogue();
 }
 
-void x86Visitor::gen_prologue() {
+void x86Visitor::gen_prologue(CFG &cfg) {
+    int x = cfg.get_size_symbol_table();
     o << ".globl main\n";
     o << " main: \n";
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
+    o << "    subq $" << to_string(x%16? x + (16 - x%16):x) << ", %rsp\n";
 }
 
 void x86Visitor::gen_epilogue() {
-    o << "    popq %rbp\n";
+    o << "    movq %rbp, %rsp\n";
+    o << "    pop %rbp \n";
     o << "    ret\n";
 }
 
@@ -130,4 +133,14 @@ void x86Visitor::visit(BitInstr &i) {
 
 void x86Visitor::visit(RetInstr &i) {
     o << "    movl " << i.var << "(%rbp), %eax\n";
+}
+
+void x86Visitor::visit(PutcharInstr &i) {
+    o << "    movl " << i.var << "(%rbp), %edi\n";
+    o << "    call putchar@PLT\n";
+}
+
+void x86Visitor::visit(GetcharInstr &i) {
+    o << "    call getchar@PLT\n";
+    o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }

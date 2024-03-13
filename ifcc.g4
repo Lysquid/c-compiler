@@ -12,6 +12,7 @@ statement
     | INT VAR '=' expr ';'      # declarationAssignment
     | expr ';' # expression
     | 'if' '(' expr ')'  block  ('else'  block)? # ifcond
+    | 'putchar(' expr ')' ';'   # putchar
     ;
 
 expr
@@ -24,7 +25,9 @@ expr
     | expr BIT_OR expr  # bitOr
     | expr COMP expr    # comparison
     | VAR '=' expr      # assignment
+    | 'getchar()'       # getchar
     | CONST             # const
+    | CARAC             # carac
     | VAR               # var
     | '(' expr ')'      # par
     ;
@@ -39,6 +42,7 @@ BIT_XOR : '^' ;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
+CARAC : '\'' . '\'' ;
 INT : 'int' ;
 VAR : [a-zA-Z][a-zA-Z0-9]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
