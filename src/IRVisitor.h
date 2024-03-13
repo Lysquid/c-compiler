@@ -37,6 +37,10 @@ public:
 
     virtual void visit(RetInstr &i) = 0;
 
+    virtual void visit(PutcharInstr &i) = 0;
+
+    virtual void visit(GetcharInstr &i) = 0;
+
 protected:
     ostream &o;
 
