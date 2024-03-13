@@ -23,6 +23,8 @@ public:
 
     void visit(DivInstr &i) override;
 
+    void visit(ModInstr &i) override;
+
     void visit(NegInstr &i) override;
 
     void visit(CmpInstr &i) override;

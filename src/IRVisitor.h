@@ -27,6 +27,8 @@ public:
 
     virtual void visit(DivInstr &i) = 0;
 
+    virtual void visit(ModInstr &i) = 0;
+
     virtual void visit(NegInstr &i) = 0;
 
     virtual void visit(CmpInstr &i) = 0;
