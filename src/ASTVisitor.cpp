@@ -54,6 +54,12 @@ antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx) {
     return addr;
 }
 
+antlrcpp::Any ASTVisitor::visitPutchar(ifccParser::PutcharContext *ctx) {
+    int addr = this->visit(ctx->expr());
+    current_bb->add_instr(new PutcharInstr(addr));
+    return 0;
+}
+
 antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx) {
     string var = ctx->VAR()->getText();
 
@@ -68,6 +74,12 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx) {
     int value = stoi(ctx->CONST()->getText());
     int addr = cfg->create_new_tempvar();
     current_bb->add_instr(new ConstInstr(value, addr));
+    return addr;
+}
+
+antlrcpp::Any ASTVisitor::visitGetchar(ifccParser::GetcharContext *ctx) {
+    int addr = cfg->create_new_tempvar();
+    current_bb->add_instr(new GetcharInstr(addr));
     return addr;
 }
 

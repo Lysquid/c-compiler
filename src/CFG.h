@@ -40,6 +40,8 @@ public:
 
     bool symbol_in_table(string symbol);
 
+    int get_size_symbol_table() {return -next_free_symbol_index;};
+
     // basic block management
     string new_BB_name();
 
@@ -48,7 +50,7 @@ public:
 
 protected:
     map<string, int> symbol_index; /**< part of the symbol table  */
-    int next_free_symbol_index;      /**< to allocate new symbols in the symbol table */
-    int next_bb_number;              /**< just for naming */
+    int next_free_symbol_index = -4;      /**< to allocate new symbols in the symbol table */
+    int next_bb_number = 1;              /**< just for naming */
 
 };
