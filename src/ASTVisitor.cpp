@@ -1,9 +1,9 @@
 #include "ASTVisitor.h"
 
 antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx) {
-    auto *main = new BasicBlock("main");
-    cfg->add_bb(main);
-    current_bb = main;
+    auto *firstBlock = new BasicBlock("firstBlock");
+    cfg->add_bb(firstBlock);
+    current_bb = firstBlock;
 
     this->visit(ctx->block());
 
@@ -14,6 +14,39 @@ antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx){
     for (ifccParser::StatementContext *statement: ctx->statement()) {
         this->visit(statement);
     }
+
+    return 0;
+}
+
+antlrcpp::Any ASTVisitor::visitIfcond(ifccParser::IfcondContext *ctx) {
+    auto *ifblock = new BasicBlock(cfg->new_BB_name());
+
+    auto *endifblock = new BasicBlock(cfg->new_BB_name());
+
+    current_bb->set_exit_true(ifblock);
+
+
+    ifblock->set_exit_true(endifblock);
+
+    cfg->add_bb(ifblock); // then
+
+    this->visit(ctx->expr()); // le test
+    current_bb->set_exit_false(endifblock); // s'il n'y a pas de else, on saute à endifblock
+    current_bb = ifblock;
+    this->visit(ctx->block(0)); // le bloc if
+
+
+    if(ctx->block().size() == 2){
+        auto *elseblock = new BasicBlock(cfg->new_BB_name());
+        current_bb->set_exit_false(elseblock);
+        elseblock->set_exit_true(endifblock);
+        cfg->add_bb(elseblock); // else
+        current_bb = elseblock;
+        this->visit(ctx->block(1)); // le bloc else
+    }
+
+    cfg->add_bb(endifblock); // endif
+    current_bb = endifblock;
 
     return 0;
 }
