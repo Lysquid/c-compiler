@@ -4,10 +4,17 @@ antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx) {
     auto *main = new BasicBlock("main");
     cfg->add_bb(main);
     current_bb = main;
+
+    this->visit(ctx->block());
+
+    return 0;
+}
+
+antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx){
     for (ifccParser::StatementContext *statement: ctx->statement()) {
         this->visit(statement);
     }
-    this->visit(ctx->ret());
+
     return 0;
 }
 
