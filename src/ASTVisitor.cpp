@@ -54,6 +54,12 @@ antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx) {
     return addr;
 }
 
+antlrcpp::Any ASTVisitor::visitPutchar(ifccParser::PutcharContext *ctx) {
+    int addr = this->visit(ctx->expr());
+    current_bb->add_instr(new PutcharInstr(addr));
+    return 0;
+}
+
 antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx) {
     string var = ctx->VAR()->getText();
 
@@ -61,6 +67,7 @@ antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx) {
         cerr << "ERROR: variable " << var << " not found" << endl;
         errors++;
     }
+    cfg->use_symbol(var);
     return cfg->get_var_index(var);
 }
 
@@ -77,6 +84,11 @@ antlrcpp::Any ASTVisitor::visitCarac(ifccParser::CaracContext *ctx) {
     int value = charConv[1];
     int addr = cfg->create_new_tempvar();
     current_bb->add_instr(new ConstInstr(value, addr));
+
+
+antlrcpp::Any ASTVisitor::visitGetchar(ifccParser::GetcharContext *ctx) {
+    int addr = cfg->create_new_tempvar();
+    current_bb->add_instr(new GetcharInstr(addr));
     return addr;
 }
 
@@ -187,4 +199,11 @@ antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx) {
     int addr = this->visit(ctx->expr());
     current_bb->add_instr(new RetInstr(addr));
     return 0;
+}
+
+void ASTVisitor::IsThereUnusedVariables() {
+    vector<string> UnusedVariables= cfg->get_unused_symbols();
+    for(string& var : UnusedVariables){
+        cerr << "WARN : unused variable "<< var << endl;
+    }
 }

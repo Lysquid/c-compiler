@@ -33,9 +33,13 @@ public:
 
     void visit(RetInstr &i) override;
 
+    void visit(PutcharInstr &i) override;
+
+    void visit(GetcharInstr &i) override;
+
 private:
 
-    void gen_prologue();
+    void gen_prologue(CFG &cfg);
 
     void gen_epilogue();
 

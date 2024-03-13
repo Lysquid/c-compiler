@@ -7,7 +7,8 @@ prog : INT 'main' '(' ')' '{' statement* ret '}' ;
 statement
     : INT VAR (',' VAR)* ';'    # declaration
     | INT VAR '=' expr ';'      # declarationAssignment
-    | expr ';' # expression
+    | expr ';'                  # expression
+    | 'putchar(' expr ')' ';'   # putchar
     ;
 
 ret: RETURN expr ';' ;
@@ -22,6 +23,7 @@ expr
     | expr BIT_OR expr  # bitOr
     | expr COMP expr    # comparison
     | VAR '=' expr      # assignment
+    | 'getchar()'       # getchar
     | CONST             # const
     | CARAC             # carac
     | VAR               # var
