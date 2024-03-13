@@ -2,16 +2,18 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : INT 'main' '(' ')' '{' statement* ret '}' ;
+prog : INT 'main' '(' ')' block ;
+
+block : '{' statement* '}' ;
 
 statement
-    : INT VAR (',' VAR)* ';'    # declaration
+    : RETURN expr ';' # ret
+    | INT VAR (',' VAR)* ';'    # declaration
     | INT VAR '=' expr ';'      # declarationAssignment
-    | expr ';'                  # expression
+    | expr ';' # expression
+    | 'if' '(' expr ')'  block  ('else'  block)? # ifcond
     | 'putchar(' expr ')' ';'   # putchar
     ;
-
-ret: RETURN expr ';' ;
 
 expr
     : ADD_SUB expr      # sign

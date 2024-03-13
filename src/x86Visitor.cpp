@@ -27,14 +27,14 @@ void x86Visitor::visit(BasicBlock &bb) {
     for (auto instr: bb.instrs) {
         instr->accept(*this);
     }
-    if (!bb.exit_true) {
+    if (bb.exit_true == nullptr) {
         return;
-    } else if (!bb.exit_false) {
+    } else if (bb.exit_false == nullptr) {
         o << "    jmp " << bb.exit_true->get_label() << "\n";
     } else {
         o << "    cmpl $0, " << bb.test_var_name << "(%rbp)\n";
-        o << "    je " << bb.exit_false->get_label() << "\n";
-        o << "    jmp " << bb.exit_true->get_label() << "\n";
+        o << "    jne " << bb.exit_true->get_label() << "\n";
+        o << "    jmp " << bb.exit_false->get_label() << "\n";
     }
 }
 
