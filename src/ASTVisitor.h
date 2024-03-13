@@ -3,6 +3,8 @@
 #include "antlr4-runtime.h"
 #include "generated/ifccBaseVisitor.h"
 #include "CFG.h"
+#include <vector>
+#include <string>
 
 using namespace std;
 
@@ -45,6 +47,8 @@ public:
     antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
 
     int getNumberOfErrors() const { return errors; }
+
+    void IsThereUnusedVariables();
 
     CFG *getCFG() { return cfg; }
 

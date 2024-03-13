@@ -12,12 +12,28 @@ void CFG::add_bb(BasicBlock *bb) {
 
 void CFG::add_to_symbol_table(string name) {
     symbol_index[name] = next_free_symbol_index;
+    is_symbol_used[name] = false;
     next_free_symbol_index -= 4;
+}
+
+void CFG::use_symbol(string name) {
+    is_symbol_used[name] = true;
+}
+
+vector<string> CFG::get_unused_symbols() {
+    vector<string> unused_symbol;
+    for(auto &entry: is_symbol_used){
+        if(!entry.second){
+            unused_symbol.push_back(entry.first);
+        }
+    }
+    return unused_symbol;
 }
 
 int CFG::create_new_tempvar() {
     string name = to_string(next_free_symbol_index - 4);
-    add_to_symbol_table(name);
+    symbol_index[name] = next_free_symbol_index;
+    next_free_symbol_index -= 4;
     return symbol_index[name];
 }
 

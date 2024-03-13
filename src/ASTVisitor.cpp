@@ -67,6 +67,7 @@ antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx) {
         cerr << "ERROR: variable " << var << " not found" << endl;
         errors++;
     }
+    cfg->use_symbol(var);
     return cfg->get_var_index(var);
 }
 
@@ -190,4 +191,11 @@ antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx) {
     int addr = this->visit(ctx->expr());
     current_bb->add_instr(new RetInstr(addr));
     return 0;
+}
+
+void ASTVisitor::IsThereUnusedVariables() {
+    vector<string> UnusedVariables= cfg->get_unused_symbols();
+    for(string& var : UnusedVariables){
+        cerr << "WARN : unused variable "<< var << endl;
+    }
 }

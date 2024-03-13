@@ -34,6 +34,10 @@ public:
     // symbol table methods
     void add_to_symbol_table(string name);
 
+    void use_symbol(string name);
+
+    vector<string> get_unused_symbols();
+
     int create_new_tempvar();
 
     int get_var_index(string var);
@@ -52,5 +56,6 @@ protected:
     map<string, int> symbol_index; /**< part of the symbol table  */
     int next_free_symbol_index = -4;      /**< to allocate new symbols in the symbol table */
     int next_bb_number = 1;              /**< just for naming */
+    map<string, bool> is_symbol_used; /**< usage of symbols of the symbol table  */
 
 };
