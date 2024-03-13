@@ -42,7 +42,7 @@ Possible optimization:
 class BasicBlock {
 public:
 
-    BasicBlock(string entry_label);
+    BasicBlock(string entry_label) : exit_true(nullptr), exit_false(nullptr), label(entry_label), next_free_symbol_index(-4) {};
 
     void accept(IRVisitor &visitor);
 
@@ -54,6 +54,24 @@ public:
 
     void set_exit_false(BasicBlock *bb) { exit_false = bb; }
 
+	void add_to_symbol_table(string name) {
+		symbol_index[name] = next_free_symbol_index;
+		next_free_symbol_index -= 4;
+	}
+
+	bool symbol_in_table(string name) {
+		return symbol_index.find(name) != symbol_index.end();
+	}
+
+	int get_var_index(string name) {
+		return symbol_index[name];
+	}
+
+	int create_new_tempvar() {
+    	string name = to_string(next_free_symbol_index);
+    	add_to_symbol_table(name);
+    	return symbol_index[name];
+	}
 
     // No encapsulation whatsoever here. Feel free to do better.
 
@@ -62,5 +80,13 @@ public:
     BasicBlock *exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
     string label;              /**< label of the BB, also will be the label in the generated code */
     string test_var_name;      /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
+	map<string, int> symbol_index; /**< local variables */
+	int next_free_symbol_index; /**< next available index for a new local variable */
+
+	int return_type; /**< 0 if void, 1 if int*/
+
+	int number_of_params = 0; /**< number of parameters of the function */
+
+	int is_return = 0; /**< 0 if not return, 1 if return */
 };
 

@@ -8,9 +8,14 @@
 
 using namespace std;
 
-class ASTVisitor : public ifccBaseVisitor {
+class ASTVisitor : public ifccBaseVisitor
+{
 public:
     antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
+
+    antlrcpp::Any visitFunction(ifccParser::FunctionContext *ctx) override;
+
+    antlrcpp::Any visitParameters(ifccParser::ParametersContext *ctx) override;
 
     antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
 
@@ -24,6 +29,8 @@ public:
 
     antlrcpp::Any visitExpression(ifccParser::ExpressionContext *ctx) override;
 
+    antlrcpp::Any visitCallVoidFunction(ifccParser::CallVoidFunctionContext *ctx) override;
+
     antlrcpp::Any visitAssignment(ifccParser::AssignmentContext *ctx) override;
 
     antlrcpp::Any visitPutchar(ifccParser::PutcharContext *ctx) override;
@@ -31,6 +38,8 @@ public:
     antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
 
     antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override;
+
+    antlrcpp::Any visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) override;
 
     antlrcpp::Any visitCarac(ifccParser::CaracContext *ctx) override;
 
@@ -62,5 +71,4 @@ private:
     int errors = 0;
     CFG *cfg = new CFG();
     BasicBlock *current_bb;
-
 };

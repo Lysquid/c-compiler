@@ -1,20 +1,20 @@
 #include "x86Visitor.h"
 
 void x86Visitor::visit(CFG &cfg) {
-    gen_prologue(cfg);
     for (auto bb: cfg.bbs) {
+        gen_prologue(bb);
         bb->accept(*this);
+        gen_epilogue();
     }
-    gen_epilogue();
 }
 
-void x86Visitor::gen_prologue(CFG &cfg) {
-    int x = cfg.get_size_symbol_table();
-    o << ".globl main\n";
-    o << " main: \n";
+void x86Visitor::gen_prologue(BasicBlock* bb) {
+    int size = -bb->next_free_symbol_index;
+    o << ".globl " << bb->get_label() << "\n";
+    o << bb->get_label() << ":\n";
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
-    o << "    subq $" << to_string(x%16? x + (16 - x%16):x) << ", %rsp\n";
+    
 }
 
 void x86Visitor::gen_epilogue() {
@@ -143,4 +143,18 @@ void x86Visitor::visit(PutcharInstr &i) {
 void x86Visitor::visit(GetcharInstr &i) {
     o << "    call getchar@PLT\n";
     o << "    movl %eax, " << i.dest << "(%rbp)\n";
+}
+
+
+void x86Visitor::visit(CopyparamInstr &i) {
+    o << "    movl %" << i.memory_type[i.src] << ", " << i.dest << "(%rbp)\n";
+}
+
+void x86Visitor::visit(SetparamInstr &i) {
+    o << "    movl " << i.src << "(%rbp), %" << i.memory_type[i.dest] << "\n";
+}
+
+void x86Visitor::visit(CallfunctionInstr &i) {
+    o << "    call " << i.function_name << "\n";
+    if(i.return_type) o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }

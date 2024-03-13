@@ -28,6 +28,8 @@ public:
 
     void add_bb(BasicBlock *bb);
 
+    BasicBlock *get_bb(string label);
+
     // < helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24
     string IR_reg_to_asm(string reg);
 
@@ -44,7 +46,7 @@ public:
 
     bool symbol_in_table(string symbol);
 
-    int get_size_symbol_table() {return -next_free_symbol_index;};
+    bool bb_in_cfg(string name);
 
     // basic block management
     string new_BB_name();
