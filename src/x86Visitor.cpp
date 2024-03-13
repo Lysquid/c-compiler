@@ -14,6 +14,7 @@ void x86Visitor::gen_prologue(BasicBlock* bb) {
     o << bb->get_label() << ":\n";
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
+    o << "    subq $" << to_string(size%16? size-size%16+16:size) << ", %rsp\n";
     
 }
 

@@ -1,5 +1,6 @@
 int main()
 {
-    int x = getchar();
+    int x = 97;
+    putcahar(x+1);
     return x;
 }
