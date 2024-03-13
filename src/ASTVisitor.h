@@ -16,6 +16,8 @@ public:
 
     antlrcpp::Any visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx) override;
 
+    antlrcpp::Any visitExpression(ifccParser::ExpressionContext *ctx) override;
+
     antlrcpp::Any visitAssignment(ifccParser::AssignmentContext *ctx) override;
 
     antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
