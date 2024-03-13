@@ -113,6 +113,7 @@ public:
         ge,
         l,
         le,
+        ne
     };
 
     CmpInstr(int term1, int term2, int dest, cmp_type cmp) : term1(term1), term2(term2), dest(dest), cmp(cmp) {}

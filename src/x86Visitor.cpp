@@ -102,6 +102,9 @@ void x86Visitor::visit(CmpInstr &i) {
         case CmpInstr::le:
             o << "le";
             break;
+        case CmpInstr::ne:
+            o << "ne";
+            break;
     }
     o << " %al\n";
     o << "    movzbl %al, %eax\n";
