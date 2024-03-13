@@ -6,5 +6,5 @@ int main() {
     int result1 = a ^ b & c;
     int result2 = a & b | c;             
 
-    return result1 + result2;
+    return 10*result1 + result2;
 }
