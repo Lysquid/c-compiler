@@ -138,23 +138,6 @@ antlrcpp::Any ASTVisitor::visitGetchar(ifccParser::GetcharContext *ctx) {
 }
 
 
-antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
-{
-    for (antlr4::tree::TerminalNode *node : ctx->VAR())
-    {
-        string var = node->getText();
-        if (!current_bb->symbol_in_table(var))
-        {
-            current_bb->add_to_symbol_table(var);
-        }
-        else
-        {
-            cerr << "ERROR: variable " << var << " already declared" << endl;
-            errors++;
-        }
-    }
-    return 0;
-}
 
 antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx)
 {
@@ -297,12 +280,6 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
 }
 
 
-antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx) {
-    int value = stoi(ctx->CONST()->getText());
-    int addr = cfg->create_new_tempvar();
-    current_bb->add_instr(new ConstInstr(value, addr));
-    return addr;
-}
 
 antlrcpp::Any ASTVisitor::visitCarac(ifccParser::CaracContext *ctx) {
     string carac = ctx->CARAC()->getText();
@@ -314,11 +291,7 @@ antlrcpp::Any ASTVisitor::visitCarac(ifccParser::CaracContext *ctx) {
 }
 
 
-antlrcpp::Any ASTVisitor::visitGetchar(ifccParser::GetcharContext *ctx) {
-    int addr = cfg->create_new_tempvar();
-    current_bb->add_instr(new GetcharInstr(addr));
-    return addr;
-}
+
 
 antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
     int addr = this->visit(ctx->expr());
