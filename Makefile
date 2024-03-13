@@ -80,7 +80,7 @@ gui:
 ##########################################
 # run tests
 test: $(EXE)
-	python3 tests/ifcc-test.py tests
+	python3 ifcc-test.py tests
 
 ##########################################
 # delete all machine-generated files

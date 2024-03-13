@@ -18,7 +18,6 @@ import argparse
 import os
 import shutil
 import sys
-import subprocess
 import asyncio
 from pathlib import Path
 import filecmp
@@ -31,117 +30,62 @@ argparser = argparse.ArgumentParser(
     epilog=""
 )
 
-argparser.add_argument('input', metavar='PATH', nargs='+', help='For each path given:'
-                                                                + ' if it\'s a file, use this file;'
-                                                                + ' if it\'s a directory, use all *.c files in this subtree')
+argparser.add_argument('input', metavar='PATH', nargs='+',
+                       help='For each path given: if it\'s a file, use this file;'
+                       + ' if it\'s a directory, use all *.c files in this subtree')
 
 argparser.add_argument('-d', '--debug', action="count", default=0,
                        help='Increase quantity of debugging messages (only useful to debug the test script itself)')
 argparser.add_argument('-v', '--verbose', action="count", default=0,
                        help='Increase verbosity level. You can use this option multiple times.')
-argparser.add_argument('-w', '--wrapper', metavar='PATH',
-                       help='Invoke your compiler through the shell script at PATH. (default: `ifcc-wrapper.sh`)')
 
 args = argparser.parse_args()
 
 if args.debug >= 2:
     print('debug: command-line arguments ' + str(args))
 
-orig_cwd = os.getcwd()
-if "ifcc-test-output" in orig_cwd:
+if Path.cwd().name == "ifcc-test-output":
     print('error: cannot run from within the output directory')
-    exit(1)
+    sys.exit(1)
 
-if os.path.isdir('ifcc-test-output'):
+out_path = Path("ifcc-test-output")
+if out_path.exists():
     # cleanup previous output directory
-    subprocess.call('rm -rf ifcc-test-output', shell=True)
-os.mkdir('ifcc-test-output')
+    shutil.rmtree(out_path)
+out_path.mkdir()
 
 # Then we process the inputs arguments i.e. filenames or subtrees
-inputfilenames = []
-for path in args.input:
-    path = os.path.normpath(path)  # collapse redundant slashes etc.
-    if os.path.isfile(path):
-        if path[-2:] == '.c':
-            inputfilenames.append(path)
+input_files = []
+for path_str in args.input:
+    path = Path(path_str)
+    if path.is_file():
+        if path.suffix == '.c':
+            input_files.append(path)
         else:
-            print("error: incorrect filename suffix (should be '.c'): " + path)
+            print(f"error: incorrect filename suffix (should be '.c'): {path}")
             exit(1)
-    elif os.path.isdir(path):
-        for dirpath, dirnames, filenames in os.walk(path):
-            inputfilenames += [dirpath + '/' + name for name in filenames if name[-2:] == '.c']
+    elif path.is_dir() and path.name != "ifcc-test-output":
+        for dirpath, _, filenames in os.walk(path):
+            for filename in filenames:
+                path = Path(dirpath) / filename
+                if path.suffix == '.c':
+                    input_files.append(path)
     else:
-        print("error: cannot read input path `" + path + "'")
+        print(f"error: cannot read input path: {path}")
         sys.exit(1)
 
 # debug: after treewalk
 if args.debug:
-    print("debug: list of files after tree walk:", " ".join(inputfilenames))
+    print("debug: list of files after tree walk: ", " ".join(map(str, input_files)))
 
 # sanity check
-if len(inputfilenames) == 0:
-    print("error: found no test-case in: " + " ".join(args.input))
+if len(input_files) == 0:
+    print("error: found no test-case in: ", " ".join(args.input))
     sys.exit(1)
 
-# Here we check that  we can actually read the files.  Our goal is to
-# fail as early as possible when the CLI arguments are wrong.
-for inputfilename in inputfilenames:
-    try:
-        f = open(inputfilename, "r")
-        f.close()
-    except Exception as e:
-        print("error: " + e.args[1] + ": " + inputfilename)
-        sys.exit(1)
-
-# Last but not least: we now locate the "wrapper script" that we will
-# use to invoke ifcc
-if args.wrapper:
-    wrapper = os.path.realpath(os.getcwd() + "/" + args.wrapper)
-else:
-    wrapper = os.path.dirname(os.path.realpath(__file__)) + "/ifcc-wrapper.sh"
-
-if not os.path.isfile(wrapper):
-    print("error: cannot find " + os.path.basename(wrapper) + " in directory: " + os.path.dirname(wrapper))
-    exit(1)
-
-if args.debug:
-    print("debug: wrapper path: " + wrapper)
-
-######################################################################################
-# PREPARE step: copy all test-cases under ifcc-test-output
-
-jobs = []
-
-for inputfilename in inputfilenames:
-    if args.debug >= 2:
-        print("debug: PREPARING " + inputfilename)
-
-    if 'ifcc-test-output' in os.path.realpath(inputfilename):
-        print('error: input filename is within output directory: ' + inputfilename)
-        exit(1)
-
-    # each test-case gets copied and processed in its own subdirectory:
-    # ../somedir/subdir/file.c becomes ./ifcc-test-output/somedir-subdir-file/input.c
-    subdir = 'ifcc-test-output/' + inputfilename.strip("./")[:-2].replace('/', '-')
-    os.mkdir(subdir)
-    shutil.copyfile(inputfilename, subdir + '/input.c')
-    jobs.append(Path(subdir))
-
-# eliminate duplicate paths from the 'jobs' list
-unique_jobs = []
-for j in jobs:
-    if not j in unique_jobs:
-        unique_jobs.append(j)
-jobs = sorted(unique_jobs)
-# debug: after deduplication
-if args.debug:
-    print("debug: list of test-cases after deduplication:", " ".join(map(str, jobs)))
 
 ######################################################################################
 # TEST step: actually compile all test-cases with both compilers
-
-
-semaphore = asyncio.Semaphore(10)
 
 
 def test_result(ok: bool, job_path: Path, message: str = None):
@@ -150,9 +94,13 @@ def test_result(ok: bool, job_path: Path, message: str = None):
     return ok
 
 
-async def job(p: Path, semaphore: asyncio.Semaphore):
+async def job(input_file: Path, semaphore: asyncio.Semaphore):
 
     async with semaphore:
+
+        p = out_path / f"{input_file.parent.parent.name}-{input_file.parent.name}-{input_file.name}"
+        p.mkdir()
+        shutil.copyfile(input_file, p / "input.c")
 
         # Reference compiler = GCC
         gcc_comp = await asyncio.create_subprocess_exec(
@@ -239,9 +187,9 @@ async def job(p: Path, semaphore: asyncio.Semaphore):
 
 
 async def main():
-    res = await asyncio.gather(*(job(j, semaphore) for j in jobs))
+    semaphore = asyncio.Semaphore(20)
+    res = await asyncio.gather(*(job(file, semaphore) for file in input_files))
     return res.count(False)
-
 
 failed = asyncio.run(main())
 
@@ -250,5 +198,3 @@ if failed:
     print(f"{failed} test{'s' if failed > 1 else ''} failed")
 else:
     print("All tests passed")
-
-
