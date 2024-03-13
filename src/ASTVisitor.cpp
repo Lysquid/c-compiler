@@ -128,6 +128,8 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx){
         current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::g));
     } else if (op == "==") {
         current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::e));
+    } else if (op == "!=") {
+        current_bb->add_instr(new CmpInstr(term1, term2, res, CmpInstr::ne));
     }
     return res;
 }
