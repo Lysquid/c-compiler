@@ -99,8 +99,10 @@ antlrcpp::Any ASTVisitor::visitMulDiv(ifccParser::MulDivContext *ctx) {
 
     if (op == "*") {
         current_bb->add_instr(new MulInstr(addr1, addr2, addr3));
-    } else {
+    } else if (op == "/"){
         current_bb->add_instr(new DivInstr(addr1, addr2, addr3));
+    } else if (op == "%"){
+        current_bb->add_instr(new ModInstr(addr1, addr2, addr3));
     }
     return addr3;
 }

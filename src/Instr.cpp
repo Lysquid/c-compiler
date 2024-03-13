@@ -27,6 +27,10 @@ void DivInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
+void ModInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
 void NegInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }

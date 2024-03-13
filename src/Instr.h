@@ -83,6 +83,17 @@ public:
     int dest;
 };
 
+class ModInstr : public Instr {
+public:
+    ModInstr(int numerator, int denominator, int dest) : numerator(numerator), denominator(denominator), dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int numerator;
+    int denominator;
+    int dest;
+};
+
 class NegInstr : public Instr {
 public:
     NegInstr(int src, int dest) : src(src), dest(dest) {}

@@ -69,6 +69,13 @@ void x86Visitor::visit(DivInstr &i) {
     o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }
 
+void x86Visitor::visit(ModInstr &i) {
+    o << "    movl " << i.numerator << "(%rbp), %eax\n";
+    o << "    cltd\n";
+    o << "    idivl " << i.denominator << "(%rbp)\n";
+    o << "    movl %edx, " << i.dest << "(%rbp)\n";
+}
+
 void x86Visitor::visit(NegInstr &i) {
     o << "    movl " << i.src << "(%rbp), %eax\n";
     o << "    negl %eax\n";
