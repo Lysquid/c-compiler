@@ -16,7 +16,5 @@ int func3(int a, int b)
 
 int main()
 {
-    int a = getchar();
-    putchar(10);
-    return func3(1, a);
+    return func3(1, 2);
 }

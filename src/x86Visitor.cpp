@@ -73,9 +73,11 @@ void x86Visitor::visit(DivInstr &i) {
 }
 
 void x86Visitor::visit(ModInstr &i) {
+    //function calculated the modulo
     o << "    movl " << i.numerator << "(%rbp), %eax\n";
-    o << "    cltd\n";
-    o << "    idivl " << i.denominator << "(%rbp)\n";
+    o << "    cdq\n";
+    o << "    movl " << i.denominator << "(%rbp), %ecx\n";
+    o << "    idivl   %ecx\n";
     o << "    movl %edx, " << i.dest << "(%rbp)\n";
 }
 
