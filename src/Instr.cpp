@@ -42,3 +42,7 @@ void RetInstr::accept(IRVisitor &visitor) {
 void CmpInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
+
+void BitInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}

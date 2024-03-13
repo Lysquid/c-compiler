@@ -30,6 +30,12 @@ public:
 
     antlrcpp::Any visitComparison(ifccParser::ComparisonContext *ctx) override;
 
+    antlrcpp::Any visitBitAnd(ifccParser::BitAndContext *ctx) override;
+
+    antlrcpp::Any visitBitOr(ifccParser::BitOrContext *ctx) override;
+
+    antlrcpp::Any visitBitXor(ifccParser::BitXorContext *ctx) override;
+
     antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
 
     int getNumberOfErrors() const { return errors; }

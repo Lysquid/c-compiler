@@ -132,6 +132,40 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx){
     return res;
 }
 
+antlrcpp::Any ASTVisitor::visitBitAnd(ifccParser::BitAndContext *ctx) {
+    int term1 = this->visit(ctx->expr(0));
+    int term2 = this->visit(ctx->expr(1));
+    string op = ctx->BIT_AND()->getText();
+    int res = cfg->create_new_tempvar();
+
+    current_bb->add_instr(new BitInstr(term1, term2, res, BitInstr::And));
+
+    return res;
+}
+
+antlrcpp::Any ASTVisitor::visitBitOr(ifccParser::BitOrContext *ctx) {
+    int term1 = this->visit(ctx->expr(0));
+    int term2 = this->visit(ctx->expr(1));
+    string op = ctx->BIT_OR()->getText();
+    int res = cfg->create_new_tempvar();
+
+    current_bb->add_instr(new BitInstr(term1, term2, res, BitInstr::Or));
+
+    return res;
+}
+
+
+antlrcpp::Any ASTVisitor::visitBitXor(ifccParser::BitXorContext *ctx) {
+    int term1 = this->visit(ctx->expr(0));
+    int term2 = this->visit(ctx->expr(1));
+    string op = ctx->BIT_XOR()->getText();
+    int res = cfg->create_new_tempvar();
+
+    current_bb->add_instr(new BitInstr(term1, term2, res, BitInstr::Xor));
+
+    return res;
+}
+
 
 antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx) {
     int addr = this->visit(ctx->expr());
