@@ -41,7 +41,7 @@ public:
 
     antlrcpp::Any visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) override;
 
-    antlrcpp::Any visitCarac(ifccParser::CaracContext *ctx) override;
+    antlrcpp::Any visitChar(ifccParser::CharContext *ctx) override;
 
     antlrcpp::Any visitSign(ifccParser::SignContext *ctx) override;
 
