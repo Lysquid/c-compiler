@@ -1,6 +1,7 @@
 #include "CFG.h"
 #include "IRVisitor.h"
 
+
 CFG::CFG() {
     next_free_symbol_index = -4;
     next_bb_number = 0;
@@ -64,7 +65,7 @@ bool CFG::bb_in_cfg(string name) {
 }
 
 string CFG::new_BB_name() {
-    string name = "Block" + next_bb_number;
+    string name = "Block" + std::to_string(next_bb_number);
     next_bb_number++;
     return name;
 }

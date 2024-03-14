@@ -42,11 +42,13 @@ Possible optimization:
 class BasicBlock {
 public:
 
-    BasicBlock(string entry_label) : exit_true(nullptr), exit_false(nullptr), label(entry_label), next_free_symbol_index(-4) {};
+    BasicBlock(string entry_label) : exit_true(nullptr), exit_false(nullptr), label(entry_label), next_free_symbol_index(-4), test_var_index(0) {};
 
     void accept(IRVisitor &visitor);
 
     void add_instr(Instr *instr);
+
+    void printInstr(); // for debugging
 
     string get_label() { return label; }
 
@@ -79,7 +81,9 @@ public:
     BasicBlock *exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
     BasicBlock *exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
     string label;              /**< label of the BB, also will be the label in the generated code */
-    string test_var_name;      /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
+
+    int test_var_index;      /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
+
 	map<string, int> symbol_index; /**< local variables */
 	int next_free_symbol_index; /**< next available index for a new local variable */
 
@@ -89,4 +93,3 @@ public:
 
 	int is_return = 0; /**< 0 if not return, 1 if return */
 };
-

@@ -19,7 +19,13 @@ public:
 
     antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
 
-    antlrcpp::Any visitIfcond(ifccParser::IfcondContext *ctx) override;
+    antlrcpp::Any visitCondstatement(ifccParser::CondstatementContext *ctx) override;
+
+    antlrcpp::Any visitCondblock(ifccParser::CondblockContext *ctx) override;
+
+    antlrcpp::Any visitElseifblock(ifccParser::ElseifblockContext *ctx) override;
+
+    antlrcpp::Any visitSimpleelse(ifccParser::SimpleelseContext *ctx) override;
 
     antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override;
 
