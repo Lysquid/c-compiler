@@ -18,16 +18,6 @@ statement
     | expr ';'                  # expression
     | 'if' '(' expr ')'  block  ('else'  block )? # ifcond
     | 'putchar(' expr ')' ';'   # putchar
-    | condblock # condstatement
-    ;
-
-condblock
-    : 'if' '(' expr ')' block elseblock?
-    ;
-
-elseblock
-    : 'else' condblock # elseifblock
-    | 'else' block # simpleelse
     ;
 
 expr

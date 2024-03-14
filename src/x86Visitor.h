@@ -47,8 +47,6 @@ private:
 
     void gen_prologue(BasicBlock* bb);
 
-    void gen_block_label(BasicBlock &bb);
-
     void gen_epilogue();
 
 };
