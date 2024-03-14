@@ -1,34 +1,25 @@
-# C compiler with antlr4/c++
+# Compilateur C
 
-## Instructions
+## Usage
 
-This minimal example shows how to build a basic C compiler using
-Antlr4 for C++. The only file the compiler can deal with is:
+Dans le repertoire makefile, faites une copie du makefile pour votre platform, et appelez le `config.mk`
 
-```
-int main() {
-   return N;
-}
-```
-where `N` is a positive integer constant. 
+Compiler et exécuter les tests :
+`make -j test`
 
-## Source Files
-- `ifcc.g4` contains the grammar in antlr4 format
-- `main.cpp` contains the C++ code to call the antlr4-generated parser
-  on the file name provided in the command line.
-- `CodeGenVisitor.h` produces the actual assembly-language output
+## Fonctionnalités
 
-## Prerequisites
-  Before building your  compiler, you should install  antlr using your
-  distribution's  package manager,  or by  running the  provided shell
-  script:   `install-antlr.sh`. 
-    
-## Compilation scripts
-- `Makefile` contains  the actual build  logic. Please read  this file
-  and ask questions on parts you do not understand.
-  The  Makefile includes a .mk file that defines several variables 
-  (ANTLR, ANTLRJAR,  ANTLRINC and  ANTLRLIB) indicating the location 
-  of various parts of the Antlr suite. 
-  You can (should)  change  those values to suit your installation, either
-  by editing the  Makefile and/or adding another .mk file.
+- Commentaires `/* */`
+- Variables (sans les scoops)
+- Constantes entières et caractères
+- Expressions avec les opérateurs `+` `-` `*` `/` `%` `|` `&` `^` `!`
+- Comparaisons avec `==` `!=` `<` `>` `<=` `>=`
+- Déclaration et affectation de variables
+- `getchar` et `putchar`
+- Fonctions (version bêta/incomplète/potentiellement buggée)
 
+## Architecture
+
+Nous avons implémenté une **IR**. L'`ASTVisitor`, qui hérite du `BaseVisitor` généré par Antlr, visite l'AST et construit l'IR. Comme dans le template fourni, l'IR est composée d'instructions `Instr`, regroupées en `BasicBlock` au sein du *control flow graph* `CFG`. La différence est que chaque instruction est une classe héritant de `Instr`, avec ses attributs spécifiques.
+
+Pour découpler l'IR de la génération d'assembleur et donc de l'architecture, nous avons mis en place un deuxième visiteur, `IRVisitor`. Son implémentation concrète pour l'architecture x86, `x86Visitor`, visite chaque instruction du CFG et génère le code assembleur. On peut ansi rajouter un backend pour chaque architecture en écrivant le visiteur associé, sans toucher à l'IR.
