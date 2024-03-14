@@ -153,3 +153,62 @@ public:
 
     int var;
 };
+
+class PutcharInstr : public Instr {
+public:
+    explicit PutcharInstr(int var) : var(var) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int var;
+};
+
+class GetcharInstr : public Instr {
+public:
+    explicit GetcharInstr(int dest) : dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int dest;
+};
+
+
+class CopyparamInstr : public Instr {
+public:
+
+    vector<string> memory_type = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
+    
+    CopyparamInstr(int src, int dest) : src(src), dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int src;
+    int dest;
+};
+
+class SetparamInstr : public Instr {
+public:
+
+    vector<string> memory_type = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
+    
+    SetparamInstr(int src, int dest) : src(src), dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int src;
+    int dest;
+};
+
+class CallfunctionInstr : public Instr {
+public:
+    CallfunctionInstr(string function_name, int dest, int return_type) : function_name(function_name), dest(dest), return_type(return_type) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    string function_name;
+    int dest;
+    int return_type;
+};
+
+ 
+ 

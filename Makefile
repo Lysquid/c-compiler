@@ -2,7 +2,7 @@
 # Each student should have a config.mk corresponding to her system.
 # Examples are  ubuntu.mk, DI.mk, fedora.mk
 # Then config.mk should be in the .gitignore of your project
-include ./makefiles/config.mk
+include makefiles/config.mk
 
 CC=g++
 CCFLAGS=-g -c -std=c++17 -I$(ANTLRINC) -Wno-attributes # -Wno-defaulted-function-deleted -Wno-unknown-warning-option
@@ -80,7 +80,7 @@ gui:
 ##########################################
 # run tests
 test: $(EXE)
-	python3 tests/ifcc-test.py tests
+	python3 ifcc-test.py tests
 
 ##########################################
 # delete all machine-generated files

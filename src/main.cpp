@@ -40,6 +40,9 @@ int main(int argn, const char **argv) {
     ASTVisitor av;
     av.visit(tree);
 
+    //checking for unused variables
+    av.IsThereUnusedVariables();
+
     if (av.getNumberOfErrors() > 0) {
         cerr << "Stopping due to errors" << endl;
         exit(1);

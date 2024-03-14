@@ -33,9 +33,19 @@ public:
 
     void visit(RetInstr &i) override;
 
+    void visit(PutcharInstr &i) override;
+
+    void visit(GetcharInstr &i) override;
+
+    void visit(CopyparamInstr &i) override;
+
+    void visit(SetparamInstr &i) override;
+
+    void visit(CallfunctionInstr &i) override;
+
 private:
 
-    void gen_prologue();
+    void gen_prologue(BasicBlock* bb);
 
     void gen_block_label(BasicBlock &bb);
 
