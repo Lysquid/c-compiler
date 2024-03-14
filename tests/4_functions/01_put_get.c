@@ -1,6 +1,6 @@
 int main()
 {
     int x = 97;
-    putcahar(x+1);
+    putchar(x+1);
     return x;
 }
