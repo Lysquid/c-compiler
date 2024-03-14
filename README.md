@@ -17,6 +17,7 @@ Compiler et exécuter les tests :
 - Déclaration et affectation de variables
 - `getchar` et `putchar`
 - Fonctions (version bêta/incomplète/potentiellement buggée)
+- Bonus (inutile) : tests parallélisés
 
 ## Architecture
 
