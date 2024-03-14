@@ -48,6 +48,8 @@ public:
 
     void add_instr(Instr *instr);
 
+    void printInstr(); // for debugging
+
     string get_label() { return label; }
 
     void set_exit_true(BasicBlock *bb) { exit_true = bb; }

@@ -11,7 +11,16 @@ statement
     | INT VAR (',' VAR)* ';'    # declaration
     | INT VAR '=' expr ';'      # declarationAssignment
     | expr ';' # expression
-    | 'if' '(' expr ')' block ('else' block)? # ifcond
+    | condblock # condstatement
+    ;
+
+condblock
+    : 'if' '(' expr ')' block elseblock?
+    ;
+
+elseblock
+    : 'else' condblock # elseifblock
+    | 'else' block # simpleelse
     ;
 
 expr
