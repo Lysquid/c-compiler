@@ -59,37 +59,31 @@ antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
     return 0;
 }
 
-
-antlrcpp::Any ASTVisitor::visitCondstatement(ifccParser::CondstatementContext *ctx) {
-    this->visit(ctx->condblock());
-    return 0;
-}
-
-antlrcpp::Any ASTVisitor::visitCondblock(ifccParser::CondblockContext *ctx) {
+antlrcpp::Any ASTVisitor::visitIfcond(ifccParser::IfcondContext *ctx) {
     auto *ifblock = new BasicBlock(cfg->new_BB_name());
+
     auto *endifblock = new BasicBlock(cfg->new_BB_name());
-    auto *elseblock = new BasicBlock(cfg->new_BB_name());
 
-    BasicBlock * blockBeforeJump = current_bb;
+    current_bb->set_exit_true(ifblock);
 
-    blockBeforeJump->set_exit_true(ifblock);
+
     ifblock->set_exit_true(endifblock);
 
-    elseblock->set_exit_true(endifblock);
     cfg->add_bb(ifblock); // then
 
-    blockBeforeJump->set_exit_false(endifblock); // s'il n'y a pas de else, on saute à endifblock
-
-    blockBeforeJump->test_var_index = this->visit(ctx->expr()); // le test, on stocke le resultat de la visite dans test_var_index
-
+    this->visit(ctx->expr()); // le test
+    current_bb->set_exit_false(endifblock); // s'il n'y a pas de else, on saute à endifblock
     current_bb = ifblock;
-    this->visit(ctx->block()); // le bloc if
+    this->visit(ctx->block(0)); // le bloc if
 
-    if(ctx->elseblock() != nullptr){
-        cfg->add_bb(elseblock);
-        blockBeforeJump->set_exit_false(elseblock);
-        current_bb = elseblock; // le bloc else
-        this->visit(ctx->elseblock());
+
+    if(ctx->block().size() == 2){
+        auto *elseblock = new BasicBlock(cfg->new_BB_name());
+        current_bb->set_exit_false(elseblock);
+        elseblock->set_exit_true(endifblock);
+        cfg->add_bb(elseblock); // else
+        current_bb = elseblock;
+        this->visit(ctx->block(1)); // le bloc else
     }
 
     cfg->add_bb(endifblock); // endif
@@ -98,19 +92,10 @@ antlrcpp::Any ASTVisitor::visitCondblock(ifccParser::CondblockContext *ctx) {
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitElseifblock(ifccParser::ElseifblockContext *ctx){
-    this->visit(ctx->condblock());
-
-    return 0;
-}
-
-antlrcpp::Any ASTVisitor::visitSimpleelse(ifccParser::SimpleelseContext *ctx){
-    this->visit(ctx->block());
-    return 0;
-}
-
-antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx) {
-    for (antlr4::tree::TerminalNode *node: ctx->VAR()) {
+antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
+{
+    for (antlr4::tree::TerminalNode *node : ctx->VAR())
+    {
         string var = node->getText();
         if (!current_bb->symbol_in_table(var))
         {

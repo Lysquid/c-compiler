@@ -18,10 +18,6 @@ void x86Visitor::gen_prologue(BasicBlock* bb) {
     
 }
 
-void x86Visitor::gen_block_label(BasicBlock &bb){
-    o << bb.label + ": \n";
-}
-
 void x86Visitor::gen_epilogue() {
     o << "    movq %rbp, %rsp\n";
     o << "    pop %rbp \n";
@@ -29,19 +25,17 @@ void x86Visitor::gen_epilogue() {
 }
 
 void x86Visitor::visit(BasicBlock &bb) {
-    gen_block_label(bb);
     for (auto instr: bb.instrs) {
         instr->accept(*this);
     }
     if (bb.exit_true == nullptr) {
-        gen_epilogue();
         return;
     } else if (bb.exit_false == nullptr) {
         o << "    jmp " << bb.exit_true->get_label() << "\n";
     } else {
-        o << "    cmpl $0, " << bb.test_var_index << "(%rbp)\n";
+        o << "    cmpl $0, " << bb.test_var_name << "(%rbp)\n";
         o << "    jne " << bb.exit_true->get_label() << "\n";
-        o << "    jmp " << bb.exit_false->get_label() << "\n\n";
+        o << "    jmp " << bb.exit_false->get_label() << "\n";
     }
 }
 
