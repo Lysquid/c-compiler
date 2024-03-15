@@ -33,7 +33,7 @@ void x86Visitor::visit(BasicBlock &bb) {
     } else if (bb.exit_false == nullptr) {
         o << "    jmp " << bb.exit_true->get_label() << "\n";
     } else {
-        o << "    cmpl $0, " << bb.test_var_name << "(%rbp)\n";
+        o << "    cmpl $0, " << bb.test_var_index << "(%rbp)\n";
         o << "    jne " << bb.exit_true->get_label() << "\n";
         o << "    jmp " << bb.exit_false->get_label() << "\n";
     }
