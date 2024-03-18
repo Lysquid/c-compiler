@@ -9,6 +9,7 @@
 - Mathis Nguyen
 - Zeyang Kong
 - Romain Benoit
+- Koch Florentin
 
 ## Usage
 
