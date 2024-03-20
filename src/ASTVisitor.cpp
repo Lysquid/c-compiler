@@ -72,8 +72,8 @@ antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx) {
     BasicBlock * currentBlock = current_cfg->current_bb; //bloc courrant
     auto *testBlock = new BasicBlock(current_cfg->new_BB_name()); // bloc de test
     auto *bodyBlock = new BasicBlock(current_cfg->new_BB_name()); // corps du while
-    BasicBlock * followingBlock = currentBlock->exit_true; //bloc suivant
-
+    BasicBlock * followingBlock = new BasicBlock(current_cfg->new_BB_name()); //bloc suivant
+    followingBlock->set_exit_true(currentBlock->exit_true);
     //si le test est vrai on execute le corps, sinon on passe à la suite
     testBlock->set_exit_true(bodyBlock);
     testBlock->set_exit_false(followingBlock);
@@ -95,6 +95,7 @@ antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx) {
     this->visit(ctx->block()); // statements of the body
 
     // le bloc suivant
+    current_cfg->add_bb(followingBlock);
     current_cfg->current_bb = followingBlock;
 
     return 0;
