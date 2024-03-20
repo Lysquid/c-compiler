@@ -24,6 +24,7 @@ int Scope::get_var_index(string symbol) {
     } else if (this->parent != nullptr) {
         return this->parent->get_var_index(symbol);
     }
+    return 0;
 }
 
 void Scope::add_to_symbol_table(string name, int index) {

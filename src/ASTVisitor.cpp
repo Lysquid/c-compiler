@@ -71,8 +71,9 @@ antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
 
 antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx) {
     BasicBlock * currentBlock = current_cfg->current_bb; //bloc courrant
-    auto *testBlock = new BasicBlock(current_cfg->new_BB_name()); // bloc de test
-    auto *bodyBlock = new BasicBlock(current_cfg->new_BB_name()); // corps du while
+    auto scope = current_cfg->current_bb->scope;
+    auto *testBlock = new BasicBlock(current_cfg->new_BB_name(), scope); // bloc de test
+    auto *bodyBlock = new BasicBlock(current_cfg->new_BB_name(), new Scope(scope)); // corps du while
     BasicBlock * followingBlock = currentBlock->exit_true; //bloc suivant
 
     //si le test est vrai on execute le corps, sinon on passe à la suite
@@ -363,7 +364,7 @@ antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
 antlrcpp::Any ASTVisitor::visitUnary(ifccParser::UnaryContext *ctx){
     int term = this->visit(ctx->expr());
     string op = ctx->UNARY_OP()->getText();
-    int dest = current_cfg->create_new_tempvar();
+    int dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
     if(op == "!"){
         current_cfg->current_bb->add_instr(new NotInstr(term,dest));
     }
