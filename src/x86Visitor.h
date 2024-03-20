@@ -29,6 +29,8 @@ public:
 
     void visit(CmpInstr &i) override;
 
+    void visit(NotInstr &i) override;
+
     void visit(BitInstr &i) override;
 
     void visit(RetInstr &i) override;

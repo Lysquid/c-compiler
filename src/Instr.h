@@ -126,6 +126,17 @@ public:
     cmp_type cmp;
 };
 
+class NotInstr : public Instr {
+public:
+
+    NotInstr(int term, int dest) : term(term), dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int term;
+    int dest;
+};
+
 class BitInstr : public Instr {
 public:
 
@@ -177,7 +188,7 @@ class CopyparamInstr : public Instr {
 public:
 
     vector<string> memory_type = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
-    
+
     CopyparamInstr(int src, int dest) : src(src), dest(dest) {}
 
     void accept(IRVisitor &visitor) override;
@@ -190,7 +201,7 @@ class SetparamInstr : public Instr {
 public:
 
     vector<string> memory_type = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
-    
+
     SetparamInstr(int src, int dest) : src(src), dest(dest) {}
 
     void accept(IRVisitor &visitor) override;
@@ -209,6 +220,3 @@ public:
     int dest;
     int return_type;
 };
-
- 
- 

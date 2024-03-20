@@ -18,7 +18,7 @@ void x86Visitor::gen_prologue(CFG &cfg) {
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
     o << "    subq $" << to_string(size%16? size-size%16+16:size) << ", %rsp\n";
-    
+
 }
 
 void x86Visitor::gen_prologue_BB(BasicBlock &bb) {
@@ -120,6 +120,14 @@ void x86Visitor::visit(CmpInstr &i) {
             break;
     }
     o << " %al\n";
+    o << "    movzbl %al, %eax\n";
+    o << "    movl %eax, " << i.dest << "(%rbp)\n";
+}
+
+void x86Visitor::visit(NotInstr &i) {
+    o << "    movl " << i.term << "(%rbp), %eax\n";
+    o << "    cmpl " << "$0, %eax\n";
+    o << "    sete %al\n";
     o << "    movzbl %al, %eax\n";
     o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }

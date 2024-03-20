@@ -33,14 +33,16 @@ public:
 
     virtual void visit(CmpInstr &i) = 0;
 
+    virtual void visit(NotInstr &i) = 0;
+
     virtual void visit(BitInstr &i) = 0;
 
     virtual void visit(RetInstr &i) = 0;
-    
+
     virtual void visit(PutcharInstr &i) = 0;
 
     virtual void visit(GetcharInstr &i) = 0;
-    
+
     virtual void visit(CopyparamInstr &i) = 0;
 
     virtual void visit(SetparamInstr &i) = 0;

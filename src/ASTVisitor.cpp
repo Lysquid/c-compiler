@@ -113,7 +113,7 @@ antlrcpp::Any ASTVisitor::visitCondblock(ifccParser::CondblockContext *ctx) {
     BasicBlock * blockBeforeJump = current_cfg->current_bb;
     endifblock->set_exit_true(current_cfg->current_bb->exit_true);
     blockBeforeJump->set_exit_true(ifblock);
-    
+
 
     ifblock->set_exit_true(endifblock);
 
@@ -311,7 +311,7 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
 
         int i = 0;
         int return_type = getCFG(name)->return_type;
-        
+
         if (!return_type)
         {
             cerr << "ERROR: void function " << name << " couldn't return a value" << endl;
@@ -337,7 +337,7 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
         errors++;
     }
     return dest;
-    
+
 }
 
 antlrcpp::Any ASTVisitor::visitChar(ifccParser::CharContext *ctx) {
@@ -358,6 +358,16 @@ antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
         return addr2;
     }
     return addr;
+}
+
+antlrcpp::Any ASTVisitor::visitUnary(ifccParser::UnaryContext *ctx){
+    int term = this->visit(ctx->expr());
+    string op = ctx->UNARY_OP()->getText();
+    int dest = current_cfg->create_new_tempvar();
+    if(op == "!"){
+        current_cfg->current_bb->add_instr(new NotInstr(term,dest));
+    }
+    return dest;
 }
 
 antlrcpp::Any ASTVisitor::visitAddSub(ifccParser::AddSubContext *ctx)
