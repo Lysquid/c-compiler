@@ -5,7 +5,7 @@
 # input: the test-cases are specified either as individual
 #         command-line arguments, or as part of a directory tree
 #
-# output: 
+# output:
 #
 # The script is divided in three distinct steps:
 # - in the ARGPARSE step, we understand the command-line arguments
@@ -90,7 +90,7 @@ if len(input_files) == 0:
 
 def test_result(ok: bool, job_path: Path, message: str = None):
     print(f"TEST-CASE: {job_path}")
-    print(f"TEST {'OK' if ok else 'FAIL'}{ f' ({message})' if message else ''}")
+    print(f"TEST {'OK' if ok else 'FAIL <-------'}{ f' ({message})' if message else ''}")
     return ok
 
 

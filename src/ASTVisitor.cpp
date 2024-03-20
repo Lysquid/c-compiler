@@ -370,6 +370,19 @@ antlrcpp::Any ASTVisitor::visitUnary(ifccParser::UnaryContext *ctx){
     return dest;
 }
 
+antlrcpp::Any ASTVisitor::visitIncrement(ifccParser::IncrementContext *ctx) {
+    int term = current_cfg->get_var_index(ctx->VAR()->getText());
+    int dest = current_cfg->create_new_tempvar();
+    string op = ctx->INCREMENT()->getText();
+    if(op == "++"){
+        current_cfg->current_bb->add_instr(new IncrementInstr(term,dest));
+    }
+    else if (op == "--"){
+        current_cfg->current_bb->add_instr(new DecrementInstr(term,dest));
+    }
+    return dest;
+}
+
 antlrcpp::Any ASTVisitor::visitAddSub(ifccParser::AddSubContext *ctx)
 {
     int addr1 = this->visit(ctx->expr(0));

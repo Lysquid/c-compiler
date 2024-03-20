@@ -94,6 +94,26 @@ public:
     int dest;
 };
 
+class IncrementInstr : public Instr {
+public:
+    IncrementInstr(int term, int dest) : term(term), dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int term;
+    int dest;
+};
+
+class DecrementInstr : public Instr {
+public:
+    DecrementInstr(int term, int dest) : term(term), dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int term;
+    int dest;
+};
+
 class NegInstr : public Instr {
 public:
     NegInstr(int src, int dest) : src(src), dest(dest) {}

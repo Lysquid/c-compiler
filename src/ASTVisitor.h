@@ -55,6 +55,8 @@ public:
 
     antlrcpp::Any visitUnary(ifccParser::UnaryContext *ctx) override;
 
+    antlrcpp::Any visitIncrement(ifccParser::IncrementContext *ctx) override;
+
     antlrcpp::Any visitAddSub(ifccParser::AddSubContext *ctx) override;
 
     antlrcpp::Any visitMulDiv(ifccParser::MulDivContext *ctx) override;

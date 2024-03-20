@@ -29,6 +29,10 @@ public:
 
     virtual void visit(ModInstr &i) = 0;
 
+    virtual void visit(IncrementInstr &i) = 0;
+
+    virtual void visit(DecrementInstr &i) = 0;
+
     virtual void visit(NegInstr &i) = 0;
 
     virtual void visit(CmpInstr &i) = 0;

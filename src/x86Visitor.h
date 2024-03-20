@@ -25,6 +25,10 @@ public:
 
     void visit(ModInstr &i) override;
 
+    void visit(IncrementInstr &i) override;
+
+    void visit(DecrementInstr &i) override;
+
     void visit(NegInstr &i) override;
 
     void visit(CmpInstr &i) override;

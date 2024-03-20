@@ -89,6 +89,19 @@ void x86Visitor::visit(ModInstr &i) {
     o << "    movl %edx, " << i.dest << "(%rbp)\n";
 }
 
+void x86Visitor::visit(IncrementInstr &i) {
+    o << "    movl " << i.term << "(%rbp), %eax\n";
+    o << "    movl %eax, " << i.dest << "(%rbp)\n";// on sauvegarde le contenu de la variable dans dest
+    o << "    addl " << "$1, %eax\n";
+    o << "    movl %eax, " << i.term << "(%rbp)\n";
+}
+
+void x86Visitor::visit(DecrementInstr &i) {
+    o << "    movl " << i.term << "(%rbp), %eax\n";
+    o << "    subl " << "$1, %eax\n";
+    o << "    movl %eax, " << i.term << "(%rbp)\n";
+}
+
 void x86Visitor::visit(NegInstr &i) {
     o << "    movl " << i.src << "(%rbp), %eax\n";
     o << "    negl %eax\n";

@@ -31,6 +31,14 @@ void ModInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
+void IncrementInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
+void DecrementInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
 void NegInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
