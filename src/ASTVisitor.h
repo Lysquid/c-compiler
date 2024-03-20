@@ -19,7 +19,13 @@ public:
 
     antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
 
-    antlrcpp::Any visitIfcond(ifccParser::IfcondContext *ctx) override;
+    antlrcpp::Any visitCondstatement(ifccParser::CondstatementContext *ctx) override;
+
+    antlrcpp::Any visitCondblock(ifccParser::CondblockContext *ctx) override;
+
+    antlrcpp::Any visitElseifblock(ifccParser::ElseifblockContext *ctx) override;
+
+    antlrcpp::Any visitSimpleelse(ifccParser::SimpleelseContext *ctx) override;
 
     antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override;
 
@@ -65,10 +71,29 @@ public:
 
     void IsThereUnusedVariables();
 
-    CFG *getCFG() { return cfg; }
+    vector<CFG *> getCFGs() { return cfgs; }
+
+    bool existsCFG(string name){
+        for (auto cfg : cfgs){
+            if (cfg->get_label() == name){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    CFG *getCFG(string name){
+        for (auto cfg : cfgs){
+            if (cfg->get_label() == name){
+                return cfg;
+            }
+        }
+        return nullptr;
+    }
 
 private:
     int errors = 0;
-    CFG *cfg = new CFG();
-    BasicBlock *current_bb;
+    vector<CFG *> cfgs;
+    CFG *current_cfg;
+
 };

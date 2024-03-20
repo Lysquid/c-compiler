@@ -1,21 +1,28 @@
 #include "x86Visitor.h"
 
 void x86Visitor::visit(CFG &cfg) {
-    for (auto bb: cfg.bbs) {
-        gen_prologue(bb);
+    gen_prologue(cfg);
+    int size = cfg.bbs.size();
+    for (int i = 0; i < size; i++) {
+        BasicBlock* bb = cfg.bbs[i];
         bb->accept(*this);
-        gen_epilogue();
+        if(i != size-1) gen_prologue_BB(*cfg.bbs[i+1]);
     }
+    gen_epilogue();
 }
 
-void x86Visitor::gen_prologue(BasicBlock* bb) {
-    int size = -bb->next_free_symbol_index;
-    o << ".globl " << bb->get_label() << "\n";
-    o << bb->get_label() << ":\n";
+void x86Visitor::gen_prologue(CFG &cfg) {
+    int size = -cfg.get_next_free_symbol_index();
+    o << ".globl " << cfg.get_label() << "\n";
+    o << cfg.get_label() << ":\n";
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
     o << "    subq $" << to_string(size%16? size-size%16+16:size) << ", %rsp\n";
     
+}
+
+void x86Visitor::gen_prologue_BB(BasicBlock &bb) {
+    o << bb.get_label() << ":\n";
 }
 
 void x86Visitor::gen_epilogue() {
@@ -33,7 +40,7 @@ void x86Visitor::visit(BasicBlock &bb) {
     } else if (bb.exit_false == nullptr) {
         o << "    jmp " << bb.exit_true->get_label() << "\n";
     } else {
-        o << "    cmpl $0, " << bb.test_var_name << "(%rbp)\n";
+        o << "    cmpl $0, " << bb.test_var_index << "(%rbp)\n";
         o << "    jne " << bb.exit_true->get_label() << "\n";
         o << "    jmp " << bb.exit_false->get_label() << "\n";
     }
