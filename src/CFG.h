@@ -28,7 +28,7 @@ public:
     CFG(string name)
     {
         this->name = name;
-        next_free_symbol_index = -4;
+        next_free_symbol_index = 0;
         next_bb_number = 0;
     }
 
@@ -37,20 +37,8 @@ public:
     BasicBlock *get_bb(string label);
 
     // < helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24
-    string IR_reg_to_asm(string reg);
-
-    // symbol table methods
-    void add_to_symbol_table(string name);
-
-    void use_symbol(string name);
 
     vector<string> get_unused_symbols();
-
-    int create_new_tempvar();
-
-    int get_var_index(string var);
-
-    bool symbol_in_table(string symbol);
 
     bool bb_in_cfg(string name);
 
@@ -59,7 +47,7 @@ public:
 
     string get_label() { return name; }
 
-    int get_next_free_symbol_index() { return next_free_symbol_index; }
+    int get_next_free_symbol_index();
 
 
     vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
@@ -74,9 +62,8 @@ public:
 
     int is_return = 0; /**< 0 if not return, 1 if return */
 protected:
-    map<string, int> symbol_index;    /**< part of the symbol table  */
-    int next_free_symbol_index = -4;  /**< to allocate new symbols in the symbol table */
+
+    int next_free_symbol_index = 0;  /**< to allocate new symbols in the symbol table */
     int next_bb_number = 0;           /**< just for naming */
-    map<string, bool> is_symbol_used; /**< usage of symbols of the symbol table  */
     string name;
 };
