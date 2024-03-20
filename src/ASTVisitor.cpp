@@ -16,9 +16,10 @@ antlrcpp::Any ASTVisitor::visitFunction(ifccParser::FunctionContext *ctx)
     CFG *cfg = new CFG(name);
     this->current_cfg = cfg;
     this->cfgs.push_back(cfg);
-    BasicBlock *bb = new BasicBlock(current_cfg->new_BB_name());
+    auto *scope = new Scope(nullptr);
+    auto *bb = new BasicBlock(current_cfg->new_BB_name(), scope);
     cfg->add_bb(bb);
-    BasicBlock* end_block = new BasicBlock(current_cfg->new_BB_name());
+    auto* end_block = new BasicBlock(current_cfg->new_BB_name(), scope);
     bb->set_exit_true(end_block);
     cfg->end_block = end_block;
 
@@ -53,10 +54,10 @@ antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
     for (antlr4::tree::TerminalNode *node : ctx->VAR())
     {
                 string var = node->getText();
-        if (!current_cfg->symbol_in_table(var))
+        if (!current_cfg->current_bb->is_symbol_declared(var))
         {
-            current_cfg->add_to_symbol_table(var);
-            current_cfg->current_bb->add_instr(new CopyparamInstr(i, current_cfg->get_var_index(var)));
+            current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
+            current_cfg->current_bb->add_instr(new CopyparamInstr(i, current_cfg->current_bb->get_var_index(var)));
             i++;
         }
         else
@@ -107,9 +108,10 @@ antlrcpp::Any ASTVisitor::visitCondstatement(ifccParser::CondstatementContext *c
 }
 
 antlrcpp::Any ASTVisitor::visitCondblock(ifccParser::CondblockContext *ctx) {
-    auto *ifblock = new BasicBlock(current_cfg->new_BB_name());
-    auto *endifblock = new BasicBlock(current_cfg->new_BB_name());
-    auto *elseblock = new BasicBlock(current_cfg->new_BB_name());
+    auto scope = current_cfg->current_bb->scope;
+    auto *ifblock = new BasicBlock(current_cfg->new_BB_name(), new Scope(scope));
+    auto *endifblock = new BasicBlock(current_cfg->new_BB_name(), scope);
+    auto *elseblock = new BasicBlock(current_cfg->new_BB_name(), new Scope(scope));
 
     BasicBlock * blockBeforeJump = current_cfg->current_bb;
     endifblock->set_exit_true(current_cfg->current_bb->exit_true);
@@ -159,14 +161,11 @@ antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
     for (antlr4::tree::TerminalNode *node : ctx->VAR())
     {
         string var = node->getText();
-        if (!current_cfg->symbol_in_table(var))
-        {
-            current_cfg->add_to_symbol_table(var);
-        }
-        else
-        {
+        if (current_cfg->current_bb->is_symbol_declared(var)) {
             cerr << "ERROR: variable " << var << " already declared" << endl;
             errors++;
+        } else {
+            current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
         }
     }
     return 0;
@@ -194,7 +193,7 @@ antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx)
 }
 
 antlrcpp::Any ASTVisitor::visitGetchar(ifccParser::GetcharContext *ctx) {
-    int addr = current_cfg->create_new_tempvar();
+    int addr = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
     current_cfg->current_bb->add_instr(new GetcharInstr(addr));
     return addr;
 }
@@ -205,9 +204,9 @@ antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssi
 {
     string var = ctx->VAR()->getText();
 
-    if (!current_cfg->symbol_in_table(var))
+    if (!current_cfg->current_bb->is_symbol_declared(var))
     {
-        current_cfg->add_to_symbol_table(var);
+        current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
     }
     else
     {
@@ -215,7 +214,7 @@ antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssi
         errors++;
     }
     int addr = this->visit(ctx->expr());
-    current_cfg->current_bb->add_instr(new CopyInstr(addr, current_cfg->get_var_index(var)));
+    current_cfg->current_bb->add_instr(new CopyInstr(addr, current_cfg->current_bb->get_var_index(var)));
     return 0;
 }
 
@@ -240,7 +239,7 @@ antlrcpp::Any ASTVisitor::visitCallVoidFunction(ifccParser::CallVoidFunctionCont
         int dest = 0;
         if (return_type)
         {
-            dest = current_cfg->create_new_tempvar();
+            dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
         }
         for (ifccParser::ExprContext *expr : ctx->expr())
         {
@@ -261,13 +260,13 @@ antlrcpp::Any ASTVisitor::visitCallVoidFunction(ifccParser::CallVoidFunctionCont
 antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx)
 {
     string var = ctx->VAR()->getText();
-    if (!current_cfg->symbol_in_table(var))
+    if (!current_cfg->current_bb->is_symbol_declared(var))
     {
         cerr << "ERROR: variable " << var << " not initialized" << endl;
         errors++;
     }
     int addr = this->visit(ctx->expr());
-    current_cfg->current_bb->add_instr(new CopyInstr(addr, current_cfg->get_var_index(var)));
+    current_cfg->current_bb->add_instr(new CopyInstr(addr, current_cfg->current_bb->get_var_index(var)));
     return addr;
 }
 
@@ -275,18 +274,18 @@ antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx)
 {
     string var = ctx->VAR()->getText();
 
-    if (!current_cfg->symbol_in_table(var))
+    if (!current_cfg->current_bb->is_symbol_declared(var))
     {
         cerr << "ERROR: variable " << var << " not found" << endl;
         errors++;
     }
-    return current_cfg->get_var_index(var);
+    return current_cfg->current_bb->get_var_index(var);
 }
 
 antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
 {
     int value = stoi(ctx->CONST()->getText());
-    int addr = current_cfg->create_new_tempvar();
+    int addr = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
     current_cfg->current_bb->add_instr(new ConstInstr(value, addr));
     return addr;
 }
@@ -320,7 +319,7 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
         }
         else
         {
-            dest = current_cfg->create_new_tempvar();
+            dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
         }
 
@@ -344,7 +343,7 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
 antlrcpp::Any ASTVisitor::visitChar(ifccParser::CharContext *ctx) {
     string char_str = ctx->CHAR()->getText();
     int value = static_cast<unsigned char>(char_str.c_str()[1]);
-    int addr = current_cfg->create_new_tempvar();
+    int addr = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
     current_cfg->current_bb->add_instr(new ConstInstr(value, addr));
     return addr;
 }
@@ -354,7 +353,7 @@ antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
     string op = ctx->ADD_SUB()->getText();
     if (op == "-")
     {
-        int addr2 = current_cfg->create_new_tempvar();
+        int addr2 = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
         current_cfg->current_bb->add_instr(new NegInstr(addr, addr2));
         return addr2;
     }
@@ -376,7 +375,7 @@ antlrcpp::Any ASTVisitor::visitAddSub(ifccParser::AddSubContext *ctx)
     int addr1 = this->visit(ctx->expr(0));
     int addr2 = this->visit(ctx->expr(1));
     string op = ctx->ADD_SUB()->getText();
-    int addr3 = current_cfg->create_new_tempvar();
+    int addr3 = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
     if (op == "+")
     {
@@ -394,7 +393,7 @@ antlrcpp::Any ASTVisitor::visitMulDiv(ifccParser::MulDivContext *ctx)
     int addr1 = this->visit(ctx->expr(0));
     int addr2 = this->visit(ctx->expr(1));
     string op = ctx->MUL_DIV()->getText();
-    int addr3 = current_cfg->create_new_tempvar();
+    int addr3 = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
     if (op == "*")
     {
@@ -421,7 +420,7 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx)
     int term1 = this->visit(ctx->expr(0));
     int term2 = this->visit(ctx->expr(1));
     string op = ctx->COMP()->getText();
-    int res = current_cfg->create_new_tempvar();
+    int res = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
     if (op == "<=")
     {
@@ -455,7 +454,7 @@ antlrcpp::Any ASTVisitor::visitBitAnd(ifccParser::BitAndContext *ctx)
     int term1 = this->visit(ctx->expr(0));
     int term2 = this->visit(ctx->expr(1));
     string op = ctx->BIT_AND()->getText();
-    int res = current_cfg->create_new_tempvar();
+    int res = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
     current_cfg->current_bb->add_instr(new BitInstr(term1, term2, res, BitInstr::And));
 
@@ -467,7 +466,7 @@ antlrcpp::Any ASTVisitor::visitBitOr(ifccParser::BitOrContext *ctx)
     int term1 = this->visit(ctx->expr(0));
     int term2 = this->visit(ctx->expr(1));
     string op = ctx->BIT_OR()->getText();
-    int res = current_cfg->create_new_tempvar();
+    int res = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
     current_cfg->current_bb->add_instr(new BitInstr(term1, term2, res, BitInstr::Or));
 
@@ -479,7 +478,7 @@ antlrcpp::Any ASTVisitor::visitBitXor(ifccParser::BitXorContext *ctx)
     int term1 = this->visit(ctx->expr(0));
     int term2 = this->visit(ctx->expr(1));
     string op = ctx->BIT_XOR()->getText();
-    int res = current_cfg->create_new_tempvar();
+    int res = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
     current_cfg->current_bb->add_instr(new BitInstr(term1, term2, res, BitInstr::Xor));
 
