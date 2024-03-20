@@ -103,20 +103,26 @@ async def job(input_file: Path, semaphore: asyncio.Semaphore):
         shutil.copyfile(input_file, p / "input.c")
 
         # Reference compiler = GCC
+        gcc_out = p / "compile-gcc.txt"
+        ifcc_out = p / "compile-ifcc.txt"
         gcc_comp = await asyncio.create_subprocess_exec(
             "gcc", "-S", "-o",
             p / "asm-gcc.s",
             p / "input.c",
-            stderr=(p / "gcc-compile.txt").open("w")
+            stderr=gcc_out.open("w")
         )
         # IFCC compiler
         ifcc_comp = await asyncio.create_subprocess_exec(
             Path.cwd() /"ifcc", p / "input.c",
             stdout=(p / "asm-ifcc.s").open("w"),
-            stderr=(p / "ifcc-compile.txt").open("w")
+            stderr=ifcc_out.open("w")
         )
         await gcc_comp.wait()
         await ifcc_comp.wait()
+        with gcc_out.open('a') as file:
+            file.write(f"return code: {gcc_comp.returncode}")
+        with ifcc_out.open('a') as file:
+            file.write(f"return code: {ifcc_comp.returncode}")
 
         # ifcc correctly rejects invalid program -> test-case ok
         if gcc_comp.returncode != 0 and ifcc_comp.returncode != 0:
@@ -134,20 +140,26 @@ async def job(input_file: Path, semaphore: asyncio.Semaphore):
             return ok
 
         # ifcc accepts to compile valid program -> let's link it
+        gcc_out = p / "link-gcc.txt"
+        ifcc_out = p / "link-ifcc.txt"
         gcc_link = await asyncio.create_subprocess_exec(
             "gcc", "-o",
             p / "exe-gcc",
             p / "asm-gcc.s",
-            stderr=(p / "gcc-link.txt").open("w")
+            stderr=gcc_out.open("w")
         )
         ifcc_link = await asyncio.create_subprocess_exec(
             "gcc", "-o",
             p / "exe-ifcc",
             p / "asm-ifcc.s",
-            stderr=(p / "ifcc-link.txt").open("w")
+            stderr=ifcc_out.open("w")
         )
         await gcc_link.wait()
         await ifcc_link.wait()
+        with gcc_out.open('a') as file:
+            file.write(f"return code: {gcc_link.returncode}")
+        with ifcc_out.open('a') as file:
+            file.write(f"return code: {ifcc_link.returncode}")
 
         if ifcc_link.returncode:
             ok = test_result(False, p, "your compiler produces incorrect assembly")
@@ -157,8 +169,8 @@ async def job(input_file: Path, semaphore: asyncio.Semaphore):
 
         # both compilers  did produce an  executable, so now we  run both
         # these executables and compare the results.
-        gcc_out = p / "gcc-execute.txt"
-        ifcc_out = p / "ifcc-execute.txt"
+        gcc_out = p / "execute-gcc.txt"
+        ifcc_out = p / "execute-ifcc.txt"
         gcc_exec = await asyncio.create_subprocess_exec(
             p / "exe-gcc",
             stdout=gcc_out.open("w")
@@ -169,6 +181,10 @@ async def job(input_file: Path, semaphore: asyncio.Semaphore):
         )
         await gcc_exec.wait()
         await ifcc_exec.wait()
+        with gcc_out.open('a') as file:
+            file.write(f"return code: {gcc_exec.returncode}")
+        with ifcc_out.open('a') as file:
+            file.write(f"return code: {ifcc_exec.returncode}")
 
         if gcc_exec.returncode != ifcc_exec.returncode:
             return test_result(False, p, "different return codes at execution")
