@@ -21,6 +21,10 @@ public:
 
     antlrcpp::Any visitWhile(ifccParser::WhileContext *ctx) override;
 
+    antlrcpp::Any visitBreak(ifccParser::BreakContext *ctx) override;
+
+    antlrcpp::Any visitContinue(ifccParser::ContinueContext *ctx) override;
+    
     antlrcpp::Any visitIf(ifccParser::IfContext *ctx) override;
 
     antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override;

@@ -78,6 +78,7 @@ antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx) {
     auto *test_block = new BasicBlock(current_cfg->new_BB_name(), scope); // bloc de test
     auto *body_block = new BasicBlock(current_cfg->new_BB_name(), scope); // corps du while
     auto * next_block = new BasicBlock(current_cfg->new_BB_name(), scope); //bloc suivant
+    bodyBlock->test_block = testBlock; //notify it is a loop
     next_block->set_exit_true(previous_block->exit_true);
     //si le test est vrai on execute le corps, sinon on passe à la suite
     test_block->set_exit_true(body_block);
@@ -105,6 +106,47 @@ antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx) {
 
     return 0;
 
+}
+
+antlrcpp::Any ASTVisitor::visitBreak(ifccParser::BreakContext *ctx) {
+    BasicBlock * currentBlock = current_cfg->current_bb; //bloc courrant
+    
+    if(currentBlock->test_block != nullptr){
+
+        auto *breakBlock = new BasicBlock(current_cfg->new_BB_name()); // bloc de break
+
+        //la sortie du bloc break <- le bloc qui suit le bloc de test quand la condition est fausse
+        breakBlock->set_exit_true(currentBlock->test_block->exit_false);
+        currentBlock->set_exit_true(breakBlock);
+
+        current_cfg->add_bb(breakBlock);
+        current_cfg->current_bb = breakBlock;
+
+    }else{
+        cerr << "ERROR: break statement not within a loop" << endl;
+        errors++;
+    }
+    return 0;
+}
+
+antlrcpp::Any ASTVisitor::visitContinue(ifccParser::ContinueContext *ctx) {
+    BasicBlock * currentBlock = current_cfg->current_bb; //bloc courrant
+    
+    if(currentBlock->test_block != nullptr){
+        auto *continueBlock = new BasicBlock(current_cfg->new_BB_name()); // bloc de continue
+
+        //la sortie du bloc continue <- le bloc qui suit le bloc de test quand la condition est vraie
+        continueBlock->set_exit_true(currentBlock->test_block);
+        currentBlock->set_exit_true(continueBlock);
+
+        current_cfg->add_bb(continueBlock);
+        current_cfg->current_bb = continueBlock;
+
+    }else{
+        cerr << "ERROR: continue statement not within a loop" << endl;
+        errors++;
+    }
+    return 0;
 }
 
 antlrcpp::Any ASTVisitor::visitIf(ifccParser::IfContext *ctx) {
