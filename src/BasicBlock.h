@@ -4,10 +4,9 @@
 #include <string>
 #include <iostream>
 #include <map>
-#include <initializer_list>
 
 #include "Instr.h"
-#include "IRVisitor.h"
+#include "Scope.h"
 
 using namespace std;
 
@@ -42,7 +41,7 @@ Possible optimization:
 class BasicBlock {
 public:
 
-    BasicBlock(string entry_label) : exit_true(nullptr), exit_false(nullptr), label(entry_label), next_free_symbol_index(-4) {};
+    BasicBlock(string entry_label, Scope* scope) : exit_true(nullptr), exit_false(nullptr), label(entry_label), next_free_symbol_index(-4), scope(scope) {};
 
     void accept(IRVisitor &visitor);
 
@@ -54,24 +53,19 @@ public:
 
     void set_exit_false(BasicBlock *bb) { exit_false = bb; }
 
-	void add_to_symbol_table(string name) {
-		symbol_index[name] = next_free_symbol_index;
-		next_free_symbol_index -= 4;
-	}
+	void add_to_symbol_table(string name, int index) const;
 
-	bool symbol_in_table(string name) {
-		return symbol_index.find(name) != symbol_index.end();
-	}
+    bool is_symbol_declared(string name) const;
 
-	int get_var_index(string name) {
-		return symbol_index[name];
-	}
+	int get_var_index(string var);
 
-	int create_new_tempvar() {
-    	string name = to_string(next_free_symbol_index);
-    	add_to_symbol_table(name);
-    	return symbol_index[name];
-	}
+    int create_new_tempvar(int index) const;
+
+    void use_symbol(string name) const;
+
+	vector<string> get_unused_symbols();
+
+
 
     // No encapsulation whatsoever here. Feel free to do better.
 
@@ -82,7 +76,7 @@ public:
     int test_var_index;      /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
 	map<string, int> symbol_index; /**< local variables */
 	int next_free_symbol_index; /**< next available index for a new local variable */
-
+	Scope *scope;
 
 };
 

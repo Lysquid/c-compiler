@@ -1,4 +1,7 @@
 #include "CFG.h"
+
+#include <set>
+
 #include "IRVisitor.h"
 
 
@@ -16,38 +19,17 @@ BasicBlock *CFG::get_bb(string label) {
     return nullptr;
 }
 
-void CFG::add_to_symbol_table(string name) {
-    symbol_index[name] = next_free_symbol_index;
-    is_symbol_used[name] = false;
-    next_free_symbol_index -= 4;
-}
-
-void CFG::use_symbol(string name) {
-    is_symbol_used[name] = true;
-}
-
 vector<string> CFG::get_unused_symbols() {
-    vector<string> unused_symbol;
-    for(auto &entry: is_symbol_used){
-        if(!entry.second){
-            unused_symbol.push_back(entry.first);
-        }
+    vector<string> unused_symbols;
+    set<Scope*> scopes;
+    for (auto bb: bbs) {
+        scopes.insert(bb->scope);
     }
-    return unused_symbol;
-}
-
-int CFG::create_new_tempvar() {
-    string name = to_string(next_free_symbol_index);
-    add_to_symbol_table(name);
-    return symbol_index[name];
-}
-
-int CFG::get_var_index(string var) {
-    return symbol_index[var];
-}
-
-bool CFG::symbol_in_table(std::string symbol) {
-    return symbol_index.find(symbol) != symbol_index.end();
+    for (auto scope: scopes) {
+        vector<string> scope_unused_symbols = scope->get_unused_symbols();
+        unused_symbols.insert(unused_symbols.end(), scope_unused_symbols.begin(), scope_unused_symbols.end());
+    }
+    return unused_symbols;
 }
 
 bool CFG::bb_in_cfg(string name) {
@@ -65,6 +47,7 @@ string CFG::new_BB_name() {
     return name;
 }
 
-string CFG::IR_reg_to_asm(string reg) {
-    return to_string(symbol_index[reg]) + "(%rbp)";
+int CFG::get_next_free_symbol_index() {
+    next_free_symbol_index -= 4;
+    return this->next_free_symbol_index;
 }
