@@ -1,10 +1,6 @@
 #include "CFG.h"
 #include "IRVisitor.h"
 
-CFG::CFG() {
-    next_free_symbol_index = -4;
-    next_bb_number = 0;
-}
 
 void CFG::add_bb(BasicBlock *bb) {
     bbs.push_back(bb);

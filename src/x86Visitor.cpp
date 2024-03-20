@@ -1,17 +1,19 @@
 #include "x86Visitor.h"
 
 void x86Visitor::visit(CFG &cfg) {
+    gen_prologue(cfg);
     for (auto bb: cfg.bbs) {
-        gen_prologue(bb);
+        
         bb->accept(*this);
-        gen_epilogue();
+        
     }
+    gen_epilogue();
 }
 
-void x86Visitor::gen_prologue(BasicBlock* bb) {
-    int size = -bb->next_free_symbol_index;
-    o << ".globl " << bb->get_label() << "\n";
-    o << bb->get_label() << ":\n";
+void x86Visitor::gen_prologue(CFG &cfg) {
+    int size = -cfg.get_next_free_symbol_index();
+    o << ".globl " << cfg.get_label() << "\n";
+    o << cfg.get_label() << ":\n";
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
     o << "    subq $" << to_string(size%16? size-size%16+16:size) << ", %rsp\n";

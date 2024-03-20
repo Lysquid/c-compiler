@@ -83,10 +83,6 @@ public:
 	map<string, int> symbol_index; /**< local variables */
 	int next_free_symbol_index; /**< next available index for a new local variable */
 
-	int return_type; /**< 0 if void, 1 if int*/
 
-	int number_of_params = 0; /**< number of parameters of the function */
-
-	int is_return = 0; /**< 0 if not return, 1 if return */
 };
 

@@ -49,7 +49,10 @@ int main(int argn, const char **argv) {
     }
 
     x86Visitor xv(cout);
-    xv.visit(*av.getCFG());
+    vector <CFG*> cfgs = av.getCFGs();
+    for(auto* cfg: cfgs){
+        xv.visit(*cfg);
+    }
 
     return 0;
 }

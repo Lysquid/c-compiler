@@ -71,10 +71,29 @@ public:
 
     void IsThereUnusedVariables();
 
-    CFG *getCFG() { return cfg; }
+    vector<CFG *> getCFGs() { return cfgs; }
+
+    bool existsCFG(string name){
+        for (auto cfg : cfgs){
+            if (cfg->get_label() == name){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    CFG *getCFG(string name){
+        for (auto cfg : cfgs){
+            if (cfg->get_label() == name){
+                return cfg;
+            }
+        }
+        return nullptr;
+    }
 
 private:
     int errors = 0;
-    CFG *cfg = new CFG();
-    BasicBlock *current_bb;
+    vector<CFG *> cfgs;
+    CFG *current_cfg;
+
 };

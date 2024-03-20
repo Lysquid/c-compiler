@@ -24,7 +24,11 @@ class IRVisitor;
  */
 class CFG {
 public:
-    CFG();
+    CFG(string name){
+        this->name = name;
+        next_free_symbol_index = -4;
+        next_bb_number = 0;
+    }
 
     void add_bb(BasicBlock *bb);
 
@@ -51,13 +55,24 @@ public:
     // basic block management
     string new_BB_name();
 
+    string get_label(){ return name; }
+
+    int get_next_free_symbol_index(){ return next_free_symbol_index; }
 
     vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 
+    BasicBlock *current_bb;
+
+    int return_type; /**< 0 if void, 1 if int*/
+
+	  int number_of_params = 0; /**< number of parameters of the function */
+
+	  int is_return = 0; /**< 0 if not return, 1 if return */
 protected:
     map<string, int> symbol_index; /**< part of the symbol table  */
     int next_free_symbol_index = -4;      /**< to allocate new symbols in the symbol table */
-    int next_bb_number = 1;              /**< just for naming */
+    int next_bb_number = 0;              /**< just for naming */
     map<string, bool> is_symbol_used; /**< usage of symbols of the symbol table  */
+    string name;
 
 };
