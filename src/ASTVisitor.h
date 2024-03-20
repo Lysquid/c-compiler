@@ -19,6 +19,8 @@ public:
 
     antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
 
+    antlrcpp::Any visitWhile(ifccParser::WhileContext *ctx) override;
+
     antlrcpp::Any visitCondstatement(ifccParser::CondstatementContext *ctx) override;
 
     antlrcpp::Any visitCondblock(ifccParser::CondblockContext *ctx) override;
