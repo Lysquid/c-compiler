@@ -20,6 +20,7 @@ antlrcpp::Any ASTVisitor::visitFunction(ifccParser::FunctionContext *ctx)
     cfg->add_bb(bb);
     BasicBlock* end_block = new BasicBlock(current_cfg->new_BB_name());
     bb->set_exit_true(end_block);
+    cfg->end_block = end_block;
 
     current_cfg->current_bb = bb;
     string return_type = ctx->return_type()->getText();
@@ -488,7 +489,7 @@ antlrcpp::Any ASTVisitor::visitBitXor(ifccParser::BitXorContext *ctx)
 antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx)
 {
     int addr = this->visit(ctx->expr());
-    current_cfg->current_bb->add_instr(new RetInstr(addr));
+    current_cfg->current_bb->add_instr(new RetInstr(addr, current_cfg->end_block->get_label()));
     current_cfg->is_return = 1;
     return 0;
 }

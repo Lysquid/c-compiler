@@ -158,11 +158,12 @@ public:
 
 class RetInstr : public Instr {
 public:
-    explicit RetInstr(int var) : var(var) {}
+    explicit RetInstr(int var, string exit_label) : var(var), exit_label(exit_label) {}
 
     void accept(IRVisitor &visitor) override;
 
     int var;
+    string exit_label;
 };
 
 class PutcharInstr : public Instr {

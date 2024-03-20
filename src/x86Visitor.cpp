@@ -151,6 +151,7 @@ void x86Visitor::visit(BitInstr &i) {
 
 void x86Visitor::visit(RetInstr &i) {
     o << "    movl " << i.var << "(%rbp), %eax\n";
+    o << "    jmp " << i.exit_label << "\n";
 }
 
 void x86Visitor::visit(PutcharInstr &i) {

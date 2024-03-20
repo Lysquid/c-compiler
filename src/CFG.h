@@ -61,9 +61,12 @@ public:
 
     int get_next_free_symbol_index() { return next_free_symbol_index; }
 
+
     vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 
     BasicBlock *current_bb;
+
+    BasicBlock *end_block;
 
     int return_type; /**< 0 if void, 1 if int*/
 
