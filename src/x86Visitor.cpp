@@ -2,10 +2,11 @@
 
 void x86Visitor::visit(CFG &cfg) {
     gen_prologue(cfg);
-    for (auto bb: cfg.bbs) {
-        
+    int size = cfg.bbs.size();
+    for (int i = 0; i < size; i++) {
+        BasicBlock* bb = cfg.bbs[i];
         bb->accept(*this);
-        
+        if(i != size-1) gen_prologue_BB(*cfg.bbs[i+1]);
     }
     gen_epilogue();
 }
@@ -18,6 +19,10 @@ void x86Visitor::gen_prologue(CFG &cfg) {
     o << "    movq %rsp, %rbp\n";
     o << "    subq $" << to_string(size%16? size-size%16+16:size) << ", %rsp\n";
     
+}
+
+void x86Visitor::gen_prologue_BB(BasicBlock &bb) {
+    o << bb.get_label() << ":\n";
 }
 
 void x86Visitor::gen_epilogue() {

@@ -75,6 +75,7 @@ antlrcpp::Any ASTVisitor::visitCondblock(ifccParser::CondblockContext *ctx) {
     BasicBlock * blockBeforeJump = current_cfg->current_bb;
 
     blockBeforeJump->set_exit_true(ifblock);
+
     ifblock->set_exit_true(endifblock);
 
     elseblock->set_exit_true(endifblock);

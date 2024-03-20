@@ -60,7 +60,7 @@ bool CFG::bb_in_cfg(string name) {
 }
 
 string CFG::new_BB_name() {
-    string name = "Block" + next_bb_number;
+    string name = "Block" + to_string(next_bb_number);
     next_bb_number++;
     return name;
 }

@@ -10,5 +10,6 @@ int main(){
   } else {
     c = 24;
   }
+  c = c+1;
   return c;
 }

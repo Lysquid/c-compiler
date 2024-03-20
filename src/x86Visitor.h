@@ -47,6 +47,8 @@ private:
 
     void gen_prologue(CFG &cfg);
 
+    void gen_prologue_BB(BasicBlock &bb);
+
     void gen_epilogue();
 
 };
