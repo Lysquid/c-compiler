@@ -20,6 +20,7 @@ statement
     | expr ';'                                      # expression
     | 'putchar(' expr ')' ';'                       # putchar
     | condblock                                     # condstatement
+    | 'while' '(' expr ')' block                    # while
     ;
 
 condblock
