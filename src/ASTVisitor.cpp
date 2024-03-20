@@ -18,6 +18,9 @@ antlrcpp::Any ASTVisitor::visitFunction(ifccParser::FunctionContext *ctx)
     this->cfgs.push_back(cfg);
     BasicBlock *bb = new BasicBlock(current_cfg->new_BB_name());
     cfg->add_bb(bb);
+    BasicBlock* end_block = new BasicBlock(current_cfg->new_BB_name());
+    bb->set_exit_true(end_block);
+
     current_cfg->current_bb = bb;
     string return_type = ctx->return_type()->getText();
     if (return_type == "int")
@@ -37,6 +40,8 @@ antlrcpp::Any ASTVisitor::visitFunction(ifccParser::FunctionContext *ctx)
     this->visit(ctx->parameters());
 
     this->visit(ctx->block());
+
+    cfg->add_bb(end_block);
     return 0;
 }
 
@@ -75,6 +80,7 @@ antlrcpp::Any ASTVisitor::visitCondblock(ifccParser::CondblockContext *ctx) {
     BasicBlock * blockBeforeJump = current_cfg->current_bb;
 
     blockBeforeJump->set_exit_true(ifblock);
+    endifblock->set_exit_true(current_cfg->current_bb->exit_true);
 
     ifblock->set_exit_true(endifblock);
 
