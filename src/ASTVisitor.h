@@ -51,6 +51,8 @@ public:
 
     antlrcpp::Any visitSign(ifccParser::SignContext *ctx) override;
 
+    antlrcpp::Any visitUnary(ifccParser::UnaryContext *ctx) override;
+
     antlrcpp::Any visitAddSub(ifccParser::AddSubContext *ctx) override;
 
     antlrcpp::Any visitMulDiv(ifccParser::MulDivContext *ctx) override;
