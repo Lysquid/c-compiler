@@ -35,6 +35,7 @@ elseblock
 expr
     : ADD_SUB expr                      # sign
     | UNARY_OP expr                     # unary
+    | increment                         # incr
     | expr MUL_DIV expr                 # mulDiv
     | expr ADD_SUB expr                 # addSub
     | expr BIT_AND expr                 # bitAnd
@@ -50,8 +51,14 @@ expr
     | '(' expr ')'                      # par
     ;
 
+increment
+    : VAR INCREMENT                     # incrementafter
+    | INCREMENT VAR                     # incrementbefore
+    ;
+
 ADD_SUB : '+' | '-' ;
 MUL_DIV : '*' | '/' | '%';
+INCREMENT : '++' | '--';
 UNARY_OP : '!' ;
 COMP : '==' | '<=' | '>=' | '<' | '>' | '!=';
 BIT_AND : '&' ;

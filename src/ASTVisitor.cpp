@@ -373,6 +373,32 @@ antlrcpp::Any ASTVisitor::visitUnary(ifccParser::UnaryContext *ctx){
     return dest;
 }
 
+antlrcpp::Any ASTVisitor::visitIncrementafter(ifccParser::IncrementafterContext *ctx) {
+    int term = current_cfg->get_var_index(ctx->VAR()->getText());
+    int dest = current_cfg->create_new_tempvar();
+    string op = ctx->INCREMENT()->getText();
+    if(op == "++"){
+        current_cfg->current_bb->add_instr(new IncrementafterInstr(term,dest));
+    }
+    else if (op == "--"){
+        current_cfg->current_bb->add_instr(new DecrementafterInstr(term,dest));
+    }
+    return dest;
+}
+
+antlrcpp::Any ASTVisitor::visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx) {
+    int term = current_cfg->get_var_index(ctx->VAR()->getText());
+    int dest = current_cfg->create_new_tempvar();
+    string op = ctx->INCREMENT()->getText();
+    if(op == "++"){
+        current_cfg->current_bb->add_instr(new IncrementbeforeInstr(term,dest));
+    }
+    else if (op == "--"){
+        current_cfg->current_bb->add_instr(new DecrementbeforeInstr(term,dest));
+    }
+    return dest;
+}
+
 antlrcpp::Any ASTVisitor::visitAddSub(ifccParser::AddSubContext *ctx)
 {
     int addr1 = this->visit(ctx->expr(0));
