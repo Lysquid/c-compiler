@@ -94,9 +94,9 @@ public:
     int dest;
 };
 
-class IncrementInstr : public Instr {
+class IncrementafterInstr : public Instr {
 public:
-    IncrementInstr(int term, int dest) : term(term), dest(dest) {}
+    IncrementafterInstr(int term, int dest) : term(term), dest(dest) {}
 
     void accept(IRVisitor &visitor) override;
 
@@ -104,9 +104,29 @@ public:
     int dest;
 };
 
-class DecrementInstr : public Instr {
+class IncrementbeforeInstr : public Instr {
 public:
-    DecrementInstr(int term, int dest) : term(term), dest(dest) {}
+    IncrementbeforeInstr(int term, int dest) : term(term), dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int term;
+    int dest;
+};
+
+class DecrementafterInstr : public Instr {
+public:
+    DecrementafterInstr(int term, int dest) : term(term), dest(dest) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    int term;
+    int dest;
+};
+
+class DecrementbeforeInstr : public Instr {
+public:
+    DecrementbeforeInstr(int term, int dest) : term(term), dest(dest) {}
 
     void accept(IRVisitor &visitor) override;
 

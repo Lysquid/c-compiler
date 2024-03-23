@@ -55,7 +55,9 @@ public:
 
     antlrcpp::Any visitUnary(ifccParser::UnaryContext *ctx) override;
 
-    antlrcpp::Any visitIncrement(ifccParser::IncrementContext *ctx) override;
+    antlrcpp::Any visitIncrementafter(ifccParser::IncrementafterContext *ctx) override;
+
+    antlrcpp::Any visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx) override;
 
     antlrcpp::Any visitAddSub(ifccParser::AddSubContext *ctx) override;
 

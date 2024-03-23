@@ -89,8 +89,9 @@ if len(input_files) == 0:
 
 
 def test_result(ok: bool, job_path: Path, message: str = None):
-    print(f"TEST-CASE: {job_path}")
-    print(f"TEST {'OK' if ok else 'FAIL <-------'}{ f' ({message})' if message else ''}")
+    if ok == False:
+        print(f"TEST-CASE: {job_path}")
+        print(f"TEST FAIL <------- { f' ({message})' if message else ''}")
     return ok
 
 
