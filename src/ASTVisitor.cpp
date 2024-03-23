@@ -374,8 +374,8 @@ antlrcpp::Any ASTVisitor::visitUnary(ifccParser::UnaryContext *ctx){
 }
 
 antlrcpp::Any ASTVisitor::visitIncrementafter(ifccParser::IncrementafterContext *ctx) {
-    int term = current_cfg->get_var_index(ctx->VAR()->getText());
-    int dest = current_cfg->create_new_tempvar();
+    int term = current_cfg->current_bb->get_var_index(ctx->VAR()->getText());
+    int dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
     string op = ctx->INCREMENT()->getText();
     if(op == "++"){
         current_cfg->current_bb->add_instr(new IncrementafterInstr(term,dest));
@@ -387,8 +387,8 @@ antlrcpp::Any ASTVisitor::visitIncrementafter(ifccParser::IncrementafterContext 
 }
 
 antlrcpp::Any ASTVisitor::visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx) {
-    int term = current_cfg->get_var_index(ctx->VAR()->getText());
-    int dest = current_cfg->create_new_tempvar();
+    int term = current_cfg->current_bb->get_var_index(ctx->VAR()->getText());
+    int dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
     string op = ctx->INCREMENT()->getText();
     if(op == "++"){
         current_cfg->current_bb->add_instr(new IncrementbeforeInstr(term,dest));
