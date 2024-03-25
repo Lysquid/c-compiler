@@ -2,34 +2,24 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : (function)+ ;
+prog : function+ ;
 
-function : return_type VAR '(' parameters ')' block ;
+function : return_type VAR '(' parameters ')' '{' statement* '}' ;
 
 return_type : INT|VOID;
 
 parameters : (INT VAR (',' INT VAR)*)? ;
 
-block : '{' statement* '}' ;
-
 statement
-    : RETURN expr ';'                               # ret
-    | INT VAR (',' VAR)* ';'                        # declaration
-    | INT VAR '=' expr ';'                          # declarationAssignment
-    | VAR '(' (expr (',' expr)*)? ')' ';'           # callVoidFunction
-    | expr ';'                                      # expression
-    | 'putchar(' expr ')' ';'                       # putchar
-    | condblock                                     # condstatement
-    | 'while' '(' expr ')' block                    # while
-    ;
-
-condblock
-    : 'if' '(' expr ')' block elseblock?
-    ;
-
-elseblock
-    : 'else' condblock # elseifblock
-    | 'else' block # simpleelse
+    : RETURN expr ';'                                   # ret
+    | INT VAR (',' VAR)* ';'                            # declaration
+    | INT VAR '=' expr ';'                              # declarationAssignment
+    | VAR '(' (expr (',' expr)*)? ')' ';'               # callVoidFunction
+    | 'putchar(' expr ')' ';'                           # putchar
+    | '{' statement* '}'                                # block
+    | 'if' '(' expr ')' if_block=statement ('else' else_block=statement)?   # if
+    | 'while' '(' expr ')' body=statement                    # while
+    | expr ';'                                          # expression
     ;
 
 expr

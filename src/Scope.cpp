@@ -1,7 +1,7 @@
 #include "Scope.h"
 
 bool Scope::is_symbol_declared(string symbol) {
-    if (this->symbol_index.find(symbol) != symbol_index.end()) {
+    if (is_declared_locally(symbol)) {
         return true;
     } else if (this->parent != nullptr) {
         return this->parent->is_symbol_declared(symbol);
@@ -10,8 +10,12 @@ bool Scope::is_symbol_declared(string symbol) {
     }
 }
 
+bool Scope::is_declared_locally(std::string symbol) {
+    return this->symbol_index.find(symbol) != symbol_index.end();
+}
+
 void Scope::use_symbol(string symbol) {
-    if (this->symbol_index.find(symbol) != symbol_index.end()) {
+    if (is_declared_locally(symbol)) {
         this->is_symbol_used[symbol] = true;
     } else if (this->parent != nullptr) {
         this->parent->use_symbol(symbol);
@@ -19,7 +23,7 @@ void Scope::use_symbol(string symbol) {
 }
 
 int Scope::get_var_index(string symbol) {
-    if (this->symbol_index.find(symbol) != symbol_index.end()) {
+    if (is_declared_locally(symbol)) {
         return this->symbol_index[symbol];
     } else if (this->parent != nullptr) {
         return this->parent->get_var_index(symbol);
