@@ -89,9 +89,12 @@ if len(input_files) == 0:
 
 
 def test_result(ok: bool, job_path: Path, message: str = None):
-    if ok == False:
+    if ok:
+        print('.', end='', flush=True)
+    else:
+        print()
         print(f"TEST-CASE: {job_path}")
-        print(f"TEST FAIL <------- { f' ({message})' if message else ''}")
+        print(f"TEST FAIL { f' ({message})' if message else ''}")
     return ok
 
 
@@ -210,7 +213,7 @@ async def main():
 
 failed = asyncio.run(main())
 
-print("-------")
+print()
 if failed:
     print(f"{failed} test{'s' if failed > 1 else ''} failed")
 else:
