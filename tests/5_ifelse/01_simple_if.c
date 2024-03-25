@@ -3,7 +3,7 @@ int main(){
   a = 5;
   b = 10;
   c = 7;
-  if(a <= b){
+  if (a <= b){
     c = 11;
   }
   return c;

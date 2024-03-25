@@ -13,6 +13,8 @@ public:
 
     bool is_symbol_declared(string name);
 
+    bool is_declared_locally(string symbol);
+
     void add_to_symbol_table(string name, int index);
 
     int get_var_index(string name);
@@ -21,6 +23,7 @@ public:
 
     vector<string> get_unused_symbols();
 
+private:
     map<string, int> symbol_index;    /**< part of the symbol table  */
     map<string, bool> is_symbol_used; /**< usage of symbols of the symbol table  */
     Scope* parent;
