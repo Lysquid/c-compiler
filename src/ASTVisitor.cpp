@@ -267,37 +267,24 @@ antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx)
 
 antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
 {
-    for (antlr4::tree::TerminalNode *node : ctx->VAR())
-    {
-        string var = node->getText();
-        if (current_cfg->current_bb->scope->is_declared_locally(var))
-        {
-            cerr << "ERROR: variable " << var << " already declared" << endl;
-            errors++;
-        }
-        else
-        {
-            current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
-        }
+    for (auto declaration: ctx->declareAssign()) {
+        this->visit(declaration);
     }
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx)
-{
+antlrcpp::Any ASTVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext *ctx) {
     string var = ctx->VAR()->getText();
-
-    if (!current_cfg->current_bb->scope->is_declared_locally(var))
-    {
-        current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
-    }
-    else
-    {
+    if (current_cfg->current_bb->scope->is_declared_locally(var)) {
         cerr << "ERROR: variable " << var << " already declared" << endl;
         errors++;
+    } else {
+        current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
+        if (ctx->expr()) {
+            int addr = this->visit(ctx->expr());
+            current_cfg->current_bb->add_instr(new CopyInstr(addr, current_cfg->current_bb->get_var_index(var)));
+        }
     }
-    int addr = this->visit(ctx->expr());
-    current_cfg->current_bb->add_instr(new CopyInstr(addr, current_cfg->current_bb->get_var_index(var)));
     return 0;
 }
 

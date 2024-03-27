@@ -6,14 +6,13 @@ prog : function+ ;
 
 function : return_type VAR '(' parameters ')' '{' statement* '}' ;
 
-return_type : TYPE | VOID;
+return_type : TYPE | VOID ;
 
 parameters : (TYPE VAR (',' TYPE VAR)*)? ;
 
 statement
     : 'return' expr? ';'                                # ret
-    | TYPE VAR (',' VAR)* ';'                           # declaration
-    | TYPE VAR '=' expr ';'                             # declarationAssignment
+    | TYPE declareAssign (',' declareAssign)* ';'       # declaration
     | '{' statement* '}'                                # block
     | 'if' '(' expr ')' if_block=statement ('else' else_block=statement)?   # if
     | 'while' '(' expr ')' body=statement               # while
@@ -21,6 +20,8 @@ statement
     | 'continue' ';'                                    # continue
     | expr ';'                                          # expression
     ;
+
+declareAssign : VAR ('=' expr)? ;
 
 expr
     : ADD_SUB expr                      # sign
@@ -46,10 +47,10 @@ increment
     ;
 
 ADD_SUB : '+' | '-' ;
-MUL_DIV : '*' | '/' | '%';
-INCREMENT : '++' | '--';
+MUL_DIV : '*' | '/' | '%' ;
+INCREMENT : '++' | '--' ;
 UNARY_OP : '!' ;
-COMP : '==' | '<=' | '>=' | '<' | '>' | '!=';
+COMP : '==' | '<=' | '>=' | '<' | '>' | '!=' ;
 BIT_AND : '&' ;
 BIT_OR : '|' ;
 BIT_XOR : '^' ;
