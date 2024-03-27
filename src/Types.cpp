@@ -1,5 +1,10 @@
 #include "Types.h"
 
+Type::Type(const string& name) {
+    if (name == "int" || name == "char") this->value = INT;
+    if (name == "void") this->value = VOID;
+}
+
 ostream& operator<<(ostream& os, const Type& type)
 {
     switch (type) {

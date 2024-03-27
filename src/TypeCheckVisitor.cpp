@@ -12,7 +12,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(ifccParser::FunctionContext *ctx) 
     string name = ctx->VAR()->getText();
     this->visit(ctx->parameters());
     Type return_type = Type(Type::VOID);
-    if (ctx->return_type()->INT() != nullptr) {
+    if (ctx->return_type()->TYPE() != nullptr) {
         return_type = Type(Type::INT);
     }
     this->func_types[name] = return_type;
@@ -26,7 +26,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(ifccParser::FunctionContext *ctx) 
 antlrcpp::Any TypeCheckVisitor::visitParameters(ifccParser::ParametersContext *ctx) {
     for (int i = 0; i < ctx->VAR().size(); i++) {
         string name = ctx->VAR(i)->getText();
-        Type type = ctx->INT(i)->getText();
+        Type type = ctx->TYPE(i)->getText();
         this->var_types[name] = type;
     }
     return Type(Type::VOID);
@@ -73,14 +73,14 @@ antlrcpp::Any TypeCheckVisitor::visitBlock(ifccParser::BlockContext *ctx) {
 antlrcpp::Any TypeCheckVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx) {
     for (auto var: ctx->VAR()) {
         string name = var->getText();
-        this->var_types[name] = Type(ctx->INT()->getText());
+        this->var_types[name] = Type(ctx->TYPE()->getText());
     }
     return Type(Type::VOID);
 }
 
 antlrcpp::Any TypeCheckVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx) {
     Type expr_type = this->visit(ctx->expr());
-    Type declaration_type = Type(ctx->INT()->getText());
+    Type declaration_type = Type(ctx->TYPE()->getText());
     if (expr_type != declaration_type) {
         errors++;
         cerr << "ERROR: Type mismatch at declaration with assignment, assigning " << expr_type << " to " << declaration_type
