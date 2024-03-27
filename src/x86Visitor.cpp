@@ -38,6 +38,7 @@ void x86Visitor::visit(BasicBlock &bb) {
     if (bb.exit_true == nullptr) {
         return;
     } else if (bb.exit_false == nullptr) {
+        
         o << "    jmp " << bb.exit_true->get_label() << "\n";
     } else {
         o << "    cmpl $0, " << bb.test_var_index << "(%rbp)\n";
@@ -204,4 +205,8 @@ void x86Visitor::visit(SetparamInstr &i) {
 void x86Visitor::visit(CallfunctionInstr &i) {
     o << "    call " << i.function_name << "\n";
     if(i.return_type) o << "    movl %eax, " << i.dest << "(%rbp)\n";
+}
+
+void x86Visitor::visit(RetVoidInstr &i) {
+    o << "    jmp " << i.exit_label << "\n";
 }

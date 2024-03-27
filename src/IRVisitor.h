@@ -57,6 +57,8 @@ public:
 
     virtual void visit(CallfunctionInstr &i) = 0;
 
+    virtual void visit(RetVoidInstr &i) = 0;
+
 protected:
     ostream &o;
 

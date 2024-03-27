@@ -519,9 +519,28 @@ antlrcpp::Any ASTVisitor::visitBitXor(ifccParser::BitXorContext *ctx)
 
 antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx)
 {
-    int addr = this->visit(ctx->expr());
-    current_cfg->current_bb->add_instr(new RetInstr(addr, current_cfg->end_block->get_label()));
-    current_cfg->is_return = 1;
+    int return_type = current_cfg->return_type;
+    if (!ctx->expr())
+    {
+        if (return_type == 1)
+        {
+            cerr << "ERROR: function " << current_cfg->get_label() << " should return a value" << endl;
+            errors++;
+        } else {
+            current_cfg->current_bb->add_instr(new RetVoidInstr(current_cfg->end_block->get_label()));
+            current_cfg->is_return = 1;
+        }
+    } else {
+        int addr = this->visit(ctx->expr());
+        if (return_type == 1){
+            current_cfg->current_bb->add_instr(new RetInstr(addr, current_cfg->end_block->get_label()));
+            current_cfg->is_return = 1;
+        } else {
+            current_cfg->current_bb->add_instr(new RetVoidInstr(current_cfg->end_block->get_label()));
+            current_cfg->is_return = 1;
+        }
+    }
+
     return 0;
 }
 

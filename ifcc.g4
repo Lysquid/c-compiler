@@ -11,7 +11,7 @@ return_type : INT|VOID;
 parameters : (INT VAR (',' INT VAR)*)? ;
 
 statement
-    : RETURN expr ';'                                   # ret
+    : RETURN expr? ';'                                  # ret
     | INT VAR (',' VAR)* ';'                            # declaration
     | INT VAR '=' expr ';'                              # declarationAssignment
     | VAR '(' (expr (',' expr)*)? ')' ';'               # callVoidFunction

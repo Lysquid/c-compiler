@@ -53,6 +53,8 @@ public:
 
     void visit(CallfunctionInstr &i) override;
 
+    void visit(RetVoidInstr &i) override;
+
 private:
 
     void gen_prologue(CFG &cfg);
