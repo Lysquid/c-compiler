@@ -41,7 +41,7 @@ Possible optimization:
 class BasicBlock {
 public:
 
-    BasicBlock(string entry_label, Scope* scope) : exit_true(nullptr), exit_false(nullptr), label(entry_label), next_free_symbol_index(-4), scope(scope) {};
+    BasicBlock(string entry_label, Scope* scope) : exit_true(nullptr), exit_false(nullptr), label(entry_label), test_block(nullptr), next_free_symbol_index(-4), scope(scope) {};
 
     void accept(IRVisitor &visitor);
 
@@ -73,6 +73,7 @@ public:
     BasicBlock *exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */
     BasicBlock *exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
     string label;              /**< label of the BB, also will be the label in the generated code */
+	BasicBlock *test_block;  /**< pointer to the test block if we are in a loop */
     int test_var_index;      /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
 	map<string, int> symbol_index; /**< local variables */
 	int next_free_symbol_index; /**< next available index for a new local variable */
