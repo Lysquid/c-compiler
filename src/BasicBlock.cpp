@@ -1,10 +1,28 @@
 #include "BasicBlock.h"
 #include "IRVisitor.h"
+#include <algorithm>
 
 
 void BasicBlock::add_instr(Instr* instr) {
     this->instrs.push_back(instr);
 }
+
+void BasicBlock::delete_instr(Instr *instr){
+    auto it = std::find_if(this->instrs.begin(), this->instrs.end(), [&](Instr* elem) {
+        return elem == instr;
+    });
+    if (it != this->instrs.end()) {
+        this->instrs.erase(it);
+    }
+}
+
+void BasicBlock::replace_instr(Instr* old_instr, Instr* new_instr) {
+    auto it = std::find(instrs.begin(), instrs.end(), old_instr);
+    if (it != instrs.end()) {
+        *it = new_instr;
+    }
+}
+
 
 void BasicBlock::accept(IRVisitor &visitor) {
     visitor.visit(*this);
@@ -36,3 +54,5 @@ vector<string> BasicBlock::get_unused_symbols() {
 int BasicBlock::get_var_index(string var) {
     return this->scope->get_var_index(var);
 }
+
+

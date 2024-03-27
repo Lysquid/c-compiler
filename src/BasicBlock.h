@@ -47,6 +47,10 @@ public:
 
     void add_instr(Instr *instr);
 
+	void delete_instr(Instr *instr);
+
+	void replace_instr(Instr *old_instr, Instr *new_instr);
+
     string get_label() { return label; }
 
     void set_exit_true(BasicBlock *bb) { exit_true = bb; }

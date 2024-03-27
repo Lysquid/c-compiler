@@ -9,6 +9,7 @@
 
 #include "ASTVisitor.h"
 #include "x86Visitor.h"
+#include "CFGOptimizer.h"
 
 using namespace std;
 
@@ -48,9 +49,16 @@ int main(int argn, const char **argv) {
         exit(1);
     }
 
-    x86Visitor xv(cout);
     vector <CFG*> cfgs = av.getCFGs();
     for(auto* cfg: cfgs){
+        CFGOptimizer co(*cfg, av.getConst_table(), av.getInstr_table());
+        co.optimization();
+    }
+
+
+    x86Visitor xv(cout);
+    vector <CFG*> optimizedCfgs = av.getCFGs();
+    for(auto* cfg: optimizedCfgs){
         xv.visit(*cfg);
     }
 
