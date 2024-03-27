@@ -15,9 +15,10 @@ public:
     bool checkInstr(Instr* instr, BasicBlock* actualbb);
     void updateCFG(int addr1, int addr2, int dest, BasicBlock* actualbb, Instr* instr);
     void printInstruction(Instr* instr);
-
+    void divideOrModuloByZero();
 private:
     CFG* cfg; 
     std::unordered_map<int, int> const_index;
     std::unordered_map<int, Instr*> instr_index;
+    std::set<int> divide_or_modulo;
 };
