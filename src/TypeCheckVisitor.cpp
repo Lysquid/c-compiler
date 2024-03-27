@@ -76,23 +76,25 @@ antlrcpp::Any TypeCheckVisitor::visitBlock(ifccParser::BlockContext *ctx) {
 }
 
 antlrcpp::Any TypeCheckVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx) {
-    for (auto var: ctx->VAR()) {
-        string name = var->getText();
-        this->var_types[name] = Type(ctx->TYPE()->getText());
+    Type declaration_type = Type(ctx->TYPE()->getText());
+    for (auto declaration: ctx->declareAssign()) {
+        Type expr_type = this->visit(declaration);
+        string var = declaration->VAR()->getText();
+        if (declaration->expr() && expr_type != declaration_type) {
+            errors++;
+            cerr << "ERROR: Type mismatch at declaration, assigning " << expr_type << " to " << declaration_type << " (" << var << ")" << endl;
+        }
+        this->var_types[var] = declaration_type;
     }
     return Type(Type::VOID);
 }
 
-antlrcpp::Any TypeCheckVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx) {
-    Type expr_type = this->visit(ctx->expr());
-    Type declaration_type = Type(ctx->TYPE()->getText());
-    if (expr_type != declaration_type) {
-        errors++;
-        cerr << "ERROR: Type mismatch at declaration with assignment, assigning " << expr_type << " to " << declaration_type
-             << endl;
+antlrcpp::Any TypeCheckVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext *ctx) {
+    if (ctx->expr()) {
+        return this->visit(ctx->expr());
+    } else {
+        return Type(Type::VOID);
     }
-    this->var_types[ctx->VAR()->getText()] = declaration_type;
-    return declaration_type;
 }
 
 antlrcpp::Any TypeCheckVisitor::visitExpression(ifccParser::ExpressionContext *ctx) {

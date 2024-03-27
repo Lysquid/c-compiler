@@ -32,7 +32,7 @@ public:
 
     antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *ctx) override;
 
-    antlrcpp::Any visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx) override;
+    antlrcpp::Any visitDeclareAssign(ifccParser::DeclareAssignContext *ctx) override;
 
     antlrcpp::Any visitExpression(ifccParser::ExpressionContext *ctx) override;
 
