@@ -296,47 +296,32 @@ antlrcpp::Any ASTVisitor::visitExpression(ifccParser::ExpressionContext *ctx)
 
 antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx)
 {
-    string destname = ctx->VAR()->getText();
+    string dest_var = ctx->VAR()->getText();
     string op = ctx->assignmentop->getText();
 
-    if (!current_cfg->current_bb->is_symbol_declared(destname))
-    {
-        cerr << "ERROR: variable " << destname << " not initialized" << endl;
+    if (!current_cfg->current_bb->is_symbol_declared(dest_var)) {
+        cerr << "ERROR: variable " << dest_var << " not initialized" << endl;
         errors++;
     }
-    int destAddr = current_cfg->current_bb->get_var_index(destname);
-    int exprToCopy = this->visit(ctx->expr());
+    int dest_addr = current_cfg->current_bb->get_var_index(dest_var);
+    int expr_addr = this->visit(ctx->expr());
 
-    if(op == "="){
-        current_cfg->current_bb->add_instr(new CopyInstr(exprToCopy, destAddr));
-        return exprToCopy;
+    if (op == "=") {
+        current_cfg->current_bb->add_instr(new CopyInstr(expr_addr, dest_addr));
     }
-    if(op == "+="){
-        int intermediatevar = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
-        current_cfg->current_bb->add_instr(new AddInstr(destAddr, exprToCopy, intermediatevar));
-        current_cfg->current_bb->add_instr(new CopyInstr(intermediatevar, destAddr));
-        return intermediatevar;
+    if (op == "+="){
+        current_cfg->current_bb->add_instr(new AddInstr(dest_addr, expr_addr, dest_addr));
     }
-    if(op == "-="){
-        int intermediatevar = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
-        current_cfg->current_bb->add_instr(new SubInstr(destAddr, exprToCopy, intermediatevar));
-        current_cfg->current_bb->add_instr(new CopyInstr(intermediatevar, destAddr));
-        return intermediatevar;
+    if (op == "-="){
+        current_cfg->current_bb->add_instr(new SubInstr(dest_addr, expr_addr, dest_addr));
     }
-    if(op == "*="){
-        int intermediatevar = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
-        current_cfg->current_bb->add_instr(new MulInstr(destAddr, exprToCopy, intermediatevar));
-        current_cfg->current_bb->add_instr(new CopyInstr(intermediatevar, destAddr));
-        return intermediatevar;
+    if (op == "*="){
+        current_cfg->current_bb->add_instr(new MulInstr(dest_addr, expr_addr, dest_addr));
     }
-    if(op == "/="){
-        int intermediatevar = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
-        current_cfg->current_bb->add_instr(new DivInstr(destAddr, exprToCopy, intermediatevar));
-        current_cfg->current_bb->add_instr(new CopyInstr(intermediatevar, destAddr));
-        return intermediatevar;
+    if (op == "/="){
+        current_cfg->current_bb->add_instr(new DivInstr(dest_addr, expr_addr, dest_addr));
     }
-
-    return 0;
+    return dest_addr;
 }
 
 antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx)
