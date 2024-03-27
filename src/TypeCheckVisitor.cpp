@@ -9,6 +9,8 @@ antlrcpp::Any TypeCheckVisitor::visitProg(ifccParser::ProgContext *ctx) {
 }
 
 antlrcpp::Any TypeCheckVisitor::visitFunction(ifccParser::FunctionContext *ctx) {
+    auto scope_var_types = this->var_types;
+    this->var_types.clear();
     string name = ctx->VAR()->getText();
     this->visit(ctx->parameters());
     Type return_type = Type(Type::VOID);
@@ -20,6 +22,7 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(ifccParser::FunctionContext *ctx) 
     for (auto statement: ctx->statement()) {
         this->visit(statement);
     }
+    this->var_types = scope_var_types;
     return Type(Type::VOID);
 }
 
@@ -64,9 +67,11 @@ antlrcpp::Any TypeCheckVisitor::visitIf(ifccParser::IfContext *ctx) {
 
 
 antlrcpp::Any TypeCheckVisitor::visitBlock(ifccParser::BlockContext *ctx) {
+    auto scope_var_types = this->var_types;
     for (ifccParser::StatementContext *statement: ctx->statement()) {
         this->visit(statement);
     }
+    this->var_types = scope_var_types;
     return Type(Type::VOID);
 }
 
