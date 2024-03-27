@@ -407,13 +407,13 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
     int value = stoi(ctx->CONST()->getText());
     int addr = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
-    const_index[addr] = value;
-
     ConstInstr* constInstruction = new ConstInstr(value, addr);
     current_cfg->current_bb->add_instr(constInstruction );
-    instr_index[addr] = constInstruction;
-    return addr;
 
+    current_cfg->getConstTable()[addr] = value;
+    current_cfg->getInstrTable()[addr] = constInstruction;
+
+    return addr;
 }
 
 antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx)

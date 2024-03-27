@@ -4,7 +4,6 @@
 #include "generated/ifccBaseVisitor.h"
 #include "CFG.h"
 #include <vector>
-#include <unordered_map>
 #include <string>
 
 using namespace std;
@@ -104,22 +103,10 @@ public:
         return nullptr;
     }
 
-    unordered_map<int, int> getConst_table(){
-        return const_index;
-    }
-
-    unordered_map<int, Instr*> getInstr_table(){
-        return instr_index;
-    }
-
 
 private:
     int errors = 0;
     vector<CFG *> cfgs;
     vector<CFG *> predefinition_cfgs;
     CFG *current_cfg;
-    std::unordered_map<int, int> const_index;
-    std::unordered_map<int, Instr*> instr_index;
-
-
 };
