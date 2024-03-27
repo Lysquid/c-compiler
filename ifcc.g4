@@ -15,7 +15,6 @@ statement
     | INT VAR (',' VAR)* ';'                            # declaration
     | INT VAR '=' expr ';'                              # declarationAssignment
     | VAR '(' (expr (',' expr)*)? ')' ';'               # callVoidFunction
-    | 'putchar(' expr ')' ';'                           # putchar
     | '{' statement* '}'                                # block
     | 'if' '(' expr ')' if_block=statement ('else' else_block=statement)?   # if
     | 'while' '(' expr ')' body=statement                    # while
@@ -36,7 +35,6 @@ expr
     | expr COMP expr                    # comparison
     | VAR '(' (expr (',' expr)*)? ')'   # callIntFunction
     | VAR '=' expr                      # assignment
-    | 'getchar()'                       # getchar
     | CONST                             # const
     | CHAR                              # char
     | VAR                               # var

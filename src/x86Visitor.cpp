@@ -183,17 +183,6 @@ void x86Visitor::visit(RetInstr &i) {
     o << "    jmp " << i.exit_label << "\n";
 }
 
-void x86Visitor::visit(PutcharInstr &i) {
-    o << "    movl " << i.var << "(%rbp), %edi\n";
-    o << "    call putchar@PLT\n";
-}
-
-void x86Visitor::visit(GetcharInstr &i) {
-    o << "    call getchar@PLT\n";
-    o << "    movl %eax, " << i.dest << "(%rbp)\n";
-}
-
-
 void x86Visitor::visit(CopyparamInstr &i) {
     o << "    movl %" << i.memory_type[i.src] << ", " << i.dest << "(%rbp)\n";
 }
