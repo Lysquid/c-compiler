@@ -13,6 +13,11 @@ antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx)
 antlrcpp::Any ASTVisitor::visitFunction(ifccParser::FunctionContext *ctx)
 {
     string name = ctx->VAR()->getText();
+    if(existsCFG(name)){
+        cerr << "ERROR: function " << name << " already declared" << endl;
+        errors++;
+    }
+    
     CFG *cfg = new CFG(name);
     this->current_cfg = cfg;
     this->cfgs.push_back(cfg);
