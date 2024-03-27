@@ -34,10 +34,10 @@ expr
     | expr BIT_OR expr                  # bitOr
     | expr COMP expr                    # comparison
     | VAR '(' (expr (',' expr)*)? ')'   # callIntFunction
-    | VAR '=' expr                      # assignment
     | CONST                             # const
     | CHAR                              # char
     | VAR                               # var
+    | VAR assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # assignment
     | '(' expr ')'                      # par
     ;
 
