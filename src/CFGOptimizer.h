@@ -14,6 +14,7 @@ public:
     void optimization();
     bool checkInstr(Instr* instr, BasicBlock* actualbb);
     void updateCFG(int addr1, int addr2, int dest, BasicBlock* actualbb, Instr* instr);
+    bool updateCFGNeutral(int addr1, int addr2, int dest, BasicBlock* actualbb, Instr* instr, int neutralElement);
     void printInstruction(Instr* instr);
     void divideOrModuloByZero();
 private:
