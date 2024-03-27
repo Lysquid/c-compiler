@@ -2,7 +2,6 @@
 
 void CFGOptimizer::optimization()
 {
-    //cfg->printCFG();
     for (auto bb : cfg->bbs)
     {
         for (Instr *instr : bb->instrs)
@@ -14,7 +13,6 @@ void CFGOptimizer::optimization()
             }
         }
     }
-    //cfg->printCFG();
 }
 
 bool CFGOptimizer::checkInstr(Instr *instr, BasicBlock *actualbb)
@@ -68,9 +66,6 @@ bool CFGOptimizer::checkInstr(Instr *instr, BasicBlock *actualbb)
         addr2 = bitInstr->term2;
         destAddr = bitInstr->dest;
     }
-
-    auto it_addr1 = const_index.find(addr1);
-    auto it_addr2 = const_index.find(addr2);
 
     if (const_index.find(addr1) != const_index.end() && const_index.find(addr2) != const_index.end())
     {
