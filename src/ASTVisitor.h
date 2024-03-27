@@ -39,8 +39,6 @@ public:
 
     antlrcpp::Any visitAssignment(ifccParser::AssignmentContext *ctx) override;
 
-    antlrcpp::Any visitPutchar(ifccParser::PutcharContext *ctx) override;
-
     antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
 
     antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override;
@@ -60,8 +58,6 @@ public:
     antlrcpp::Any visitAddSub(ifccParser::AddSubContext *ctx) override;
 
     antlrcpp::Any visitMulDiv(ifccParser::MulDivContext *ctx) override;
-
-    antlrcpp::Any visitGetchar(ifccParser::GetcharContext *ctx) override;
 
     antlrcpp::Any visitComparison(ifccParser::ComparisonContext *ctx) override;
 
@@ -85,11 +81,21 @@ public:
                 return true;
             }
         }
+        for (auto cfg : predefinition_cfgs){
+            if (cfg->get_label() == name){
+                return true;
+            }
+        }
         return false;
     }
 
     CFG *getCFG(string name){
         for (auto cfg : cfgs){
+            if (cfg->get_label() == name){
+                return cfg;
+            }
+        }
+        for (auto cfg : predefinition_cfgs){
             if (cfg->get_label() == name){
                 return cfg;
             }
@@ -100,6 +106,7 @@ public:
 private:
     int errors = 0;
     vector<CFG *> cfgs;
+    vector<CFG *> predefinition_cfgs;
     CFG *current_cfg;
 
 };

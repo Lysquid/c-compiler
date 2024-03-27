@@ -206,24 +206,6 @@ public:
     string exit_label;
 };
 
-class PutcharInstr : public Instr {
-public:
-    explicit PutcharInstr(int var) : var(var) {}
-
-    void accept(IRVisitor &visitor) override;
-
-    int var;
-};
-
-class GetcharInstr : public Instr {
-public:
-    explicit GetcharInstr(int dest) : dest(dest) {}
-
-    void accept(IRVisitor &visitor) override;
-
-    int dest;
-};
-
 
 class CopyparamInstr : public Instr {
 public:

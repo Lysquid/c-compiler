@@ -11,6 +11,7 @@ public:
 
     void visit(BasicBlock &bb) override;
 
+
     void visit(ConstInstr &i) override;
 
     void visit(CopyInstr &i) override;
@@ -42,10 +43,6 @@ public:
     void visit(BitInstr &i) override;
 
     void visit(RetInstr &i) override;
-
-    void visit(PutcharInstr &i) override;
-
-    void visit(GetcharInstr &i) override;
 
     void visit(CopyparamInstr &i) override;
 

@@ -2,6 +2,15 @@
 
 antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
+    CFG *putchar = new CFG("putchar");
+    putchar->number_of_params = 1;
+    putchar->return_type = 0;
+    this->predefinition_cfgs.push_back(putchar);
+
+    CFG *getchar = new CFG("getchar");
+    getchar->number_of_params = 0;
+    getchar->return_type = 1;
+    this->predefinition_cfgs.push_back(getchar);
 
     for (ifccParser::FunctionContext *function : ctx->function())
     {
@@ -258,12 +267,6 @@ antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
 }
 
 
-antlrcpp::Any ASTVisitor::visitGetchar(ifccParser::GetcharContext *ctx) {
-    int addr = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
-    current_cfg->current_bb->add_instr(new GetcharInstr(addr));
-    return addr;
-}
-
 
 
 antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx)
@@ -356,11 +359,7 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
     return addr;
 }
 
-antlrcpp::Any ASTVisitor::visitPutchar(ifccParser::PutcharContext *ctx) {
-    int addr = this->visit(ctx->expr());
-    current_cfg->current_bb->add_instr(new PutcharInstr(addr));
-    return 0;
-}
+
 
 
 antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx)
