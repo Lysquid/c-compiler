@@ -1,6 +1,7 @@
 build
 src/generated
 ifcc-test-output
+tests-output
 a.out
 ifcc
 config.mk
