@@ -19,6 +19,8 @@ statement
     | '{' statement* '}'                                # block
     | 'if' '(' expr ')' if_block=statement ('else' else_block=statement)?   # if
     | 'while' '(' expr ')' body=statement                    # while
+    | 'break' ';'                                       # break
+    | 'continue' ';'                                    # continue
     | expr ';'                                          # expression
     ;
 
