@@ -56,12 +56,13 @@ BIT_OR : '|' ;
 BIT_XOR : '^' ;
 
 RETURN : 'return' ;
-INT : 'int' ;
+INT : 'int' | 'char';
 VOID : 'void' ;
 
 CONST : [0-9]+ ;
 CHAR : '\'' . '\'' ;
 VAR : [_a-zA-Z][_a-zA-Z0-9]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
+COMMENT2 : '//' .*? '\n' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
 WS    : [ \t\r\n] -> channel(HIDDEN);
