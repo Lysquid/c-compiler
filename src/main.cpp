@@ -10,6 +10,7 @@
 #include "ASTVisitor.h"
 #include "x86Visitor.h"
 #include "CFGOptimizer.h"
+#include "TypeCheckVisitor.h"
 
 using namespace std;
 
@@ -35,6 +36,13 @@ int main(int argn, const char **argv) {
 
     if (parser.getNumberOfSyntaxErrors() > 0) {
         cerr << "error: syntax error during parsing" << endl;
+        exit(1);
+    }
+
+    TypeCheckVisitor tcv;
+    tcv.visit(tree);
+
+    if (tcv.errors > 0) {
         exit(1);
     }
 
