@@ -53,6 +53,7 @@ int main(int argn, const char **argv) {
     for(auto* cfg: cfgs){
         CFGOptimizer co(*cfg, av.getConst_table(), av.getInstr_table());
         co.optimization();
+        co.divideOrModuloByZero();
     }
 
 
