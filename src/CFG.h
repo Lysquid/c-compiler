@@ -61,6 +61,9 @@ public:
     int number_of_params = 0; /**< number of parameters of the function */
 
     int is_return = 0; /**< 0 if not return, 1 if return */
+
+    void printCFG();
+    
 protected:
 
     int next_free_symbol_index = 0;  /**< to allocate new symbols in the symbol table */
