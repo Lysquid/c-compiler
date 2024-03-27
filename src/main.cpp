@@ -59,7 +59,7 @@ int main(int argn, const char **argv) {
 
     vector <CFG*> cfgs = av.getCFGs();
     for(auto* cfg: cfgs){
-        CFGOptimizer co(*cfg, av.getConst_table(), av.getInstr_table());
+        CFGOptimizer co(*cfg, cfg->getConstTable(), cfg->getInstrTable());
         co.optimization();
         co.divideOrModuloByZero();
     }

@@ -2,7 +2,6 @@
 
 void CFGOptimizer::optimization()
 {
-    // cfg->printCFG();
     for (auto bb : cfg->bbs)
     {
         for (Instr *instr : bb->instrs)
@@ -14,7 +13,6 @@ void CFGOptimizer::optimization()
             }
         }
     }
-    // cfg->printCFG();
 }
 
 bool CFGOptimizer::checkInstr(Instr *instr, BasicBlock *actualbb)

@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 #include <initializer_list>
 
 #include "Instr.h"
@@ -62,6 +63,14 @@ public:
 
     int is_return = 0; /**< 0 if not return, 1 if return */
 
+    unordered_map<int, int>& getConstTable(){
+        return const_index;
+    }
+
+    unordered_map<int, Instr*>& getInstrTable(){
+        return instr_index;
+    }
+
     void printCFG();
     
 protected:
@@ -69,4 +78,7 @@ protected:
     int next_free_symbol_index = 0;  /**< to allocate new symbols in the symbol table */
     int next_bb_number = 0;           /**< just for naming */
     string name;
+
+    unordered_map<int, int> const_index;
+    unordered_map<int, Instr*> instr_index;
 };

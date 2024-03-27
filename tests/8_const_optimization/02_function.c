@@ -1,7 +1,7 @@
 int calcul(int a, int b)
 {
     int c = 1000 + 2000;
-    return a+b;
+    return 1+2+a+b;
 }
 
 int main()
