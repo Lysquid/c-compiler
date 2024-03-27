@@ -22,18 +22,19 @@ antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx)
 antlrcpp::Any ASTVisitor::visitFunction(ifccParser::FunctionContext *ctx)
 {
     string name = ctx->VAR()->getText();
-    if(existsCFG(name)){
+    if (existsCFG(name))
+    {
         cerr << "ERROR: function " << name << " already declared" << endl;
         errors++;
     }
-    
+
     CFG *cfg = new CFG(name);
     this->current_cfg = cfg;
     this->cfgs.push_back(cfg);
     auto *scope = new Scope(nullptr);
     auto *block = new BasicBlock(current_cfg->new_BB_name(), scope);
     cfg->add_bb(block);
-    auto* end_block = new BasicBlock(current_cfg->new_BB_name(), scope);
+    auto *end_block = new BasicBlock(current_cfg->new_BB_name(), scope);
     block->set_exit_true(end_block);
     cfg->end_block = end_block;
 
@@ -55,7 +56,8 @@ antlrcpp::Any ASTVisitor::visitFunction(ifccParser::FunctionContext *ctx)
 
     this->visit(ctx->parameters());
 
-    for (auto statement: ctx->statement()) {
+    for (auto statement : ctx->statement())
+    {
         this->visit(statement);
     }
 
@@ -69,7 +71,7 @@ antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
     int i = 0;
     for (antlr4::tree::TerminalNode *node : ctx->VAR())
     {
-                string var = node->getText();
+        string var = node->getText();
         if (!current_cfg->current_bb->is_symbol_declared(var))
         {
             current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
@@ -85,29 +87,30 @@ antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx) {
+antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx)
+{
     auto scope = current_cfg->current_bb->scope;
 
-    BasicBlock * previous_block = current_cfg->current_bb; //bloc courrant
+    BasicBlock *previous_block = current_cfg->current_bb;                 // bloc courrant
     auto *test_block = new BasicBlock(current_cfg->new_BB_name(), scope); // bloc de test
     auto *body_block = new BasicBlock(current_cfg->new_BB_name(), scope); // corps du while
-    auto * next_block = new BasicBlock(current_cfg->new_BB_name(), scope); //bloc suivant
-    body_block->test_block = test_block; //notify it is a loop
+    auto *next_block = new BasicBlock(current_cfg->new_BB_name(), scope); // bloc suivant
+    body_block->test_block = test_block;                                  // notify it is a loop
     next_block->set_exit_true(previous_block->exit_true);
-    //si le test est vrai on execute le corps, sinon on passe à la suite
+    // si le test est vrai on execute le corps, sinon on passe à la suite
     test_block->set_exit_true(body_block);
     test_block->set_exit_false(next_block);
 
-    //dans le bloc courant on passe au test
+    // dans le bloc courant on passe au test
     previous_block->set_exit_true(test_block);
 
-    //à la fin du corps on ré-execute le test
+    // à la fin du corps on ré-execute le test
     body_block->set_exit_true(test_block);
 
     // le bloc de test
     current_cfg->add_bb(test_block);
     current_cfg->current_bb = test_block;
-    test_block->test_var_index = this->visit(ctx->expr()); //récupère le test, et la variable qui le stoque
+    test_block->test_var_index = this->visit(ctx->expr()); // récupère le test, et la variable qui le stoque
 
     // le bloc de corps
     current_cfg->add_bb(body_block);
@@ -119,60 +122,67 @@ antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx) {
     current_cfg->current_bb = next_block;
 
     return 0;
-
 }
 
-antlrcpp::Any ASTVisitor::visitBreak(ifccParser::BreakContext *ctx) {
-    BasicBlock * currentBlock = current_cfg->current_bb; //bloc courrant
-    
-    if(currentBlock->test_block != nullptr){
+antlrcpp::Any ASTVisitor::visitBreak(ifccParser::BreakContext *ctx)
+{
+    BasicBlock *currentBlock = current_cfg->current_bb; // bloc courrant
+
+    if (currentBlock->test_block != nullptr)
+    {
         auto scope = current_cfg->current_bb->scope;
         auto *breakBlock = new BasicBlock(current_cfg->new_BB_name(), scope); // bloc de break
 
-        //la sortie du bloc break <- le bloc qui suit le bloc de test quand la condition est fausse
+        // la sortie du bloc break <- le bloc qui suit le bloc de test quand la condition est fausse
         breakBlock->set_exit_true(currentBlock->test_block->exit_false);
         currentBlock->set_exit_true(breakBlock);
 
         current_cfg->add_bb(breakBlock);
         current_cfg->current_bb = breakBlock;
-
-    }else{
+    }
+    else
+    {
         cerr << "ERROR: break statement not within a loop" << endl;
         errors++;
     }
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitContinue(ifccParser::ContinueContext *ctx) {
-    BasicBlock * currentBlock = current_cfg->current_bb; //bloc courrant
-    
-    if(currentBlock->test_block != nullptr) {
+antlrcpp::Any ASTVisitor::visitContinue(ifccParser::ContinueContext *ctx)
+{
+    BasicBlock *currentBlock = current_cfg->current_bb; // bloc courrant
+
+    if (currentBlock->test_block != nullptr)
+    {
         auto scope = current_cfg->current_bb->scope;
         auto *continueBlock = new BasicBlock(current_cfg->new_BB_name(), scope); // bloc de continue
 
-        //la sortie du bloc continue <- le bloc qui suit le bloc de test quand la condition est vraie
+        // la sortie du bloc continue <- le bloc qui suit le bloc de test quand la condition est vraie
         continueBlock->set_exit_true(currentBlock->test_block);
         currentBlock->set_exit_true(continueBlock);
 
         current_cfg->add_bb(continueBlock);
         current_cfg->current_bb = continueBlock;
-
-    }else{
+    }
+    else
+    {
         cerr << "ERROR: continue statement not within a loop" << endl;
         errors++;
     }
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitIf(ifccParser::IfContext *ctx) {
+antlrcpp::Any ASTVisitor::visitIf(ifccParser::IfContext *ctx)
+{
     auto scope = current_cfg->current_bb->scope;
     auto *if_block = new BasicBlock(current_cfg->new_BB_name(), scope);
     auto *next_block = new BasicBlock(current_cfg->new_BB_name(), scope);
 
-    BasicBlock * previous_block = current_cfg->current_bb;
+    BasicBlock *previous_block = current_cfg->current_bb;
 
-    //notify if we are currently in a loop
-    if(previous_block->test_block != nullptr){
+    // notify if we are currently in a loop
+    if (previous_block->test_block != nullptr)
+    {
         if_block->test_block = previous_block->test_block;
         next_block->test_block = previous_block->test_block;
     }
@@ -191,11 +201,13 @@ antlrcpp::Any ASTVisitor::visitIf(ifccParser::IfContext *ctx) {
     current_cfg->current_bb = if_block;
     this->visit(ctx->if_block); // le bloc if
 
-    if(ctx->else_block != nullptr){
+    if (ctx->else_block != nullptr)
+    {
         auto *else_block = new BasicBlock(current_cfg->new_BB_name(), scope);
 
-        //notify if we are currently in a loop
-        if(previous_block->test_block != nullptr){
+        // notify if we are currently in a loop
+        if (previous_block->test_block != nullptr)
+        {
             else_block->test_block = previous_block->test_block;
         }
 
@@ -213,15 +225,14 @@ antlrcpp::Any ASTVisitor::visitIf(ifccParser::IfContext *ctx) {
     return 0;
 }
 
-
-
 antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx)
 {
-    BasicBlock* previous_block = current_cfg->current_bb;
+    BasicBlock *previous_block = current_cfg->current_bb;
     auto block = new BasicBlock(current_cfg->new_BB_name(), new Scope(current_cfg->current_bb->scope));
     auto next_block = new BasicBlock(current_cfg->new_BB_name(), previous_block->scope);
 
-    if(previous_block->test_block != nullptr){
+    if (previous_block->test_block != nullptr)
+    {
         block->test_block = previous_block->test_block;
         next_block->test_block = previous_block->test_block;
     }
@@ -233,18 +244,21 @@ antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx)
     current_cfg->add_bb(block);
     current_cfg->current_bb = block;
 
-    for (ifccParser::StatementContext *statement : ctx->statement()) {
+    for (ifccParser::StatementContext *statement : ctx->statement())
+    {
         this->visit(statement);
     }
 
     current_cfg->add_bb(next_block);
     current_cfg->current_bb = next_block;
 
-    if (current_cfg->return_type && !current_cfg->is_return) {
+    if (current_cfg->return_type && !current_cfg->is_return)
+    {
         cerr << "ERROR: function " << current_cfg->get_label() << " should return a value" << endl;
     }
 
-    if (!current_cfg->return_type && current_cfg->is_return) {
+    if (!current_cfg->return_type && current_cfg->is_return)
+    {
         cerr << "ERROR: void function " << current_cfg->get_label() << " should not return a value" << endl;
     }
 
@@ -256,18 +270,18 @@ antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
     for (antlr4::tree::TerminalNode *node : ctx->VAR())
     {
         string var = node->getText();
-        if (current_cfg->current_bb->scope->is_declared_locally(var)) {
+        if (current_cfg->current_bb->scope->is_declared_locally(var))
+        {
             cerr << "ERROR: variable " << var << " already declared" << endl;
             errors++;
-        } else {
+        }
+        else
+        {
             current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
         }
     }
     return 0;
 }
-
-
-
 
 antlrcpp::Any ASTVisitor::visitDeclarationAssignment(ifccParser::DeclarationAssignmentContext *ctx)
 {
@@ -303,18 +317,22 @@ antlrcpp::Any ASTVisitor::visitCallVoidFunction(ifccParser::CallVoidFunctionCont
             cerr << "ERROR: wrong number of parameters for function " << name << endl;
             errors++;
         }
-        int i = 0;
         int return_type = getCFG(name)->return_type;
         int dest = 0;
         if (return_type)
         {
             dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
         }
+
+        vector<int> addrs;
         for (ifccParser::ExprContext *expr : ctx->expr())
         {
             int addr = this->visit(expr);
-            current_cfg->current_bb->add_instr(new SetparamInstr(addr, i));
-            i++;
+            addrs.push_back(addr);
+        }
+        for (int i = 0; i < addrs.size(); i++)
+        {
+            current_cfg->current_bb->add_instr(new SetparamInstr(addrs[i], i));
         }
         current_cfg->current_bb->add_instr(new CallfunctionInstr(name, dest, return_type));
     }
@@ -359,9 +377,6 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
     return addr;
 }
 
-
-
-
 antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx)
 {
     string name = ctx->VAR()->getText();
@@ -374,7 +389,6 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
             errors++;
         }
 
-        int i = 0;
         int return_type = getCFG(name)->return_type;
 
         if (!return_type)
@@ -385,14 +399,16 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
         else
         {
             dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
-
         }
-
+        vector<int> addrs;
         for (ifccParser::ExprContext *expr : ctx->expr())
         {
             int addr = this->visit(expr);
-            current_cfg->current_bb->add_instr(new SetparamInstr(addr, i));
-            i++;
+            addrs.push_back(addr);
+        }
+        for (int i = 0; i < addrs.size(); i++)
+        {
+            current_cfg->current_bb->add_instr(new SetparamInstr(addrs[i], i));
         }
         current_cfg->current_bb->add_instr(new CallfunctionInstr(name, dest, return_type));
     }
@@ -402,10 +418,10 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
         errors++;
     }
     return dest;
-
 }
 
-antlrcpp::Any ASTVisitor::visitChar(ifccParser::CharContext *ctx) {
+antlrcpp::Any ASTVisitor::visitChar(ifccParser::CharContext *ctx)
+{
     string char_str = ctx->CHAR()->getText();
     int value = static_cast<unsigned char>(char_str.c_str()[1]);
     int addr = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
@@ -413,7 +429,8 @@ antlrcpp::Any ASTVisitor::visitChar(ifccParser::CharContext *ctx) {
     return addr;
 }
 
-antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
+antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx)
+{
     int addr = this->visit(ctx->expr());
     string op = ctx->ADD_SUB()->getText();
     if (op == "-")
@@ -425,38 +442,46 @@ antlrcpp::Any ASTVisitor::visitSign(ifccParser::SignContext *ctx) {
     return addr;
 }
 
-antlrcpp::Any ASTVisitor::visitUnary(ifccParser::UnaryContext *ctx){
+antlrcpp::Any ASTVisitor::visitUnary(ifccParser::UnaryContext *ctx)
+{
     int term = this->visit(ctx->expr());
     string op = ctx->UNARY_OP()->getText();
     int dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
-    if(op == "!"){
-        current_cfg->current_bb->add_instr(new NotInstr(term,dest));
+    if (op == "!")
+    {
+        current_cfg->current_bb->add_instr(new NotInstr(term, dest));
     }
     return dest;
 }
 
-antlrcpp::Any ASTVisitor::visitIncrementafter(ifccParser::IncrementafterContext *ctx) {
+antlrcpp::Any ASTVisitor::visitIncrementafter(ifccParser::IncrementafterContext *ctx)
+{
     int term = current_cfg->current_bb->get_var_index(ctx->VAR()->getText());
     int dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
     string op = ctx->INCREMENT()->getText();
-    if(op == "++"){
-        current_cfg->current_bb->add_instr(new IncrementafterInstr(term,dest));
+    if (op == "++")
+    {
+        current_cfg->current_bb->add_instr(new IncrementafterInstr(term, dest));
     }
-    else if (op == "--"){
-        current_cfg->current_bb->add_instr(new DecrementafterInstr(term,dest));
+    else if (op == "--")
+    {
+        current_cfg->current_bb->add_instr(new DecrementafterInstr(term, dest));
     }
     return dest;
 }
 
-antlrcpp::Any ASTVisitor::visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx) {
+antlrcpp::Any ASTVisitor::visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx)
+{
     int term = current_cfg->current_bb->get_var_index(ctx->VAR()->getText());
     int dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
     string op = ctx->INCREMENT()->getText();
-    if(op == "++"){
-        current_cfg->current_bb->add_instr(new IncrementbeforeInstr(term,dest));
+    if (op == "++")
+    {
+        current_cfg->current_bb->add_instr(new IncrementbeforeInstr(term, dest));
     }
-    else if (op == "--"){
-        current_cfg->current_bb->add_instr(new DecrementbeforeInstr(term,dest));
+    else if (op == "--")
+    {
+        current_cfg->current_bb->add_instr(new DecrementbeforeInstr(term, dest));
     }
     return dest;
 }
@@ -585,16 +610,23 @@ antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx)
         {
             cerr << "ERROR: function " << current_cfg->get_label() << " should return a value" << endl;
             errors++;
-        } else {
+        }
+        else
+        {
             current_cfg->current_bb->add_instr(new RetVoidInstr(current_cfg->end_block->get_label()));
             current_cfg->is_return = 1;
         }
-    } else {
+    }
+    else
+    {
         int addr = this->visit(ctx->expr());
-        if (return_type == 1){
+        if (return_type == 1)
+        {
             current_cfg->current_bb->add_instr(new RetInstr(addr, current_cfg->end_block->get_label()));
             current_cfg->is_return = 1;
-        } else {
+        }
+        else
+        {
             current_cfg->current_bb->add_instr(new RetVoidInstr(current_cfg->end_block->get_label()));
             current_cfg->is_return = 1;
         }
@@ -603,9 +635,11 @@ antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx)
     return 0;
 }
 
-void ASTVisitor::IsThereUnusedVariables() {
-    vector<string> UnusedVariables= current_cfg->get_unused_symbols();
-    for(string& var : UnusedVariables){
-        cerr << "WARN : unused variable "<< var << endl;
+void ASTVisitor::IsThereUnusedVariables()
+{
+    vector<string> UnusedVariables = current_cfg->get_unused_symbols();
+    for (string &var : UnusedVariables)
+    {
+        cerr << "WARN : unused variable " << var << endl;
     }
 }
