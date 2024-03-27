@@ -307,43 +307,6 @@ antlrcpp::Any ASTVisitor::visitExpression(ifccParser::ExpressionContext *ctx)
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitCallVoidFunction(ifccParser::CallVoidFunctionContext *ctx)
-{
-    string name = ctx->VAR()->getText();
-    if (existsCFG(name))
-    {
-        if (getCFG(name)->number_of_params != ctx->expr().size())
-        {
-            cerr << "ERROR: wrong number of parameters for function " << name << endl;
-            errors++;
-        }
-        int return_type = getCFG(name)->return_type;
-        int dest = 0;
-        if (return_type)
-        {
-            dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
-        }
-
-        vector<int> addrs;
-        for (ifccParser::ExprContext *expr : ctx->expr())
-        {
-            int addr = this->visit(expr);
-            addrs.push_back(addr);
-        }
-        for (int i = 0; i < addrs.size(); i++)
-        {
-            current_cfg->current_bb->add_instr(new SetparamInstr(addrs[i], i));
-        }
-        current_cfg->current_bb->add_instr(new CallfunctionInstr(name, dest, return_type));
-    }
-    else
-    {
-        cerr << "ERROR: unknown function " << name << endl;
-        errors++;
-    }
-    return 0;
-}
-
 antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx)
 {
     string destname = ctx->VAR()->getText();
@@ -416,47 +379,39 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
 
 }
 
-antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx)
+antlrcpp::Any ASTVisitor::visitCallFunction(ifccParser::CallFunctionContext *ctx)
 {
     string name = ctx->VAR()->getText();
-    int dest = 0;
-    if (existsCFG(name))
-    {
-        if (getCFG(name)->number_of_params != ctx->expr().size())
-        {
+    if (existsCFG(name)) {
+        if (getCFG(name)->number_of_params != ctx->expr().size()) {
             cerr << "ERROR: wrong number of parameters for function " << name << endl;
             errors++;
         }
 
+        int dest = 0;
         int return_type = getCFG(name)->return_type;
-
-        if (!return_type)
-        {
-            cerr << "ERROR: void function " << name << " couldn't return a value" << endl;
-            errors++;
-        }
-        else
-        {
+        if (return_type) {
             dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
         }
-        vector<int> addrs;
-        for (ifccParser::ExprContext *expr : ctx->expr())
-        {
-            int addr = this->visit(expr);
-            addrs.push_back(addr);
+
+        vector<int> args_addrs;
+        for (auto argument : ctx->expr()) {
+            int addr = this->visit(argument);
+            args_addrs.push_back(addr);
         }
-        for (int i = 0; i < addrs.size(); i++)
-        {
-            current_cfg->current_bb->add_instr(new SetparamInstr(addrs[i], i));
+        for (int i = 0; i < args_addrs.size(); i++) {
+            current_cfg->current_bb->add_instr(new SetparamInstr(args_addrs[i], i));
         }
-        current_cfg->current_bb->add_instr(new CallfunctionInstr(name, dest, return_type));
-    }
-    else
-    {
+        current_cfg->current_bb->add_instr(new CallFunctionInstr(name, dest, return_type));
+
+        if (return_type) {
+            return dest;
+        }
+    } else {
         cerr << "ERROR: unknown function " << name << endl;
         errors++;
     }
-    return dest;
+    return 0;
 }
 
 antlrcpp::Any ASTVisitor::visitChar(ifccParser::CharContext *ctx)

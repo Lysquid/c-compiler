@@ -84,7 +84,7 @@ void CFG::printCFG() {
                 cout << "Copyparam Instruction: src=" << copyparamInstr->src << ", dest=" << copyparamInstr->dest << endl;
             } else if (SetparamInstr* setparamInstr = dynamic_cast<SetparamInstr*>(instr)) {
                 cout << "Setparam Instruction: src=" << setparamInstr->src << ", dest=" << setparamInstr->dest << endl;
-            } else if (CallfunctionInstr* callfunctionInstr = dynamic_cast<CallfunctionInstr*>(instr)) {
+            } else if (CallFunctionInstr* callfunctionInstr = dynamic_cast<CallFunctionInstr*>(instr)) {
                 cout << "Callfunction Instruction: function_name=" << callfunctionInstr->function_name << ", dest=" << callfunctionInstr->dest << ", return_type=" << callfunctionInstr->return_type << endl;
             }
         }

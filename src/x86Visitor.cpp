@@ -191,7 +191,7 @@ void x86Visitor::visit(SetparamInstr &i) {
     o << "    movl " << i.src << "(%rbp), %" << i.memory_type[i.dest] << "\n";
 }
 
-void x86Visitor::visit(CallfunctionInstr &i) {
+void x86Visitor::visit(CallFunctionInstr &i) {
     o << "    call " << i.function_name << "\n";
     if(i.return_type) o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }

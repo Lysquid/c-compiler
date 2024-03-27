@@ -36,15 +36,13 @@ public:
 
     antlrcpp::Any visitExpression(ifccParser::ExpressionContext *ctx) override;
 
-    antlrcpp::Any visitCallVoidFunction(ifccParser::CallVoidFunctionContext *ctx) override;
+    antlrcpp::Any visitCallFunction(ifccParser::CallFunctionContext *ctx) override;
 
     antlrcpp::Any visitAssignment(ifccParser::AssignmentContext *ctx) override;
 
     antlrcpp::Any visitVar(ifccParser::VarContext *ctx) override;
 
     antlrcpp::Any visitConst(ifccParser::ConstContext *ctx) override;
-
-    antlrcpp::Any visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) override;
 
     antlrcpp::Any visitChar(ifccParser::CharContext *ctx) override;
 
@@ -72,5 +70,7 @@ public:
 
     int errors = 0;
 private:
-    unordered_map<string, Type> types_table;
+    unordered_map<string, Type> var_types;
+    unordered_map<string, Type> func_types;
+    Type current_func_type;
 };

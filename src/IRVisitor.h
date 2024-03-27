@@ -51,7 +51,7 @@ public:
 
     virtual void visit(SetparamInstr &i) = 0;
 
-    virtual void visit(CallfunctionInstr &i) = 0;
+    virtual void visit(CallFunctionInstr &i) = 0;
 
     virtual void visit(RetVoidInstr &i) = 0;
 

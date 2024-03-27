@@ -14,7 +14,6 @@ statement
     : RETURN expr? ';'                                  # ret
     | INT VAR (',' VAR)* ';'                            # declaration
     | INT VAR '=' expr ';'                              # declarationAssignment
-    | VAR '(' (expr (',' expr)*)? ')' ';'               # callVoidFunction
     | '{' statement* '}'                                # block
     | 'if' '(' expr ')' if_block=statement ('else' else_block=statement)?   # if
     | 'while' '(' expr ')' body=statement                    # while
@@ -33,7 +32,7 @@ expr
     | expr BIT_XOR expr                 # bitXor
     | expr BIT_OR expr                  # bitOr
     | expr COMP expr                    # comparison
-    | VAR '(' (expr (',' expr)*)? ')'   # callIntFunction
+    | VAR '(' (expr (',' expr)*)? ')'   # callFunction
     | CONST                             # const
     | CHAR                              # char
     | VAR                               # var

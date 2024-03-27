@@ -233,9 +233,9 @@ public:
     int dest;
 };
 
-class CallfunctionInstr : public Instr {
+class CallFunctionInstr : public Instr {
 public:
-    CallfunctionInstr(string function_name, int dest, int return_type) : function_name(function_name), dest(dest), return_type(return_type) {}
+    CallFunctionInstr(string function_name, int dest, int return_type) : function_name(function_name), dest(dest), return_type(return_type) {}
 
     void accept(IRVisitor &visitor) override;
 
