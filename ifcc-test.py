@@ -48,11 +48,11 @@ if Path.cwd().name == "ifcc-test-output":
     print('error: cannot run from within the output directory')
     sys.exit(1)
 
-out_path = Path("ifcc-test-output")
-if out_path.exists():
+OUT_PATH = Path("tests-output")
+if OUT_PATH.exists():
     # cleanup previous output directory
-    shutil.rmtree(out_path)
-out_path.mkdir()
+    shutil.rmtree(OUT_PATH)
+OUT_PATH.mkdir()
 
 # Then we process the inputs arguments i.e. filenames or subtrees
 input_files = []
@@ -100,10 +100,10 @@ def test_result(ok: bool, job_path: Path, message: str = None):
 
 async def job(input_file: Path, semaphore: asyncio.Semaphore):
 
-    async with semaphore:
+    async with (semaphore):
 
-        p = out_path / f"{input_file.parent.parent.name}-{input_file.parent.name}-{input_file.name}"
-        p.mkdir()
+        p = OUT_PATH / input_file.parent / input_file.stem
+        p.mkdir(parents=True)
         shutil.copyfile(input_file, p / "input.c")
 
         # Reference compiler = GCC

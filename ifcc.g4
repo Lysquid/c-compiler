@@ -6,18 +6,17 @@ prog : function+ ;
 
 function : return_type VAR '(' parameters ')' '{' statement* '}' ;
 
-return_type : INT|VOID;
+return_type : TYPE | VOID;
 
-parameters : (INT VAR (',' INT VAR)*)? ;
+parameters : (TYPE VAR (',' TYPE VAR)*)? ;
 
 statement
-    : RETURN expr? ';'                                  # ret
-    | INT VAR (',' VAR)* ';'                            # declaration
-    | INT VAR '=' expr ';'                              # declarationAssignment
-    | VAR '(' (expr (',' expr)*)? ')' ';'               # callVoidFunction
+    : 'return' expr? ';'                                # ret
+    | TYPE VAR (',' VAR)* ';'                           # declaration
+    | TYPE VAR '=' expr ';'                             # declarationAssignment
     | '{' statement* '}'                                # block
     | 'if' '(' expr ')' if_block=statement ('else' else_block=statement)?   # if
-    | 'while' '(' expr ')' body=statement                    # while
+    | 'while' '(' expr ')' body=statement               # while
     | 'break' ';'                                       # break
     | 'continue' ';'                                    # continue
     | expr ';'                                          # expression
@@ -33,7 +32,7 @@ expr
     | expr BIT_XOR expr                 # bitXor
     | expr BIT_OR expr                  # bitOr
     | expr COMP expr                    # comparison
-    | VAR '(' (expr (',' expr)*)? ')'   # callIntFunction
+    | VAR '(' (expr (',' expr)*)? ')'   # callFunction
     | CONST                             # const
     | CHAR                              # char
     | VAR                               # var
@@ -55,8 +54,7 @@ BIT_AND : '&' ;
 BIT_OR : '|' ;
 BIT_XOR : '^' ;
 
-RETURN : 'return' ;
-INT : 'int' | 'char';
+TYPE : 'int' | 'char';
 VOID : 'void' ;
 
 CONST : [0-9]+ ;

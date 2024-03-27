@@ -3,14 +3,14 @@
 #include "antlr4-runtime.h"
 #include "generated/ifccBaseVisitor.h"
 #include "CFG.h"
+#include "Types.h"
 #include <vector>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 
-class ASTVisitor : public ifccBaseVisitor
-{
+class TypeCheckVisitor : public ifccBaseVisitor {
 public:
     antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
 
@@ -25,7 +25,7 @@ public:
     antlrcpp::Any visitBreak(ifccParser::BreakContext *ctx) override;
 
     antlrcpp::Any visitContinue(ifccParser::ContinueContext *ctx) override;
-    
+
     antlrcpp::Any visitIf(ifccParser::IfContext *ctx) override;
 
     antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override;
@@ -68,56 +68,9 @@ public:
 
     antlrcpp::Any visitPar(ifccParser::ParContext *ctx) override;
 
-    int getNumberOfErrors() const { return errors; }
-
-    void IsThereUnusedVariables();
-
-    vector<CFG *> getCFGs() { return cfgs; }
-
-    bool existsCFG(string name){
-        for (auto cfg : cfgs){
-            if (cfg->get_label() == name){
-                return true;
-            }
-        }
-        for (auto cfg : predefinition_cfgs){
-            if (cfg->get_label() == name){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    CFG *getCFG(string name){
-        for (auto cfg : cfgs){
-            if (cfg->get_label() == name){
-                return cfg;
-            }
-        }
-        for (auto cfg : predefinition_cfgs){
-            if (cfg->get_label() == name){
-                return cfg;
-            }
-        }
-        return nullptr;
-    }
-
-    unordered_map<int, int> getConst_table(){
-        return const_index;
-    }
-
-    unordered_map<int, Instr*> getInstr_table(){
-        return instr_index;
-    }
-
-
-private:
     int errors = 0;
-    vector<CFG *> cfgs;
-    vector<CFG *> predefinition_cfgs;
-    CFG *current_cfg;
-    std::unordered_map<int, int> const_index;
-    std::unordered_map<int, Instr*> instr_index;
-
-
+private:
+    unordered_map<string, Type> var_types;
+    unordered_map<string, Type> func_types;
+    Type current_func_type;
 };

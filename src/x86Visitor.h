@@ -48,7 +48,7 @@ public:
 
     void visit(SetparamInstr &i) override;
 
-    void visit(CallfunctionInstr &i) override;
+    void visit(CallFunctionInstr &i) override;
 
     void visit(RetVoidInstr &i) override;
 
