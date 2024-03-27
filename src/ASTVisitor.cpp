@@ -366,6 +366,7 @@ antlrcpp::Any ASTVisitor::visitVar(ifccParser::VarContext *ctx)
         cerr << "ERROR: variable " << var << " not found" << endl;
         errors++;
     }
+
     return current_cfg->current_bb->get_var_index(var);
 }
 
