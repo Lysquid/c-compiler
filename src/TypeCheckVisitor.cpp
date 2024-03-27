@@ -23,11 +23,11 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(ifccParser::FunctionContext *ctx) 
     return Type(Type::VOID);
 }
 
-
 antlrcpp::Any TypeCheckVisitor::visitParameters(ifccParser::ParametersContext *ctx) {
-    for (auto var: ctx->VAR()) {
-        string name = var->getText();
-        this->var_types[name] = Type(Type::INT);
+    for (int i = 0; i < ctx->VAR().size(); i++) {
+        string name = ctx->VAR(i)->getText();
+        Type type = ctx->INT(i)->getText();
+        this->var_types[name] = type;
     }
     return Type(Type::VOID);
 }
