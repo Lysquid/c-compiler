@@ -43,6 +43,8 @@ public:
 
     virtual void visit(NotInstr &i) = 0;
 
+    virtual void visit(LogicInstr &i) = 0;
+
     virtual void visit(BitInstr &i) = 0;
 
     virtual void visit(RetInstr &i) = 0;

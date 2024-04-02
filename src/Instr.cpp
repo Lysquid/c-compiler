@@ -63,6 +63,10 @@ void NotInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
+void LogicInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
 void BitInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
@@ -75,10 +79,6 @@ void SetparamInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
-void CallFunctionInstr::accept(IRVisitor &visitor) {
-    visitor.visit(*this);
-}
-
-void RetVoidInstr::accept(IRVisitor &visitor) {
+void CallfunctionInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }

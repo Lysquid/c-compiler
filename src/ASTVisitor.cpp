@@ -531,6 +531,22 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx)
     return res;
 }
 
+antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx) {
+    int term1 = this->visit(ctx->expr(0));
+    int term2 = this->visit(ctx->expr(1));
+    string op = ctx->LOGIC()->getText();
+    int res = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
+
+    if(op == "||"){
+        current_cfg->current_bb->add_instr(new LogicInstr(term1, term2, res, LogicInstr::Or));
+    }
+    if(op == "&&"){
+        current_cfg->current_bb->add_instr(new LogicInstr(term1, term2, res, LogicInstr::And));
+    }
+
+    return res;
+}
+
 antlrcpp::Any ASTVisitor::visitBitAnd(ifccParser::BitAndContext *ctx)
 {
     int term1 = this->visit(ctx->expr(0));

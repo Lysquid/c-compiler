@@ -4,6 +4,7 @@
 #include "generated/ifccBaseVisitor.h"
 #include "CFG.h"
 #include <vector>
+#include <unordered_map>
 #include <string>
 
 using namespace std;
@@ -58,6 +59,8 @@ public:
     antlrcpp::Any visitMulDiv(ifccParser::MulDivContext *ctx) override;
 
     antlrcpp::Any visitComparison(ifccParser::ComparisonContext *ctx) override;
+
+    antlrcpp::Any visitLogicop(ifccParser::LogicopContext *ctx) override;
 
     antlrcpp::Any visitBitAnd(ifccParser::BitAndContext *ctx) override;
 

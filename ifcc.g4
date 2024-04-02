@@ -3,7 +3,9 @@ grammar ifcc;
 axiom : prog EOF ;
 
 prog : function+ ;
+prog : function+ ;
 
+function : return_type VAR '(' parameters ')' '{' statement* '}' ;
 function : return_type VAR '(' parameters ')' '{' statement* '}' ;
 
 return_type : TYPE | VOID ;
@@ -27,18 +29,26 @@ expr
     : ADD_SUB expr                      # sign
     | UNARY_OP expr                     # unary
     | increment                         # incr
+    | increment                         # incr
     | expr MUL_DIV expr                 # mulDiv
     | expr ADD_SUB expr                 # addSub
     | expr BIT_AND expr                 # bitAnd
     | expr BIT_XOR expr                 # bitXor
     | expr BIT_OR expr                  # bitOr
     | expr COMP expr                    # comparison
-    | VAR '(' (expr (',' expr)*)? ')'   # callFunction
+    | expr LOGIC expr                   # logicop
+    | VAR '(' (expr (',' expr)*)? ')'   # callIntFunction
     | CONST                             # const
     | CHAR                              # char
     | VAR                               # var
     | VAR assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # assignment
+    | VAR assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # assignment
     | '(' expr ')'                      # par
+    ;
+
+increment
+    : VAR INCREMENT                     # incrementafter
+    | INCREMENT VAR                     # incrementbefore
     ;
 
 increment
@@ -50,7 +60,8 @@ ADD_SUB : '+' | '-' ;
 MUL_DIV : '*' | '/' | '%' ;
 INCREMENT : '++' | '--' ;
 UNARY_OP : '!' ;
-COMP : '==' | '<=' | '>=' | '<' | '>' | '!=' ;
+LOGIC : '||' | '&&' ;
+COMP : '==' | '<=' | '>=' | '<' | '>' | '!=';
 BIT_AND : '&' ;
 BIT_OR : '|' ;
 BIT_XOR : '^' ;

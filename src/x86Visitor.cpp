@@ -161,6 +161,10 @@ void x86Visitor::visit(NotInstr &i) {
     o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }
 
+void x86Visitor::visit(LogicInstr &i){
+    
+}
+
 void x86Visitor::visit(BitInstr &i) {
     o << "    movl " << i.term1 << "(%rbp), %eax\n";
     switch (i.bitOp) {
