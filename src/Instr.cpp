@@ -83,6 +83,14 @@ void CallFunctionInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
+void BreakInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
+void ContinueInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
 void RetVoidInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
