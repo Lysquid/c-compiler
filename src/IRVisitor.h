@@ -55,6 +55,10 @@ public:
 
     virtual void visit(CallFunctionInstr &i) = 0;
 
+    virtual void visit(BreakInstr &i) = 0;
+
+    virtual void visit(ContinueInstr &i) = 0;
+
     virtual void visit(RetVoidInstr &i) = 0;
 
 protected:

@@ -11,7 +11,6 @@ public:
 
     void visit(BasicBlock &bb) override;
 
-
     void visit(ConstInstr &i) override;
 
     void visit(CopyInstr &i) override;
@@ -51,6 +50,10 @@ public:
     void visit(SetparamInstr &i) override;
 
     void visit(CallFunctionInstr &i) override;
+
+    void visit(BreakInstr &i) override;
+
+    void visit(ContinueInstr &i) override;
 
     void visit(RetVoidInstr &i) override;
 

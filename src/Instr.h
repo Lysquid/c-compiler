@@ -262,6 +262,24 @@ public:
     int return_type;
 };
 
+class BreakInstr : public Instr {
+public:
+    BreakInstr(string exit_label) : exit_label(exit_label) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    string exit_label;
+};
+
+class ContinueInstr : public Instr {
+public:
+    ContinueInstr(string exit_label) : exit_label(exit_label) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    string exit_label;
+};
+
 class RetVoidInstr : public Instr {
 public:
     RetVoidInstr(string exit_label) : exit_label(exit_label) {}

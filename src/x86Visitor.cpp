@@ -200,6 +200,14 @@ void x86Visitor::visit(CallFunctionInstr &i) {
     if(i.return_type) o << "    movl %eax, " << i.dest << "(%rbp)\n";
 }
 
+void x86Visitor::visit(BreakInstr &i) {
+    o << "    jmp " << i.exit_label << "\n";
+}
+
+void x86Visitor::visit(ContinueInstr &i) {
+    o << "    jmp " << i.exit_label << "\n";
+}
+
 void x86Visitor::visit(RetVoidInstr &i) {
     o << "    jmp " << i.exit_label << "\n";
 }
