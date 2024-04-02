@@ -79,6 +79,10 @@ void SetparamInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
-void CallfunctionInstr::accept(IRVisitor &visitor) {
+void CallFunctionInstr::accept(IRVisitor &visitor) {
+    visitor.visit(*this);
+}
+
+void RetVoidInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }

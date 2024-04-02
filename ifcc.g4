@@ -3,9 +3,7 @@ grammar ifcc;
 axiom : prog EOF ;
 
 prog : function+ ;
-prog : function+ ;
 
-function : return_type VAR '(' parameters ')' '{' statement* '}' ;
 function : return_type VAR '(' parameters ')' '{' statement* '}' ;
 
 return_type : TYPE | VOID ;
@@ -42,13 +40,7 @@ expr
     | CHAR                              # char
     | VAR                               # var
     | VAR assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # assignment
-    | VAR assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # assignment
     | '(' expr ')'                      # par
-    ;
-
-increment
-    : VAR INCREMENT                     # incrementafter
-    | INCREMENT VAR                     # incrementbefore
     ;
 
 increment

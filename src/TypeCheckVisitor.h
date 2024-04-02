@@ -36,7 +36,7 @@ public:
 
     antlrcpp::Any visitExpression(ifccParser::ExpressionContext *ctx) override;
 
-    antlrcpp::Any visitCallFunction(ifccParser::CallFunctionContext *ctx) override;
+    antlrcpp::Any visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) override;
 
     antlrcpp::Any visitAssignment(ifccParser::AssignmentContext *ctx) override;
 

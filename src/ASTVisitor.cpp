@@ -351,7 +351,7 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
     return addr;
 }
 
-antlrcpp::Any ASTVisitor::visitCallFunction(ifccParser::CallFunctionContext *ctx)
+antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx)
 {
     string name = ctx->VAR()->getText();
     if (existsCFG(name)) {

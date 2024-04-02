@@ -119,7 +119,7 @@ antlrcpp::Any TypeCheckVisitor::visitConst(ifccParser::ConstContext *ctx) {
     return Type(Type::INT);
 }
 
-antlrcpp::Any TypeCheckVisitor::visitCallFunction(ifccParser::CallFunctionContext *ctx) {
+antlrcpp::Any TypeCheckVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) {
     string name = ctx->VAR()->getText();
     for (ifccParser::ExprContext *expr: ctx->expr()) {
         this->visit(expr);
