@@ -11,12 +11,18 @@
 - Romain Benoit
 - Koch Florentin
 
-## Usage
+## Utilisation
 
 Dans le repertoire makefile, faites une copie du makefile pour votre platform, et appelez le `config.mk`
 
 Compiler et exécuter les tests :
 `make -j test`
+
+## Documentation
+
+Générer la documentation avec doxygen : `make doc`
+
+La documentation est au format HTML. Pour la consulter, ouvrir le fichier `html/index.html`
 
 ## Fonctionnalités
 
