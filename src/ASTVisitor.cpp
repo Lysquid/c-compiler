@@ -110,7 +110,7 @@ antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx)
     // le bloc de test
     current_cfg->add_bb(test_block);
     current_cfg->current_bb = test_block;
-    test_block->test_var_index = this->visit(ctx->expr()); // récupère le test, et la variable qui le stoque
+    test_block->test_var_index = this->visit(ctx->expr()); // récupère le test, et la variable qui le stocke
 
     // le bloc de corps
     current_cfg->add_bb(body_block);
@@ -532,19 +532,35 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx)
 }
 
 antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx) {
-    int term1 = this->visit(ctx->expr(0));
-    int term2 = this->visit(ctx->expr(1));
     string op = ctx->LOGIC()->getText();
-    int res = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
+
+    auto scope = current_cfg->current_bb->scope;
+
+    BasicBlock *previous_block = current_cfg->current_bb;                 // bloc courrant
+    auto *second_test_block = new BasicBlock(current_cfg->new_BB_name(), scope); // le bloc où on va faire le deuxieme test
+    auto *skip_block = new BasicBlock(current_cfg->new_BB_name(), scope); // bloc de la suite (où on sautera si pas besoin de calculer la deuxième)
 
     if(op == "||"){
-        current_cfg->current_bb->add_instr(new LogicInstr(term1, term2, res, LogicInstr::Or));
-    }
-    if(op == "&&"){
-        current_cfg->current_bb->add_instr(new LogicInstr(term1, term2, res, LogicInstr::And));
+        skip_block->set_exit_true(previous_block->exit_true);
+        second_test_block->set_exit_true(previous_block->exit_true);
+
+        skip_block->set_exit_false(previous_block->exit_false);
+        second_test_block->set_exit_false(previous_block->exit_false);
+
+        previous_block->set_exit_true(skip_block);
+        previous_block->set_exit_false(second_test_block);
+
+        current_cfg->add_bb(skip_block);
+        current_cfg->add_bb(second_test_block);
+
+        current_cfg->current_bb = skip_block;
+        previous_block->test_var_index = this->visit(ctx->expr(0));
+
+        current_cfg->current_bb = second_test_block;
+        second_test_block->test_var_index = this->visit(ctx->expr(1));
     }
 
-    return res;
+    return 0;
 }
 
 antlrcpp::Any ASTVisitor::visitBitAnd(ifccParser::BitAndContext *ctx)
