@@ -225,12 +225,10 @@ public:
 };
 
 
-class CopyparamInstr : public Instr {
+class CopyParamInstr : public Instr {
 public:
 
-    vector<string> memory_type = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
-
-    CopyparamInstr(int src, int dest) : src(src), dest(dest) {}
+    CopyParamInstr(int src, int dest) : src(src), dest(dest) {}
 
     void accept(IRVisitor &visitor) override;
 
@@ -238,12 +236,10 @@ public:
     int dest;
 };
 
-class SetparamInstr : public Instr {
+class SetParamInstr : public Instr {
 public:
 
-    vector<string> memory_type = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
-
-    SetparamInstr(int src, int dest) : src(src), dest(dest) {}
+    SetParamInstr(int src, int dest) : src(src), dest(dest) {}
 
     void accept(IRVisitor &visitor) override;
 
