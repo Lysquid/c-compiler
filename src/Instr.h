@@ -225,12 +225,10 @@ public:
 };
 
 
-class CopyparamInstr : public Instr {
+class CopyParamInstr : public Instr {
 public:
 
-    vector<string> memory_type = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
-
-    CopyparamInstr(int src, int dest) : src(src), dest(dest) {}
+    CopyParamInstr(int src, int dest) : src(src), dest(dest) {}
 
     void accept(IRVisitor &visitor) override;
 
@@ -238,12 +236,10 @@ public:
     int dest;
 };
 
-class SetparamInstr : public Instr {
+class SetParamInstr : public Instr {
 public:
 
-    vector<string> memory_type = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
-
-    SetparamInstr(int src, int dest) : src(src), dest(dest) {}
+    SetParamInstr(int src, int dest) : src(src), dest(dest) {}
 
     void accept(IRVisitor &visitor) override;
 
@@ -260,6 +256,24 @@ public:
     string function_name;
     int dest;
     int return_type;
+};
+
+class BreakInstr : public Instr {
+public:
+    BreakInstr(string exit_label) : exit_label(exit_label) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    string exit_label;
+};
+
+class ContinueInstr : public Instr {
+public:
+    ContinueInstr(string exit_label) : exit_label(exit_label) {}
+
+    void accept(IRVisitor &visitor) override;
+
+    string exit_label;
 };
 
 class RetVoidInstr : public Instr {

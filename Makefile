@@ -87,3 +87,9 @@ test: $(EXE)
 clean:
 	rm -rf $(BUILD_DIR) $(GENERATED_DIR) $(TEST_OUTPUT)
 	rm -f $(EXE)
+
+##########################################
+# documentation
+doc:
+	doxygen
+	xdg-open html/index.html

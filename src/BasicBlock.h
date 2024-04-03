@@ -43,32 +43,70 @@ public:
 
     BasicBlock(string entry_label, Scope* scope) : exit_true(nullptr), exit_false(nullptr), label(entry_label), test_block(nullptr), next_free_symbol_index(-4), scope(scope) {};
 
+	/**
+	 * Accepte un visiteur de la classe IRVisitor
+	*/
     void accept(IRVisitor &visitor);
 
+	/**
+	 * Ajoute une instruction à la fin du bloc
+	*/
     void add_instr(Instr *instr);
 
+	/**
+	 * Supprime une instruction du bloc
+	*/
 	void delete_instr(Instr *instr);
 
+	/**
+	 * Remplace une instruction par une autre
+	*/
 	void replace_instr(Instr *old_instr, Instr *new_instr);
 
+	/**
+	 * Retourne le label du bloc 
+	*/
     string get_label() { return label; }
 
+	/**
+	 * Définit le bloc suivant de la condition vraie
+	*/
     void set_exit_true(BasicBlock *bb) { exit_true = bb; }
 
+	/**
+	 * Définit le bloc suivant de la condition fausse
+	*/
     void set_exit_false(BasicBlock *bb) { exit_false = bb; }
 
+	/**
+	 * Ajoute une variable dans la table des symboles
+	*/
 	void add_to_symbol_table(string name, int index) const;
 
+	/**
+	 * Vérifie si une variable est déclarée
+	*/
     bool is_symbol_declared(string name) const;
 
+	/**
+	 * Retourne l'index d'une variable
+	*/
 	int get_var_index(string var);
 
+	/**
+	 * Crée une nouvelle variable temporaire
+	*/
     int create_new_tempvar(int index) const;
 
+	/**
+	 * Marque la variable comme utilisée dans la scope
+	*/
     void use_symbol(string name) const;
 
+	/**
+	 * Retourne les variables non utilisées
+	*/
 	vector<string> get_unused_symbols();
-
 
 
     // No encapsulation whatsoever here. Feel free to do better.
@@ -81,7 +119,7 @@ public:
     int test_var_index;      /** < when generating IR code for an if(expr) or while(expr) etc, store here the name of the variable that holds the value of expr */
 	map<string, int> symbol_index; /**< local variables */
 	int next_free_symbol_index; /**< next available index for a new local variable */
-	Scope *scope;
+	Scope *scope; /** < scope of the block */
 
 };
 

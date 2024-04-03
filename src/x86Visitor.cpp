@@ -1,17 +1,7 @@
 #include "x86Visitor.h"
 
 void x86Visitor::visit(CFG &cfg) {
-    gen_prologue(cfg);
-    int size = cfg.bbs.size();
-    for (int i = 0; i < size; i++) {
-        BasicBlock* bb = cfg.bbs[i];
-        bb->accept(*this);
-        if(i != size-1) gen_prologue_BB(*cfg.bbs[i+1]);
-    }
-    gen_epilogue();
-}
-
-void x86Visitor::gen_prologue(CFG &cfg) {
+    // Prologue
     int size = -cfg.get_next_free_symbol_index();
     o << ".globl " << cfg.get_label() << "\n";
     o << cfg.get_label() << ":\n";
@@ -19,19 +9,19 @@ void x86Visitor::gen_prologue(CFG &cfg) {
     o << "    movq %rsp, %rbp\n";
     o << "    subq $" << to_string(size%16? size-size%16+16:size) << ", %rsp\n";
 
-}
+    // Blocks
+    for (auto bb: cfg.bbs) {
+        bb->accept(*this);
+    }
 
-void x86Visitor::gen_prologue_BB(BasicBlock &bb) {
-    o << bb.get_label() << ":\n";
-}
-
-void x86Visitor::gen_epilogue() {
+    // Epilogue
     o << "    movq %rbp, %rsp\n";
     o << "    pop %rbp \n";
     o << "    ret\n";
 }
 
 void x86Visitor::visit(BasicBlock &bb) {
+    o << bb.get_label() << ":\n";
     for (auto instr: bb.instrs) {
         instr->accept(*this);
     }
@@ -187,17 +177,32 @@ void x86Visitor::visit(RetInstr &i) {
     o << "    jmp " << i.exit_label << "\n";
 }
 
-void x86Visitor::visit(CopyparamInstr &i) {
-    o << "    movl %" << i.memory_type[i.src] << ", " << i.dest << "(%rbp)\n";
+void x86Visitor::visit(CopyParamInstr &i) {
+    if(i.src < 6){
+        o << "    movl %" << registers[i.src] << ", " << i.dest << "(%rbp)\n";
+    }
 }
 
-void x86Visitor::visit(SetparamInstr &i) {
-    o << "    movl " << i.src << "(%rbp), %" << i.memory_type[i.dest] << "\n";
+void x86Visitor::visit(SetParamInstr &i) {
+    if(i.dest < 6){
+        o << "    movl " << i.src << "(%rbp), %" << registers[i.dest] << "\n";
+    } else {
+        o << "    movl " << i.src << "(%rbp), %eax\n";
+        o << "    pushq %rax\n";
+    }
 }
 
 void x86Visitor::visit(CallFunctionInstr &i) {
     o << "    call " << i.function_name << "\n";
     if(i.return_type) o << "    movl %eax, " << i.dest << "(%rbp)\n";
+}
+
+void x86Visitor::visit(BreakInstr &i) {
+    o << "    jmp " << i.exit_label << "\n";
+}
+
+void x86Visitor::visit(ContinueInstr &i) {
+    o << "    jmp " << i.exit_label << "\n";
 }
 
 void x86Visitor::visit(RetVoidInstr &i) {

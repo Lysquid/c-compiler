@@ -8,5 +8,5 @@ int main()
 
 int bonjour(int a, int b)
 {
-    return return a + b;
+    return a + b;
 }
