@@ -70,16 +70,22 @@ antlrcpp::Any ASTVisitor::visitFunction(ifccParser::FunctionContext *ctx)
 
 antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
 {
-    current_cfg->number_of_params = ctx->VAR().size();
-    int i = 0;
-    for (antlr4::tree::TerminalNode *node : ctx->VAR())
+    int size = ctx->VAR().size();
+    current_cfg->number_of_params = size;
+    for (int i = size - 1; i >= 0; i--)
     {
-        string var = node->getText();
+        string var = ctx->VAR(i)->getText();
         if (!current_cfg->current_bb->is_symbol_declared(var))
         {
-            current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
-            current_cfg->current_bb->add_instr(new CopyparamInstr(i, current_cfg->current_bb->get_var_index(var)));
-            i++;
+            if (i >= 6)
+            {
+                current_cfg->current_bb->add_to_symbol_table(var, 16+(i-6)*8);
+            }
+            else
+            {
+                current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
+                current_cfg->current_bb->add_instr(new CopyparamInstr(i, current_cfg->current_bb->get_var_index(var)));
+            }
         }
         else
         {
@@ -99,7 +105,7 @@ antlrcpp::Any ASTVisitor::visitWhile(ifccParser::WhileContext *ctx)
     auto *body_block = new BasicBlock(current_cfg->new_BB_name(), scope); // corps du while
     auto *next_block = new BasicBlock(current_cfg->new_BB_name(), scope); // bloc suivant
 
-    body_block->test_block = test_block;                                  // notify it is a loop
+    body_block->test_block = test_block; // notify it is a loop
 
     next_block->set_exit_true(previous_block->exit_true);
 
@@ -258,20 +264,26 @@ antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx)
 
 antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
 {
-    for (auto declaration: ctx->declareAssign()) {
+    for (auto declaration : ctx->declareAssign())
+    {
         this->visit(declaration);
     }
     return 0;
 }
 
-antlrcpp::Any ASTVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext *ctx) {
+antlrcpp::Any ASTVisitor::visitDeclareAssign(ifccParser::DeclareAssignContext *ctx)
+{
     string var = ctx->VAR()->getText();
-    if (current_cfg->current_bb->scope->is_declared_locally(var)) {
+    if (current_cfg->current_bb->scope->is_declared_locally(var))
+    {
         cerr << "ERROR: variable " << var << " already declared" << endl;
         errors++;
-    } else {
+    }
+    else
+    {
         current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
-        if (ctx->expr()) {
+        if (ctx->expr())
+        {
             int addr = this->visit(ctx->expr());
             current_cfg->current_bb->add_instr(new CopyInstr(addr, current_cfg->current_bb->get_var_index(var)));
         }
@@ -290,26 +302,32 @@ antlrcpp::Any ASTVisitor::visitAssignment(ifccParser::AssignmentContext *ctx)
     string dest_var = ctx->VAR()->getText();
     string op = ctx->assignmentop->getText();
 
-    if (!current_cfg->current_bb->is_symbol_declared(dest_var)) {
+    if (!current_cfg->current_bb->is_symbol_declared(dest_var))
+    {
         cerr << "ERROR: variable " << dest_var << " not initialized" << endl;
         errors++;
     }
     int dest_addr = current_cfg->current_bb->get_var_index(dest_var);
     int expr_addr = this->visit(ctx->expr());
 
-    if (op == "=") {
+    if (op == "=")
+    {
         current_cfg->current_bb->add_instr(new CopyInstr(expr_addr, dest_addr));
     }
-    if (op == "+="){
+    if (op == "+=")
+    {
         current_cfg->current_bb->add_instr(new AddInstr(dest_addr, expr_addr, dest_addr));
     }
-    if (op == "-="){
+    if (op == "-=")
+    {
         current_cfg->current_bb->add_instr(new SubInstr(dest_addr, expr_addr, dest_addr));
     }
-    if (op == "*="){
+    if (op == "*=")
+    {
         current_cfg->current_bb->add_instr(new MulInstr(dest_addr, expr_addr, dest_addr));
     }
-    if (op == "/="){
+    if (op == "/=")
+    {
         current_cfg->current_bb->add_instr(new DivInstr(dest_addr, expr_addr, dest_addr));
     }
     return dest_addr;
@@ -333,8 +351,8 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
     int value = stoi(ctx->CONST()->getText());
     int addr = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
-    ConstInstr* constInstruction = new ConstInstr(value, addr);
-    current_cfg->current_bb->add_instr(constInstruction );
+    ConstInstr *constInstruction = new ConstInstr(value, addr);
+    current_cfg->current_bb->add_instr(constInstruction);
 
     current_cfg->getConstTable()[addr] = value;
     current_cfg->getInstrTable()[addr] = constInstruction;
@@ -345,32 +363,41 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
 antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx)
 {
     string name = ctx->VAR()->getText();
-    if (existsCFG(name)) {
-        if (getCFG(name)->number_of_params != ctx->expr().size()) {
+    if (existsCFG(name))
+    {
+        if (getCFG(name)->number_of_params != ctx->expr().size())
+        {
             cerr << "ERROR: wrong number of parameters for function " << name << endl;
             errors++;
         }
 
         int dest = 0;
         int return_type = getCFG(name)->return_type;
-        if (return_type) {
+        if (return_type)
+        {
             dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
         }
 
         vector<int> args_addrs;
-        for (auto argument : ctx->expr()) {
+        for (auto argument : ctx->expr())
+        {
             int addr = this->visit(argument);
             args_addrs.push_back(addr);
         }
-        for (int i = 0; i < args_addrs.size(); i++) {
+
+        for (int i = args_addrs.size() - 1; i >= 0; i--)
+        {
             current_cfg->current_bb->add_instr(new SetparamInstr(args_addrs[i], i));
         }
         current_cfg->current_bb->add_instr(new CallFunctionInstr(name, dest, return_type));
 
-        if (return_type) {
+        if (return_type)
+        {
             return dest;
         }
-    } else {
+    }
+    else
+    {
         cerr << "ERROR: unknown function " << name << endl;
         errors++;
     }
@@ -522,16 +549,19 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx)
     return res;
 }
 
-antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx) {
+antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx)
+{
     int term1 = this->visit(ctx->expr(0));
     int term2 = this->visit(ctx->expr(1));
     string op = ctx->LOGIC()->getText();
     int res = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
 
-    if(op == "||"){
+    if (op == "||")
+    {
         current_cfg->current_bb->add_instr(new LogicInstr(term1, term2, res, LogicInstr::Or));
     }
-    if(op == "&&"){
+    if (op == "&&")
+    {
         current_cfg->current_bb->add_instr(new LogicInstr(term1, term2, res, LogicInstr::And));
     }
 
