@@ -67,7 +67,7 @@ $(GENERATED_DIR)/ifccParser.cpp: ifcc.g4
 	$(ANTLR) -visitor -no-listener -Dlanguage=Cpp -o $(GENERATED_DIR) ifcc.g4
 
 # prevent automatic cleanup of "intermediate" files like ifccLexer.cpp etc
-.PRECIOUS: $(GENERATED_DIR)/ifcc%.cpp
+.PRECIOUS: $(GENERATED_DIR)/ifcc%.cpp $(BUILD_DIR)/ifcc%.o
 
 ##########################################
 # view the parse tree in a graphical window

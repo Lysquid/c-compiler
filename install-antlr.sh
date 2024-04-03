@@ -6,12 +6,6 @@ set -e # Abort the script at the first error
 # Preparation step
 
 # sanity check
-if [ $(basename $PWD) != "pld-comp" ]
-then
-    echo "error: this script must be executed from within your 'pld-comp' directory"
-    exit 1
-fi
-
 if test -d antlr.tmp
 then
     echo "error: please remove the antlr.tmp directory (probably from a previous attempt)"
@@ -43,9 +37,11 @@ curl -O https://www.antlr.org/download/antlr4-cpp-runtime-4.9.2-source.zip
 ######################################################################
 # Build step
 
-# Arch
-# export CC=clang
-# export CXX=clang++
+# CUSTOM ADDITION
+# REMOVE IT IF IT FAILS
+# Fix GCC stopping on warning by using clang
+export CC=clang
+export CXX=clang++
 
 unzip *.zip
 mkdir build
