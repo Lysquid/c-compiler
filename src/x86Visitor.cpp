@@ -188,11 +188,18 @@ void x86Visitor::visit(RetInstr &i) {
 }
 
 void x86Visitor::visit(CopyparamInstr &i) {
-    o << "    movl %" << i.memory_type[i.src] << ", " << i.dest << "(%rbp)\n";
+    if(i.src < 6){
+        o << "    movl %" << i.memory_type[i.src] << ", " << i.dest << "(%rbp)\n";
+    }
 }
 
 void x86Visitor::visit(SetparamInstr &i) {
-    o << "    movl " << i.src << "(%rbp), %" << i.memory_type[i.dest] << "\n";
+    if(i.dest < 6){
+        o << "    movl " << i.src << "(%rbp), %" << i.memory_type[i.dest] << "\n";
+    } else {
+        o << "    movl " << i.src << "(%rbp), %eax\n";
+        o << "    pushq %rax\n";
+    }
 }
 
 void x86Visitor::visit(CallFunctionInstr &i) {
