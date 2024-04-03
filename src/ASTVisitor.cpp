@@ -1,5 +1,8 @@
 #include "ASTVisitor.h"
 
+/**
+ * Visite le programme sous forme d'AST et génère l'IR associée
+ */
 antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
     CFG *putchar = new CFG("putchar");
