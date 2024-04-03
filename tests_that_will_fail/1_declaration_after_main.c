@@ -1,5 +1,3 @@
-int bonjour(int a, int b);
-
 int main()
 {
     int a = bonjour(1,2);
@@ -8,5 +6,6 @@ int main()
 
 int bonjour(int a, int b)
 {
-    return return a + b;
+    a + b;
+    return 5;
 }
