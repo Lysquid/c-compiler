@@ -81,7 +81,7 @@ antlrcpp::Any ASTVisitor::visitParameters(ifccParser::ParametersContext *ctx)
             else
             {
                 current_cfg->current_bb->add_to_symbol_table(var, current_cfg->get_next_free_symbol_index());
-                current_cfg->current_bb->add_instr(new CopyparamInstr(i, current_cfg->current_bb->get_var_index(var)));
+                current_cfg->current_bb->add_instr(new CopyParamInstr(i, current_cfg->current_bb->get_var_index(var)));
             }
         }
         else
@@ -384,7 +384,7 @@ antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContex
 
         for (int i = args_addrs.size() - 1; i >= 0; i--)
         {
-            current_cfg->current_bb->add_instr(new SetparamInstr(args_addrs[i], i));
+            current_cfg->current_bb->add_instr(new SetParamInstr(args_addrs[i], i));
         }
         current_cfg->current_bb->add_instr(new CallFunctionInstr(name, dest, return_type));
 

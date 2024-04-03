@@ -45,9 +45,9 @@ public:
 
     void visit(RetInstr &i) override;
 
-    void visit(CopyparamInstr &i) override;
+    void visit(CopyParamInstr &i) override;
 
-    void visit(SetparamInstr &i) override;
+    void visit(SetParamInstr &i) override;
 
     void visit(CallFunctionInstr &i) override;
 
@@ -59,10 +59,6 @@ public:
 
 private:
 
-    void gen_prologue(CFG &cfg);
-
-    void gen_prologue_BB(BasicBlock &bb);
-
-    void gen_epilogue();
+    const vector<string> registers = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
 
 };

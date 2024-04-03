@@ -80,9 +80,9 @@ void CFG::printCFG() {
                 cout << "Bit Instruction: term1=" << bitInstr->term1 << ", term2=" << bitInstr->term2 << ", dest=" << bitInstr->dest << ", bitOp=" << bitInstr->bitOp << endl;
             } else if (RetInstr* retInstr = dynamic_cast<RetInstr*>(instr)) {
                 cout << "Return Instruction: var=" << retInstr->var << endl;
-            } else if (CopyparamInstr* copyparamInstr = dynamic_cast<CopyparamInstr*>(instr)) {
+            } else if (CopyParamInstr* copyparamInstr = dynamic_cast<CopyParamInstr*>(instr)) {
                 cout << "Copyparam Instruction: src=" << copyparamInstr->src << ", dest=" << copyparamInstr->dest << endl;
-            } else if (SetparamInstr* setparamInstr = dynamic_cast<SetparamInstr*>(instr)) {
+            } else if (SetParamInstr* setparamInstr = dynamic_cast<SetParamInstr*>(instr)) {
                 cout << "Setparam Instruction: src=" << setparamInstr->src << ", dest=" << setparamInstr->dest << endl;
             } else if (CallFunctionInstr* callfunctionInstr = dynamic_cast<CallFunctionInstr*>(instr)) {
                 cout << "Callfunction Instruction: function_name=" << callfunctionInstr->function_name << ", dest=" << callfunctionInstr->dest << ", return_type=" << callfunctionInstr->return_type << endl;

@@ -49,9 +49,9 @@ public:
 
     virtual void visit(RetInstr &i) = 0;
 
-    virtual void visit(CopyparamInstr &i) = 0;
+    virtual void visit(CopyParamInstr &i) = 0;
 
-    virtual void visit(SetparamInstr &i) = 0;
+    virtual void visit(SetParamInstr &i) = 0;
 
     virtual void visit(CallFunctionInstr &i) = 0;
 

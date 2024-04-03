@@ -71,11 +71,11 @@ void BitInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
-void CopyparamInstr::accept(IRVisitor &visitor) {
+void CopyParamInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
-void SetparamInstr::accept(IRVisitor &visitor) {
+void SetParamInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
