@@ -1,8 +1,5 @@
 #include "ASTVisitor.h"
 
-/**
- * Visite le programme sous forme d'AST et génère l'IR associée
- */
 antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
     CFG *putchar = new CFG("putchar");
@@ -515,6 +512,7 @@ antlrcpp::Any ASTVisitor::visitPar(ifccParser::ParContext *ctx)
     return this->visit(ctx->expr());
 }
 
+
 antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx)
 {
     int term1 = this->visit(ctx->expr(0));
@@ -549,6 +547,7 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx)
     return res;
 }
 
+
 antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx)
 {
     int term1 = this->visit(ctx->expr(0));
@@ -568,6 +567,7 @@ antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx)
     return res;
 }
 
+
 antlrcpp::Any ASTVisitor::visitBitAnd(ifccParser::BitAndContext *ctx)
 {
     int term1 = this->visit(ctx->expr(0));
@@ -579,6 +579,7 @@ antlrcpp::Any ASTVisitor::visitBitAnd(ifccParser::BitAndContext *ctx)
 
     return res;
 }
+
 
 antlrcpp::Any ASTVisitor::visitBitOr(ifccParser::BitOrContext *ctx)
 {
@@ -592,6 +593,7 @@ antlrcpp::Any ASTVisitor::visitBitOr(ifccParser::BitOrContext *ctx)
     return res;
 }
 
+
 antlrcpp::Any ASTVisitor::visitBitXor(ifccParser::BitXorContext *ctx)
 {
     int term1 = this->visit(ctx->expr(0));
@@ -603,6 +605,7 @@ antlrcpp::Any ASTVisitor::visitBitXor(ifccParser::BitXorContext *ctx)
 
     return res;
 }
+
 
 antlrcpp::Any ASTVisitor::visitRet(ifccParser::RetContext *ctx)
 {

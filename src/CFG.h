@@ -33,23 +33,40 @@ public:
         next_bb_number = 0;
     }
 
+    /**
+     * Ajoute un bloc à la fin du CFG
+    */
     void add_bb(BasicBlock *bb);
 
+    /**
+     * Récupère un bloc par son label
+    */
     BasicBlock *get_bb(string label);
 
-    // < helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24
-
+    /**
+     * Récupère les symboles inutilisés
+    */
     vector<string> get_unused_symbols();
 
+    /**
+     * Vérifie si un bloc est dans le CFG
+    */
     bool bb_in_cfg(string name);
 
-    // basic block management
+    /**
+     * Crée un nouveau nom de bloc 
+    */
     string new_BB_name();
 
+    /**
+     * Récupère le label du CFG
+    */
     string get_label() { return name; }
 
+    /**
+     * Récupère l'index du prochain symbole libre de la table des symboles
+    */
     int get_next_free_symbol_index();
-
 
     vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
 
@@ -63,10 +80,16 @@ public:
 
     int is_return = 0; /**< 0 if not return, 1 if return */
 
+    /**
+     * Récupère la table des constantes
+    */
     unordered_map<int, int>& getConstTable(){
         return const_index;
     }
 
+    /**
+     * Récupère la table des instructions
+    */
     unordered_map<int, Instr*>& getInstrTable(){
         return instr_index;
     }
