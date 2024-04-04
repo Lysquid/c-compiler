@@ -1,4 +1,5 @@
 #include "ASTVisitor.h"
+#include "Instr.h"
 
 antlrcpp::Any ASTVisitor::visitProg(ifccParser::ProgContext *ctx)
 {
@@ -649,11 +650,11 @@ antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx)
 
     if (op == "||")
     {
-        current_cfg->current_bb->add_instr(new LogicInstr(term1, term2, res, LogicInstr::Or));
+        current_cfg->current_bb->add_instr(new AddInstr(term1, term2, res));
     }
     if (op == "&&")
     {
-        current_cfg->current_bb->add_instr(new LogicInstr(term1, term2, res, LogicInstr::And));
+        current_cfg->current_bb->add_instr(new MulInstr(term1, term2, res));
     }
 
     return res;
