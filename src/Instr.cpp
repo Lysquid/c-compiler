@@ -63,10 +63,6 @@ void NotInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }
 
-void LogicInstr::accept(IRVisitor &visitor) {
-    visitor.visit(*this);
-}
-
 void BitInstr::accept(IRVisitor &visitor) {
     visitor.visit(*this);
 }

@@ -1,4 +1,5 @@
 #include "x86Visitor.h"
+#include "Instr.h"
 
 void x86Visitor::visit(CFG &cfg) {
     // Prologue
@@ -149,10 +150,6 @@ void x86Visitor::visit(NotInstr &i) {
     o << "    sete %al\n";
     o << "    movzbl %al, %eax\n";
     o << "    movl %eax, " << i.dest << "(%rbp)\n";
-}
-
-void x86Visitor::visit(LogicInstr &i){
-    
 }
 
 void x86Visitor::visit(BitInstr &i) {
