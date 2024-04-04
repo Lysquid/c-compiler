@@ -17,10 +17,16 @@
 
 Assurer 
 
-Dans le repertoire makefile, faites une copie du makefile pour votre platform, et appelez le `config.mk`
+Dans le repertoire makefile, faites une copie du makefile pour votre platform, et appelez la `config.mk`.
 
-Compiler et exécuter les tests :
+Pour compiler et exécuter les tests :
 `make -j test`
+permettra de compiler et exécuter les tests avec plusieurs threads pour plus de rapidité. Un test qui passe sera représenté dans la console par `.`, et un test qui ne passe pas sera clairement indiqué sur la console.
+
+Un test passe si l'une des conditions suivantes est réunie:
+- Le programme donné en entrée est bien compilé par GCC et IFCC, et les valeurs de retour d'exécution sont les mêmes.
+- Le programme donné en entrée n'a pas pu être compilé par GCC et IFCC, et les deux compilateurs on retourné au moins une erreur.
+Dans tous les autres cas, le test ne passera pas.
 
 ## Documentation
 
@@ -31,14 +37,18 @@ La documentation est au format HTML. Pour la consulter, ouvrir le fichier `html/
 ## Fonctionnalités
 
 - Commentaires `/* */`
-- Variables (sans les scoops)
+- Variables (sans les scopes)
 - Constantes entières et caractères
+- Tableaux 1D
 - Expressions avec les opérateurs `+` `-` `*` `/` `%` `|` `&` `^` `!`
 - Comparaisons avec `==` `!=` `<` `>` `<=` `>=`
 - Déclaration et affectation de variables
+- Conditions `if`, `else`
+- Boucles `while`
+- Opérateurs logiques NON pareseux `&&` `||`
 - `getchar` et `putchar`
 - Fonctions (version bêta/incomplète/potentiellement buggée)
-- Bonus (inutile) : tests parallélisés
+- Bonus (inutile, sauf pour nous, ça nous a fait gagner beaucoup de temps) : tests parallélisés
 
 ## Architecture
 
