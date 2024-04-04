@@ -41,10 +41,13 @@ La documentation est au format HTML. Pour la consulter, ouvrir le fichier `html/
 - Constantes entières et caractères
 - Tableaux 1D
 - Expressions avec les opérateurs `+` `-` `*` `/` `%` `|` `&` `^` `!`
+- Opérateurs d'incrémentation `i++` `i--` `++i` `--i`
 - Comparaisons avec `==` `!=` `<` `>` `<=` `>=`
 - Déclaration et affectation de variables
-- Conditions `if`, `else`
-- Boucles `while`
+- Vérification de la déclaration d'une variable avant son utilisation
+- Vérification de l'utilisation d'une variable déclarée
+- Structures conditionnelles `if`, `else`
+- Boucles `while`, avec `continue` et `break`
 - Opérateurs logiques NON pareseux `&&` `||`
 - `getchar` et `putchar`
 - Fonctions (version bêta/incomplète/potentiellement buggée)
