@@ -558,11 +558,11 @@ antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx)
 
     if (op == "||")
     {
-        current_cfg->current_bb->add_instr(new AddInstr(term1, term2, res));
+        current_cfg->current_bb->add_instr(new BitInstr(term1, term2, res, BitInstr::Or));
     }
     if (op == "&&")
     {
-        current_cfg->current_bb->add_instr(new MulInstr(term1, term2, res));
+        current_cfg->current_bb->add_instr(new BitInstr(term1, term2, res, BitInstr::And));
     }
 
     return res;
