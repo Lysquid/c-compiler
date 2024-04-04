@@ -13,6 +13,7 @@ parameters : (TYPE VAR (',' TYPE VAR)*)? ;
 statement
     : 'return' expr? ';'                                # ret
     | TYPE declareAssign (',' declareAssign)* ';'       # declaration
+    | TYPE ( arrayDecl (',' arrayDecl)* ) ';'           # arrayDeclaration
     | '{' statement* '}'                                # block
     | 'if' '(' expr ')' if_block=statement ('else' else_block=statement)?   # if
     | 'while' '(' expr ')' body=statement               # while
@@ -22,6 +23,8 @@ statement
     ;
 
 declareAssign : VAR ('=' expr)? ;
+
+arrayDecl : VAR '[' CONST ']' ('=' '{' expr (',' expr)* '}')?;
 
 expr
     : ADD_SUB expr                      # sign
@@ -40,7 +43,9 @@ expr
     | CHAR                              # char
     | VAR                               # var
     | VAR assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # assignment
+    | VAR '[' CONST ']'  assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # arrayAssignment
     | '(' expr ')'                      # par
+    | VAR '['CONST']'                   # arrayAccess
     ;
 
 increment

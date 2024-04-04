@@ -58,6 +58,27 @@ public:
     antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override;
 
     /**
+     * Visite une déclaration de tableau
+     */
+    antlrcpp::Any visitArrayDeclaration(ifccParser::ArrayDeclarationContext *ctx) override;
+
+    /**
+     * Visite une déclaration de tableau avec affectation
+     */
+    antlrcpp::Any visitArrayDecl(ifccParser::ArrayDeclContext *ctx) override;
+
+    /**
+     * Visite un élement de tableau
+     */
+    antlrcpp::Any visitArrayAccess(ifccParser::ArrayAccessContext *ctx) override;
+
+    /**
+     * Visite une affectation d'élement de tableau 
+     */
+    antlrcpp::Any visitArrayAssignment(ifccParser::ArrayAssignmentContext *ctx) override;
+
+
+    /**
      * Visite une déclaration de variable
      */
     antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *ctx) override;

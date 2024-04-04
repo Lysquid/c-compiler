@@ -30,6 +30,14 @@ public:
 
     antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override;
 
+    antlrcpp::Any visitArrayDeclaration(ifccParser::ArrayDeclarationContext *ctx) override;
+
+    antlrcpp::Any visitArrayDecl(ifccParser::ArrayDeclContext *ctx) override;
+
+    antlrcpp::Any visitArrayAccess(ifccParser::ArrayAccessContext *ctx) override;
+
+    antlrcpp::Any visitArrayAssignment(ifccParser::ArrayAssignmentContext *ctx) override;
+
     antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *ctx) override;
 
     antlrcpp::Any visitDeclareAssign(ifccParser::DeclareAssignContext *ctx) override;

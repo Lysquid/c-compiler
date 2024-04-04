@@ -259,6 +259,98 @@ antlrcpp::Any ASTVisitor::visitBlock(ifccParser::BlockContext *ctx)
     return 0;
 }
 
+antlrcpp::Any ASTVisitor::visitArrayDeclaration(ifccParser::ArrayDeclarationContext *ctx)
+{
+    for (auto declaration: ctx->arrayDecl()) {
+        this->visit(declaration);
+    }
+    return 0;
+}
+
+antlrcpp::Any ASTVisitor::visitArrayDecl(ifccParser::ArrayDeclContext *ctx) {
+    //name
+    string var = ctx->VAR()->getText();
+    if (current_cfg->current_bb->scope->is_declared_locally(var)) {
+        cerr << "ERROR: variable " << var << " already declared" << endl;
+        errors++;
+    }
+
+    vector<int> args_addrs;
+    for (auto argument : ctx->expr()) {
+        int addr = this->visit(argument);
+        args_addrs.push_back(addr);
+    }
+
+    //size
+    int declaredSize = stoi(ctx->CONST()->getText());
+
+    if (declaredSize <= 0){
+        cerr << "Error: Array size must be positive." << endl;
+        return antlrcpp::Any();
+    }
+
+    //symbolTable
+    for (int i = 0; i < declaredSize; ++i) {
+         current_cfg->current_bb->add_to_symbol_table(var + "[" + to_string(i) + "]", current_cfg->get_next_free_symbol_index());
+    }
+
+    //number of elements in brackets 
+    int elementsSize = args_addrs.size();
+
+    if(elementsSize != 0){
+
+        if (declaredSize != elementsSize) {
+            cerr << "ERROR: Array size mismatch for variable " << var << endl;
+            return antlrcpp::Any();
+        }
+
+        for (int i = 0; i < elementsSize; ++i) {
+            int addr = this->visit(ctx->expr(i));
+            current_cfg->current_bb->add_instr(new CopyInstr(addr, current_cfg->current_bb->get_var_index(var + "[" + to_string(i) + "]")));
+        }
+    }         
+    return 0;
+}
+
+antlrcpp::Any ASTVisitor::visitArrayAccess(ifccParser::ArrayAccessContext *ctx)
+{
+  string arrayName = ctx->VAR()->getText();
+  string rangeValue = ctx->CONST()->getText();
+  int arrayValueAddrs = current_cfg->current_bb->get_var_index(arrayName + "[" + rangeValue + "]");
+  return arrayValueAddrs;
+}
+
+antlrcpp::Any ASTVisitor::visitArrayAssignment(ifccParser::ArrayAssignmentContext *ctx) {
+    string arrayName = ctx->VAR()->getText();
+    string rangeValue = ctx->CONST()->getText();
+    string dest_var = arrayName + "[" + rangeValue + "]";
+    string op = ctx->assignmentop->getText();
+
+    if (!current_cfg->current_bb->is_symbol_declared(dest_var)) {
+        cerr << "ERROR: Index is incorrect" << endl;
+        errors++;
+    }
+    int dest_addr = current_cfg->current_bb->get_var_index(dest_var);
+    int expr_addr = this->visit(ctx->expr());
+
+    if (op == "=") {
+        current_cfg->current_bb->add_instr(new CopyInstr(expr_addr, dest_addr));
+    }
+    if (op == "+="){
+        current_cfg->current_bb->add_instr(new AddInstr(dest_addr, expr_addr, dest_addr));
+    }
+    if (op == "-="){
+        current_cfg->current_bb->add_instr(new SubInstr(dest_addr, expr_addr, dest_addr));
+    }
+    if (op == "*="){
+        current_cfg->current_bb->add_instr(new MulInstr(dest_addr, expr_addr, dest_addr));
+    }
+    if (op == "/="){
+        current_cfg->current_bb->add_instr(new DivInstr(dest_addr, expr_addr, dest_addr));
+    }
+    return dest_addr;
+}
+
 antlrcpp::Any ASTVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
 {
     for (auto declaration : ctx->declareAssign())

@@ -75,6 +75,41 @@ antlrcpp::Any TypeCheckVisitor::visitBlock(ifccParser::BlockContext *ctx) {
     return Type(Type::VOID);
 }
 
+antlrcpp::Any TypeCheckVisitor::visitArrayDeclaration(ifccParser::ArrayDeclarationContext *ctx) {
+    Type declaration_type = Type(ctx->TYPE()->getText()); 
+    for (auto declaration: ctx->arrayDecl()) {
+        Type expr_type = this->visitArrayDecl(declaration); 
+        string var = declaration->VAR()->getText();
+        if (declaration->expr().size() > 0 && expr_type != declaration_type) { 
+            errors++;
+            cerr << "ERROR: Type mismatch at declaration, assigning " << expr_type << " to " << declaration_type << " (" << var << ")" << endl;
+        }
+        this->var_types[var] = declaration_type;
+    }
+    return Type(Type::VOID);
+}
+
+antlrcpp::Any TypeCheckVisitor::visitArrayDecl(ifccParser::ArrayDeclContext *ctx) {
+     if (ctx->expr().empty()) {
+        return Type(Type::VOID);
+    } else {
+        return this->visit(ctx->expr(0));
+    }
+}
+
+antlrcpp::Any TypeCheckVisitor::visitArrayAccess(ifccParser::ArrayAccessContext *ctx) {
+    return Type(Type::INT);
+}
+
+antlrcpp::Any TypeCheckVisitor::visitArrayAssignment(ifccParser::ArrayAssignmentContext *ctx) {
+    Type expr_type = this->visit(ctx->expr());
+    Type var_type = var_types[ctx->VAR()->getText()];
+    if (expr_type != var_type) {
+        errors++;
+        cerr << "ERROR: Type mismatch at assignment, assigning " << expr_type << " to " << var_type << " (" << ctx->VAR()->getText() << ")" << endl;
+    }
+    return var_type;
+}
 antlrcpp::Any TypeCheckVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx) {
     Type declaration_type = Type(ctx->TYPE()->getText());
     for (auto declaration: ctx->declareAssign()) {
