@@ -30,6 +30,8 @@ Vous pouvez maintenant compiler un programme de notre sous ensemble du C vers x8
 Compilez et exécuter les tests :
 `make -j test`
 
+Pour tester un seul programme : `./ifcc-test.py program.c`
+
 Un test qui passe sera représenté dans la console par `.`, et un test qui ne passe pas sera clairement indiqué sur la console.
 
 Un test passe si l'une des conditions suivantes est réunie :
@@ -44,7 +46,50 @@ Générez la documentation avec doxygen : `make doc`
 
 La documentation est au format HTML. Pour la consulter, ouvrez le fichier `html/index.html`
 
-## Fonctionnalités
+## Manuel utilisateur
+
+Ce projet permet de compiler un sous ensemble du C, qui est délimité dans cette partie.
+
+### Commentaires
+
+Seuls les commentaires du type- sont supportés `/* */`, y compris sur plusieurs lignes.
+
+### Variables
+
+Les déclarations de variable sont les même qu'en C. Seuls le type `int` est supporté. Le type `char` fonctionne, et est traité comme un `int`.
+
+```c
+int a;
+int b = 2;
+int x=1, y, z=3;
+```
+
+Comme en C, redéclarer une variable, utiliser une variable non déclarer ou avant sans déclaration lève une erreur.
+
+### Caractères
+
+Un unique caractère entre peut être utilisé pour assigner une variable (la valeur ASCII corespondante est stockée).
+
+```c
+int c1 = 'a';
+char c2 = 'b';
+```
+
+Les caractère spéciaux tels que `\n` ne fonctionnent pas.
+
+### Tableaux
+
+### Expressions arithmétiques
+
+Les opérateurs suivants sont supportés : `+` `-` `*` `/` `%` `|` `&` `^` `!`. Le moins unaire fonctionne aussi. Les opérateurs multiplicatif ont bien la priorité sur les opérateurs additif.
+
+TODO: les autres priorités
+TODO: exemple
+TODO: parentheses
+
+### Opérateurs d'incrémentation
+
+### Opérateurs de comparaison
 
 - Commentaires `/* */`
 - Variables (sans les scopes)
