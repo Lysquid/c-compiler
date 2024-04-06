@@ -1,4 +1,4 @@
-# Compilateur C
+# Compilateur C IFCC
 
 ## Hexanome
 
@@ -52,19 +52,22 @@ Ce projet permet de compiler un sous ensemble du C, qui est délimité dans cett
 
 ### Commentaires
 
-Seuls les commentaires du type- sont supportés `/* */`, y compris sur plusieurs lignes.
+Seuls les commentaires du type `/* */` sont supportés , y compris sur plusieurs lignes.
 
 ### Variables
 
 Les déclarations de variable sont les même qu'en C. Seuls le type `int` est supporté. Le type `char` fonctionne, et est traité comme un `int`.
 
+Il est également possible d'affecter une valeur **constante** (un entier) à une variable avec `variable = constante`. 
+
 ```c
 int a;
 int b = 2;
 int x=1, y, z=3;
+a = 5;
 ```
 
-Comme en C, redéclarer une variable, utiliser une variable non déclarer ou avant sans déclaration lève une erreur.
+Comme pour avec GCC, redéclarer une variable, utiliser une variable non déclarée ou avant sa déclaration lève une erreur.
 
 ### Caractères
 
@@ -89,7 +92,110 @@ TODO: parentheses
 
 ### Opérateurs d'incrémentation
 
+Comme avec GCC, le compilateur IFCC est capable de reconnaitre les opérateurs d'incrémentation `++` et `--`. S'ils sont placés devant une variable, alors la variable sera respectivement incrémentée ou décrémentée de 1 **avant** d'avoir sa valeur retournée. Dans le cas où ils sont placés après la variable, alors sa valeur sera incrémentée ou décrémentée de 1 **après** avoir sa valeur retournée.
+
+```c
+int a = 0;
+int b = a++;  // ici, b = 0, c'est-à-dire la valeur de a AVANT incrémentation, puis a = 1
+int c = ++a;  // ici, c = 2, c'est-à-dire la valeur de a APRES incrémentation, puis a = 2
+```
+
 ### Opérateurs de comparaison
+
+Il est possible de réaliser des comparaisons entre deux entiers (constantes ou variables) grâce aux opérateurs de comparaison `==` `!=` `<` `>` `<=` `>=`. Similairement à GCC, la valeur retournée sera 1 si la comparaison est vraie, et 0 sinon.
+
+```c
+int a = 0;
+int b = a < 4;  // ici, b = 1, comme 0 est bien inférieur à 4
+int c = a == 1; // ici, c = 0, comme 0 n'est pas égal à 1
+```
+
+### Structures conditionnelles
+
+Le compilateur IFCC supporte les structures conditionnelles de C `if`, `while` et `switch?`.
+
+#### if
+
+La structure `if(condition){ }` permet d'exécuter des instructions entre acolades si la valeur donnée en entrée est différente de 0.
+
+```c
+int a = 0;
+if(42){
+    a = 6;
+}
+
+// a = 6 à la fin
+```
+
+Il est aussi possible de d'indiquer des instructions à exécuter dans le cas où la condition est égale à 0 avec
+`else`.
+
+```c
+int a = 0;
+if (a > 5){
+    a = 3;
+} else {
+    a = 42;
+}
+
+// ici a = 42
+```
+
+#### while
+
+La boucle `while(condition){ }` fonctionne de manière similaire à un `if`. Les instructions à l'intérieur des acolades sont exécutées tant que la condition est différente de 0.
+
+```c
+int a = 0;
+while (a < 5){
+    a++;
+}
+
+// ici a = 5
+```
+
+#### switch
+
+### Opérateurs logiques non paresseux
+
+Il est possible de combiner deux valeurs ensembles pour pouvoir réaliser des conditions plus complexes avec les opérateurs `&&` et `||`.
+
+Contrairement à GCC, les opérateurs `&&` et `||` ne sont pas paresseux avec IFCC. Cela signifie que les deux expressions seront exécutées dans tous les cas.
+
+#### ET &&
+`a && b` retournera 1 si et seulement si `a` et `b` sont différents de 0. Dans tous les autres cas, 0 sera retourné.
+
+```c
+int a = 0;
+if (a > 5 && a < 5){
+    a = 3;
+} 
+
+int b = 0;
+if (b == 0 && b < 8) {
+    b = 5;
+}
+
+// ici a = 0 et b = 5
+```
+
+
+#### OU ||
+`a || b` retournera 1 si au moins `a` ou `b` est différent de 0. Dans le cas où a et b sont égaux à 0, 0 sera retourné.
+
+```c
+int a = 0;
+if (a > 5 || a < 5){
+    a = 3;
+} 
+
+int b = 0;
+if (b == 0 || b < 8) {
+    b = 5;
+}
+
+// ici a = 3 et b = 5
+```
 
 - Commentaires `/* */`
 - Variables (sans les scopes)
