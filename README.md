@@ -13,11 +13,11 @@
 
 ## Utilisation
 
-### Antler4
+### Antlr4
 
-Installez Antler4, avec le gestionaire de système, ou en exécutant le script `./install-antlr.sh`
+Installez Antlr4, avec le gestionnaire de système, ou en exécutant le script `./install-antlr.sh`
 
-Dans le repertoire `makefile`, faites une copie du makefile pour votre platform, et appelez le `config.mk`. Si vous avec utilisez le script d'installation, cette étape n'est pas nécessaire.
+Dans le repertoire `makefile`, faites une copie du makefile pour votre platforme, et appelez le `config.mk`. Si vous avec utilisez le script d'installation, cette étape n'est pas nécessaire.
 
 ### Utilisation
 
@@ -27,7 +27,7 @@ Vous pouvez maintenant compiler un programme de notre sous ensemble du C vers x8
 
 ### Tests
 
-Compilez et exécuter les tests :
+Compilez et exécutez les tests :
 `make -j test`
 
 Pour tester un seul programme : `./ifcc-test.py program.c`
@@ -67,13 +67,13 @@ multiline
 
 ### Variables
 
-Seuls le type `int` est supporté. Le type `char` fonctionne, et est traité comme un `int`.
+Seul le type `int` est supporté. Le type `char` fonctionne, et est traité comme un `int`.
 
 #### Déclaration et affectation
 
-Les déclarations de variable sont les même qu'en C : on peut déclarer plusieurs .
+Les déclarations de variables sont les mêmes qu'en C : on peut en déclarer plusieures.
 
-Il est possible d'affecter une valeur constante ou bien la valeur d'une autre variable à une variable. L'affection renvoyant la valeur affecté, on peut les enchaîner.
+Il est possible d'affecter une valeur constante ou bien la valeur d'une autre variable à une variable. L'affection renvoyant la valeur affectée, on peut les enchaîner.
 
 ```c
 int a;
@@ -85,18 +85,18 @@ int x = y = z = 2;
 
 Comme pour avec GCC, redéclarer une variable, utiliser une variable non déclarée ou avant sa déclaration lève une erreur.
 
-Les variables déclarées et non utilisés affichent un warning.
+Les variables déclarées et non utilisées affichent un warning.
 
 #### Caractères
 
-Un unique caractère entre peut être utilisé pour assigner une variable (la valeur ASCII corespondante est stockée).
+Un unique caractère peut être utilisé pour assigner une variable (la valeur ASCII corespondante est stockée).
 
 ```c
 int c1 = 'a';   // 97
 char c2 = 'b';  // 98
 ```
 
-Les caractère spéciaux tels que `\n` ne fonctionnent pas.
+Les caractères spéciaux tels que `\n` ne fonctionnent pas.
 
 ### Tableaux
 
@@ -140,7 +140,7 @@ int c = ++a;  // ici, c = 2, c'est-à-dire la valeur de a APRES incrémentation,
 
 #### Opérateurs d'affections
 
-Les opérateurs `+=` `-=` `*=` `/=` sont supportés en plus de l'assignation classiques.
+Les opérateurs `+=` `-=` `*=` `/=` sont supportés en plus de l'assignation classique.
 
 #### Opérateurs de comparaison
 
@@ -154,7 +154,7 @@ int c = a == 1; // ici, c = 0, comme 0 n'est pas égal à 1
 
 ### Blocs avec portée
 
-Les accolades définissent un bloc. Cela crée porté : on peut alors accéder au variable déclarée à l'intérieur et l’extérieur, y compris en cas de blocs imbriqués, mais on ne peut plus utiliser les variables définient à l'intérieur du bloc après en être sorti.
+Les accolades définissent un bloc. Cela crée une portée : on peut alors accéder à la variable déclarée à l'intérieur et l’extérieur, y compris en cas de blocs imbriqués, mais on ne peut plus utiliser les variables définies à l'intérieur du bloc après en être sorti.
 
 ```c
 int a = 1;
@@ -171,7 +171,7 @@ a = b;   // erreur: b est indéfini dans ce scope
 
 #### Shadowing
 
-Une variable redéfinie dans un bloc à la priorité devant celle définie dans les blocs parents, et ne les écrase pas.
+Une variable redéfinie dans un bloc a la priorité devant celle définie dans les blocs parents, et ne les écrase pas.
 
 ```c
 int a = 1;
@@ -182,7 +182,7 @@ int a = 1;
 a == 1  // vrai
 ```
 
-Ces bloc fonctionnent de la même manière dans les structures suivantes.
+Ces blocs fonctionnent de la même manière dans les structures suivantes.
 
 ### Structures conditionnelles
 
@@ -190,7 +190,7 @@ Le compilateur IFCC supporte les structures conditionnelles de C `if`, `while` e
 
 #### if
 
-La structure `if (condition)` permet d'exécuter une instructions ou un bloc d'instructions si la valeur donnée en entrée est différente de 0.
+La structure `if (condition)` permet d'exécuter une instruction ou un bloc d'instructions si la valeur donnée en entrée est différente de 0.
 
 ```c
 int a = 0;
@@ -201,7 +201,7 @@ if (42) {
 ```
 
 Il est aussi possible de d'indiquer des instructions à exécuter dans le cas où la condition est égale à 0 avec
-`else`. À noter que les bloc ne sont pas nécessaires s'il n'y a qu'une seule ligne dans chaque branche.
+`else`. À noter que les blocs ne sont pas nécessaires s'il n'y a qu'une seule ligne dans chaque branche.
 
 ```c
 int a = 0;
@@ -214,7 +214,7 @@ else
 
 #### while
 
-La boucle `while (condition)` fonctionne de manière similaire à un `if`. L'instructions ou le bloc d'instructions à la suite sont exécutées tant que la condition est différente de 0.
+La boucle `while (condition)` fonctionne de manière similaire à un `if`. L'instruction ou le bloc d'instructions à la suite sont exécutés tant que la condition est différente de 0.
 
 ```c
 int a = 0;
@@ -290,11 +290,11 @@ Antlr nous fourni l'AST, que nous visitons pour générer une **IR**, qui est el
 
 ### Visiteurs de l'AST
 
-L'AST est actuellement visité par 2 visiteurs, héritant de la classe `BaseVisitor` générée par Antlr. Nous les avons séparez pour rendre le code plus clair, étant donnés que leurs fonctions sont relativement indépendantes.
+L'AST est actuellement visitée par 2 visiteurs, héritant de la classe `BaseVisitor` générée par Antlr. Nous les avons séparés pour rendre le code plus clair, étant donné que leurs fonctions sont relativement indépendantes.
 
 #### Visiteur de type checking
 
-Le premier est le `TypeCheckVisitor`, qui vérifie que les types  (définis dans `Types.h`) sont biens utilisés de façon cohérente.Voilà un exemple typique d'erreur à détecter :
+Le premier est le `TypeCheckVisitor`, qui vérifie que les types (définis dans `Types.h`) sont bien utilisés de façon cohérente. Voilà un exemple typique d'erreur à détecter :
 
 ```c
 void f() {}
@@ -304,17 +304,17 @@ int main() {
 }
 ```
 
-Ce visiteur ne tient pas compte des blocs, il peut donc par exemple levé une erreur de type pour une variable indéfinie dans un scope. Ce visiteur aurait été réellement utile si nous avions implémenté d'autres type, ce qui n'a pas été le cas. Nous n'avons pas eu le temps d'implémenter le check des tableaux.
+Ce visiteur ne tient pas compte des blocs, il peut donc par exemple lever une erreur de type pour une variable indéfinie dans un scope. Ce visiteur aurait été réellement utile si nous avions implémenté d'autres types, ce qui n'a pas été le cas. Nous n'avons pas eu le temps d'implémenter le check des tableaux.
 
 #### Visiteur de génération de l'IR
 
-Le code de génération de l'IR se trouve dans `ASTVisitor`. Le plus gros du code du compilateur ce trouve dans ce visiteur, qui mériterait d'être décomposé.
+Le code de génération de l'IR se trouve dans `ASTVisitor`. Le plus gros du code du compilateur se trouve dans ce visiteur, qui mériterait d'être décomposé.
 
 ### IR
 
 Comme dans le template fourni, l'IR est composée d'instructions `Instr`, regroupées en `BasicBlock` au sein de *control flow graph* `CFG` pour chaque fonction. La différence est que chaque instruction est une classe héritant de `Instr`, avec ses attributs spécifiques.
 
-Chaque Basic Block contient un pointeur vers son `Scope`. C'est dans cette objet qu'est contenu la table des symboles, avec les méthodes permettant de manipuler les variables. Un scope contient un pointeur vers son scope parent : on a donc un arbre dans lequel on peut remonter pour *resolve* une variable.
+Chaque Basic Block contient un pointeur vers son `Scope`. C'est dans cet objet qu'est contenu la table des symboles, avec les méthodes permettant de manipuler les variables. Un scope contient un pointeur vers son scope parent : on a donc un arbre dans lequel on peut remonter pour *resolve* une variable.
 
 ### Génération de l'assembleur
 
@@ -342,17 +342,17 @@ int b = 0 + a * 1:
 
 Ici, l'expression arithmétique `0 + a * 1` sera remplacée par la valeur de la variable `a` dans le code assembleur. De manière plus précise, les instructions `addl` et `imull` sont remplacées par des instructions `movl`.
 
-Pour implémenter cette optimisation, il existe au moins 2 grandes architecture possibles symbolisés par une * dans le schéma suivant :
+Pour implémenter cette optimisation, il existe au moins 2 grandes architectures possibles symbolisées par une * dans le schéma suivant :
 
 AST * visité par (ASTVisitor) -> CFG * visité par (x86Visitor)  -> code type assembleur
 
-Nous avons privilégié la seconde option étant donné sa facilitation relative d'implémentation.
+Nous avons privilégié la seconde option étant donné sa relative facilité d'implémentation.
 
 On retrouvera ainsi dans `CFGOptimizer` un programme qui itére sur les instructions d'un CFG donné, identifie celles optimisables, supprime les anciennes et remplace par les nouvelles. Le résultat constitue un nouveau CFG, exploré à son tour par `x86Visitor`. L'optimiseur proposé ramène toute déclaration combinaison de constantes et d'opérateurs classiques (`+` `-` `*` `/` `%` `-` `&` `|` `^`) à la simple déclaration de la constante qui en résulte et supprime les elements neutres des expressions variables.
 
 ### Tests
 
-Le framework de tests à été modifié pour exécuter les tests en parallèle. Bien que cela permettait initialement de diviser le temps d’exécution par deux, la différence n'est plus très grande avec notre jeu de tests actuel.
+Le framework de tests a été modifié pour exécuter les tests en parallèle. Bien que cela permettait initialement de diviser le temps d’exécution par deux, la différence n'est plus très grande avec notre jeu de tests actuel.
 
 ---
 
@@ -362,6 +362,6 @@ Nous sommes partis sur une base de code commune à l'hexanome au cours la 3ème 
 
 Les séances suivantes, nous avons pu travailler efficacement en parallèle avec un workflow centré autour de GitLab : des issues pour lister les tâches à faire, développées sur des branches de features, que l'on merge ensuite sur la branche main après avoir eu une revue de code.
 
-Les refactors importants (qui ne peuvent pas se faire en parallèle) comme le visiteur d'IR, se font hors séance. Certaines features complexes telles que l'optimisation et les tableaux ont été codés en peer coding pour limiter les erreurs.
+Les refactors importants (qui ne peuvent pas se faire en parallèle), comme le visiteur d'IR, se font hors séance. Certaines features complexes telles que l'optimisation et les tableaux ont été codées en peer coding pour limiter les erreurs.
 
-Les tests ont été écrit pour la plupart au fur et à mesure de l'implémentation des fonctionnalités. Vers la fin, certains membres du groupe ont essayé de mettre à l'épreuve nos implémentations avec des tests en boite noirs, ce qui nous a permis de trouver et corriger de nombreux bugs.
+Les tests ont été écrits pour la plupart au fur et à mesure de l'implémentation des fonctionnalités. Vers la fin, certains membres du groupe ont essayé de mettre à l'épreuve nos implémentations avec des tests en boite noire, ce qui nous a permis de trouver et corriger de nombreux bugs.
