@@ -230,6 +230,11 @@ Nous avons implémenté une **IR**. L'`ASTVisitor`, qui hérite du `BaseVisitor`
 
 Pour découpler l'IR de la génération d'assembleur et donc de l'architecture, nous avons mis en place un deuxième visiteur, `IRVisitor`. Son implémentation concrète pour l'architecture x86, `x86Visitor`, visite chaque instruction du CFG et génère le code assembleur. On peut ansi rajouter un backend pour chaque architecture en écrivant le visiteur associé, sans toucher à l'IR.
 
+Pour implémenter l'optimisation, il existe au moins 2 grandes architecture possibles symbolisés par une * dans le schéma suivant : 
+AST * visité par (ASTVisitor) -> CFG * visité par (x86Visitor)  -> code type assembleur 
+Nous avons privilégié la seconde option étant donné sa facilitation relative d'implémentation. 
+On retrouvera ainsi dans `CFGOptimizer` un programme qui itére sur les instructions d'un CFG donné, identifie celles optimisables, supprime les anciennes et remplace par les nouvelles. Le résultat constitue un nouveau CFG, exploré à son tour par '`x86Visitor`'. L'optimiseur proposé rammène toute déclaration combinaison de constantes et d'opérateurs classiques (+, -, *, /, %, -, &, |, ^) à la simple déclaration de la constante qui en résulte et supprime les élements neutres des expressions variables. 
+
 ## Gestion de projet
 
 Nous sommes partis sur une base de code commune à l'hexanome au cours la 3ème séance, en utilisant la plus avancée. Nous avons en même temps fait la transition vers l'IR. La séance d'après, nous avons pu travailler efficacement en parallèle avec un workflow centré autour de GitLab : des issues pour lister les tâches à faire, développées sur des branches de features, qu'on merge sur la branche main après avoir eu une revue de code. Les refactors importants (qui ne peuvent pas se faire en parallèle) comme le visiteur d'IR, se font hors séance. Nous prévoyons de continuer avec cette méthode de gestion.
