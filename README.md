@@ -226,6 +226,38 @@ while (a < 5) {
 
 #### break et continue
 
+Les instruction `break` et `continue` sont comme dans le language C. Elles doivent seulement être mises dans le boucle `while`.
+L'instruction `break` permet de terminer prématurément l'exécution de la boucle `while` et de sortir de celle-ci. Par exemple:
+
+```c
+int i = 0;
+    
+while (i < 10) {
+    // Si i atteint 5, sortir de la boucle
+    if (i == 5) {
+        break;
+    } 
+    i++;
+}
+// ici i = 5
+```
+
+L'instruction `continue` permet de passer à l'itération suivante de la boucle `while` sans exécuter le reste du code à l'intérieur de la boucle pour l'itération actuelle. Par exemple: 
+
+```c
+int i = 0;
+int j = 0;
+while (i < 5) {
+    i++;
+    // Si i est pair, passer à l'itération suivante
+    if (i % 2 == 0) {
+        continue;
+    }
+    j++;
+}
+// ici j = 3 parce qu'il y a 3 nombres impairs de 1 à 5.
+```
+
 #### switch
 
 ### Opérateurs logiques non paresseux
