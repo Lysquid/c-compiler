@@ -52,7 +52,16 @@ Ce projet permet de compiler un sous ensemble du C, qui est délimité dans cett
 
 ### Commentaires
 
-Seuls les commentaires du type `/* */` sont supportés , y compris sur plusieurs lignes.
+Les commentaires du type `/* */` et `//` sont supportés :
+
+```c
+// salut
+a = 1;
+/*
+Je suis un commentaire
+multiline
+*/
+```
 
 ### Variables
 
@@ -74,8 +83,8 @@ Comme pour avec GCC, redéclarer une variable, utiliser une variable non déclar
 Un unique caractère entre peut être utilisé pour assigner une variable (la valeur ASCII corespondante est stockée).
 
 ```c
-int c1 = 'a';
-char c2 = 'b';
+int c1 = 'a';   // 97
+char c2 = 'b';  // 98
 ```
 
 Les caractère spéciaux tels que `\n` ne fonctionnent pas.
@@ -99,11 +108,12 @@ t1[0] = 2; //affectation d'une valeur à un élément du tableau
 
 ### Expressions arithmétiques
 
-Les opérateurs suivants sont supportés : `+` `-` `*` `/` `%` `|` `&` `^` `!`. Le moins unaire fonctionne aussi. Les opérateurs multiplicatif ont bien la priorité sur les opérateurs additif.
+Les opérateurs suivants sont supportés : `+` `-` `*` `/` `%` `|` `&` `^` `!`, ainsi que le moins unaire. La priorité des opérateurs arithmétiques est respectée : les opérateurs multiplicatifs avant les opérateurs additifs, et ceux ayant la même priorité sont évalués dans l'ordre. Les parenthèses permettent de préciser la priorité des opérations.
 
-TODO: les autres priorités
-TODO: exemple
-TODO: parentheses
+```c
+int a = (2 + (13 % 10)) * -6 / 2 + (1+(+1(1+1)))
+int b = 8 & 1  //
+```
 
 ### Opérateurs d'incrémentation
 
