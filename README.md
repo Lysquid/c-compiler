@@ -276,7 +276,7 @@ Le compilateur supporte la définition et l'utilisation des fonctions, qui retou
 
 #### Définition de fonctions
 
-La définition des fonctions sont comme dans le language C. Par exemple:
+La définition des fonctions est comme dans le language C. Par exemple:
 
 ```c
 int func1(int a, int b){
@@ -293,7 +293,9 @@ L'appel de fonctions doivent être mis après la définition de cette fonction. 
 Par exemple:
 
 ```c
+int b = 3;
 int a = func1(b, 5);
+// ici a = 3+5 = 8
 ```
 
 Notez qu'une variable ne peut pas être affectée à un appel de fonction qui retourne de type void.
@@ -304,7 +306,12 @@ Dans notre compilateur, nous avons prédéfini 2 fonctions d'entrée sortie: put
 
 ```c
 int a = getchar();
+// L'utilisateur peut saisir un caractère, et la variable a va être affectée au code ascii de ce caractère. 
+// Par exemple si on saisi le caractère 'a', alors a = 97.
+
 putchar(a+1);
+// Le programme affiche le caractère dont le code ascii est égale à la valeur de a+1.
+// Pour l'exemple au dessus, ici on affiche 'b'.
 ```
 
 Notez que l'utilisateur ne peut pas redéfinir une fonction appelée putchar ou getchar.
