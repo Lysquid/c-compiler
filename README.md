@@ -46,6 +46,8 @@ Générez la documentation avec doxygen : `make doc`
 
 La documentation est au format HTML. Pour la consulter, ouvrez le fichier `html/index.html`
 
+---
+
 ## Manuel utilisateur
 
 Ce projet permet de compiler un sous ensemble du C, qui est délimité dans cette partie.
@@ -280,6 +282,8 @@ TODO: Zeyang
 
 #### Fonctions d'entrées sortie
 
+---
+
 ## Manuel programmeur
 
 Antlr nous fourni l'AST, que nous visitons pour générer une **IR**, qui est elle même visitée pour générer le code assembleur.
@@ -304,7 +308,7 @@ Ce visiteur ne tient pas compte des blocs, il peut donc par exemple levé une er
 
 #### Visiteur de génération de l'IR
 
-Le code de génération de l'IR se trouve dans `ASTVisitor` (visiteur volumineux qui mériterait d'être décomposé).
+Le code de génération de l'IR se trouve dans `ASTVisitor`. Le plus gros du code du compilateur ce trouve dans ce visiteur, qui mériterait d'être décomposé.
 
 ### IR
 
@@ -314,33 +318,29 @@ Chaque Basic Block contient un pointeur vers son `Scope`. C'est dans cette objet
 
 ### Génération de l'assembleur
 
-Nous avons implémenté un design pattern visiteur pour parcourir l'IR, la classe `IRVisiteur` dans sa version abstraite. Le but est de découpler l'IR de la génération de code, et de donner une interface standard pour cette génération.
+Nous avons implémenté un design pattern visiteur pour parcourir l'IR, la classe `IRVisitor` dans sa version abstraite. Le but est de découpler l'IR de la génération de code, et de donner une interface standard pour cette génération.
 
 L'implémentation concrète pour l'architecture x86, `x86Visitor`, visite chaque instruction des CFG et génère le code assembleur. On peut ainsi facilement rajouter un backend pour chaque architecture en écrivant le visiteur associé.
 
-### Optimisation
-
-#### Propagation des constantes
+### Optimisation : propagation des constantes
 
 Les expressions arithmétiques contenant exclusivement des constantes ont été optimisées et sont remplacées directement par leur résultat lors de la génération du code assembleur.
 
 ```c
 int a = 0;
 a = 1 + 2 * 3;
-
-// ici, l'expression arithmétique '1 + 2 * 3' sera remplacée par la constante '9' dans le code assembleur
-// de manière plus précise, les instructions addl et imull sont remplacées par une seule instruction movl.
 ```
+
+Ici, l'expression arithmétique `1 + 2 * 3` sera remplacée par la constante `9` dans le code assembleur. De manière plus précise, les instructions `addl` et `imull` sont remplacées par une seule instruction `movl`.
 
 Les éléments neutres des opérateurs `+` `-` `*` sont supprimés lors de la génération du code assembleur.
 
 ```c
 int a = 0;
 int b = 0 + a * 1:
-
-// ici, l'expression arithmétique '0 + a * 1' sera remplacée par la valeur de la variable 'a' dans le code assembleur
-// de manière plus précise, les instructions addl et imull sont remplacées par des instructions movl.
 ```
+
+Ici, l'expression arithmétique `0 + a * 1` sera remplacée par la valeur de la variable `a` dans le code assembleur. De manière plus précise, les instructions `addl` et `imull` sont remplacées par des instructions `movl`.
 
 Pour implémenter cette optimisation, il existe au moins 2 grandes architecture possibles symbolisés par une * dans le schéma suivant :
 
@@ -348,8 +348,20 @@ AST * visité par (ASTVisitor) -> CFG * visité par (x86Visitor)  -> code type a
 
 Nous avons privilégié la seconde option étant donné sa facilitation relative d'implémentation.
 
-On retrouvera ainsi dans `CFGOptimizer` un programme qui itére sur les instructions d'un CFG donné, identifie celles optimisables, supprime les anciennes et remplace par les nouvelles. Le résultat constitue un nouveau CFG, exploré à son tour par `x86Visitor`. L'optimiseur proposé rammène toute déclaration combinaison de constantes et d'opérateurs classiques (+, -, *, /, %, -, &, |, ^) à la simple déclaration de la constante qui en résulte et supprime les élements neutres des expressions variables.
+On retrouvera ainsi dans `CFGOptimizer` un programme qui itére sur les instructions d'un CFG donné, identifie celles optimisables, supprime les anciennes et remplace par les nouvelles. Le résultat constitue un nouveau CFG, exploré à son tour par `x86Visitor`. L'optimiseur proposé ramène toute déclaration combinaison de constantes et d'opérateurs classiques (`+` `-` `*` `/` `%` `-` `&` `|` `^`) à la simple déclaration de la constante qui en résulte et supprime les elements neutres des expressions variables.
+
+### Tests
+
+Le framework de tests à été modifié pour exécuter les tests en parallèle. Bien que cela permettait initialement de diviser le temps d’exécution par deux, la différence n'est plus très grande avec notre jeu de tests actuel.
+
+---
 
 ## Gestion de projet
 
-Nous sommes partis sur une base de code commune à l'hexanome au cours la 3ème séance, en utilisant la plus avancée. Nous avons en même temps fait la transition vers l'IR. La séance d'après, nous avons pu travailler efficacement en parallèle avec un workflow centré autour de GitLab : des issues pour lister les tâches à faire, développées sur des branches de features, qu'on merge sur la branche main après avoir eu une revue de code. Les refactors importants (qui ne peuvent pas se faire en parallèle) comme le visiteur d'IR, se font hors séance. Nous prévoyons de continuer avec cette méthode de gestion.
+Nous sommes partis sur une base de code commune à l'hexanome au cours la 3ème séance, partant de la version plus avancée. Nous avons en même temps fait la transition vers l'IR, ce qui n'a pas forcément été simple.
+
+Les séances suivantes, nous avons pu travailler efficacement en parallèle avec un workflow centré autour de GitLab : des issues pour lister les tâches à faire, développées sur des branches de features, que l'on merge ensuite sur la branche main après avoir eu une revue de code.
+
+Les refactors importants (qui ne peuvent pas se faire en parallèle) comme le visiteur d'IR, se font hors séance. Certaines features complexes telles que l'optimisation et les tableaux ont été codés en peer coding pour limiter les erreurs.
+
+Les tests ont été écrit pour la plupart au fur et à mesure de l'implémentation des fonctionnalités. Vers la fin, certains membres du groupe ont essayé de mettre à l'épreuve nos implémentations avec des tests en boite noirs, ce qui nous a permis de trouver et corriger de nombreux bugs.
