@@ -65,20 +65,27 @@ multiline
 
 ### Variables
 
-Les déclarations de variable sont les même qu'en C. Seuls le type `int` est supporté. Le type `char` fonctionne, et est traité comme un `int`.
+Seuls le type `int` est supporté. Le type `char` fonctionne, et est traité comme un `int`.
 
-Il est également possible d'affecter une valeur **constante** (un entier) à une variable avec `variable = constante`. 
+#### Déclaration et affectation
+
+Les déclarations de variable sont les même qu'en C : on peut déclarer plusieurs .
+
+Il est possible d'affecter une valeur constante ou bien la valeur d'une autre variable à une variable. L'affection renvoyant la valeur affecté, on peut les enchaîner.
 
 ```c
 int a;
 int b = 2;
+a = b;
 int x=1, y, z=3;
-a = 5;
+int x = y = z = 2;
 ```
 
 Comme pour avec GCC, redéclarer une variable, utiliser une variable non déclarée ou avant sa déclaration lève une erreur.
 
-### Caractères
+Les variables déclarées et non utilisés affichent un warning.
+
+#### Caractères
 
 Un unique caractère entre peut être utilisé pour assigner une variable (la valeur ASCII corespondante est stockée).
 
@@ -106,18 +113,22 @@ x = t2[0]; //accès à un élément du tableau
 t1[0] = 2; //affectation d'une valeur à un élément du tableau 
 ```
 
-### Expressions arithmétiques
+### Expressions
 
-Les opérateurs suivants sont supportés : `+` `-` `*` `/` `%` `|` `&` `^` `!`, ainsi que le moins unaire. La priorité des opérateurs arithmétiques est respectée : les opérateurs multiplicatifs avant les opérateurs additifs, et ceux ayant la même priorité sont évalués dans l'ordre. Les parenthèses permettent de préciser la priorité des opérations.
+#### Expressions arithmétiques
+
+Les opérateurs arithmétiques `+` `-` `*` `/` `%` et bit à bit `|` `&` `^` ainsi que les opérateurs unaires `!` et `-` sont supportés.
+
+La priorité des opérateurs arithmétiques est respectée : les opérateurs multiplicatifs avant les opérateurs additifs, et ceux ayant la même priorité sont évalués dans l'ordre. Les parenthèses permettent de préciser la priorité des opérations.
 
 ```c
 int a = (2 + (13 % 10)) * -6 / 2 + (1+(+1(1+1)))
 int b = 8 & 1  //
 ```
 
-### Opérateurs d'incrémentation
+#### Opérateurs d'incrémentation
 
-Comme avec GCC, le compilateur IFCC est capable de reconnaitre les opérateurs d'incrémentation `++` et `--`. S'ils sont placés devant une variable, alors la variable sera respectivement incrémentée ou décrémentée de 1 **avant** d'avoir sa valeur retournée. Dans le cas où ils sont placés après la variable, alors sa valeur sera incrémentée ou décrémentée de 1 **après** avoir sa valeur retournée.
+IFCC reconnaît les opérateurs d'incrémentation `++` et `--`. S'ils sont placés devant une variable, alors la variable sera respectivement incrémentée ou décrémentée de 1 **avant** d'avoir sa valeur retournée. Dans le cas où ils sont placés après la variable, alors sa valeur sera incrémentée ou décrémentée de 1 **après** avoir sa valeur retournée.
 
 ```c
 int a = 0;
@@ -125,9 +136,13 @@ int b = a++;  // ici, b = 0, c'est-à-dire la valeur de a AVANT incrémentation,
 int c = ++a;  // ici, c = 2, c'est-à-dire la valeur de a APRES incrémentation, puis a = 2
 ```
 
-### Opérateurs de comparaison
+#### Opérateurs d'affections
 
-Il est possible de réaliser des comparaisons entre deux entiers (constantes ou variables) grâce aux opérateurs de comparaison `==` `!=` `<` `>` `<=` `>=`. Similairement à GCC, la valeur retournée sera 1 si la comparaison est vraie, et 0 sinon.
+Les opérateurs `+=` `-=` `*=` `/=` sont supportés en plus de l'assignation classiques.
+
+#### Opérateurs de comparaison
+
+Il est possible de réaliser des comparaisons entre deux entiers (constantes ou variables) grâce aux opérateurs de comparaison `==` `!=` `<` `>` `<=` `>=`. La valeur retournée sera 1 si la comparaison est vraie, et 0 sinon. En C, ces opérateurs ont des priorités bien spécifiques, qui ne sont pas respectées ici : elles sont évaluées de gauche à droite.
 
 ```c
 int a = 0;
@@ -135,64 +150,95 @@ int b = a < 4;  // ici, b = 1, comme 0 est bien inférieur à 4
 int c = a == 1; // ici, c = 0, comme 0 n'est pas égal à 1
 ```
 
+### Blocs avec portée
+
+Les accolades définissent un bloc. Cela crée porté : on peut alors accéder au variable déclarée à l'intérieur et l’extérieur, y compris en cas de blocs imbriqués, mais on ne peut plus utiliser les variables définient à l'intérieur du bloc après en être sorti.
+
+```c
+int a = 1;
+{
+    a = 2;
+    {
+        c = b;
+    }
+    int b = 1;
+}
+a == 2;  // vrai
+a = b;   // erreur: b est indéfini dans ce scope
+```
+
+#### Shadowing
+
+Une variable redéfinie dans un bloc à la priorité devant celle définie dans les blocs parents, et ne les écrase pas.
+
+```c
+int a = 1;
+{
+    int a = 2;
+    a == 2  // vrai
+}
+a == 1  // vrai
+```
+
+Ces bloc fonctionnent de la même manière dans les structures suivantes.
+
 ### Structures conditionnelles
 
 Le compilateur IFCC supporte les structures conditionnelles de C `if`, `while` et `switch?`.
 
 #### if
 
-La structure `if(condition){ }` permet d'exécuter des instructions entre acolades si la valeur donnée en entrée est différente de 0.
+La structure `if (condition)` permet d'exécuter une instructions ou un bloc d'instructions si la valeur donnée en entrée est différente de 0.
 
 ```c
 int a = 0;
-if(42){
+if (42) {
     a = 6;
 }
-
 // a = 6 à la fin
 ```
 
 Il est aussi possible de d'indiquer des instructions à exécuter dans le cas où la condition est égale à 0 avec
-`else`.
+`else`. À noter que les bloc ne sont pas nécessaires s'il n'y a qu'une seule ligne dans chaque branche.
 
 ```c
 int a = 0;
-if (a > 5){
+if (a > 5)
     a = 3;
-} else {
+else
     a = 42;
-}
-
 // ici a = 42
 ```
 
 #### while
 
-La boucle `while(condition){ }` fonctionne de manière similaire à un `if`. Les instructions à l'intérieur des acolades sont exécutées tant que la condition est différente de 0.
+La boucle `while (condition)` fonctionne de manière similaire à un `if`. L'instructions ou le bloc d'instructions à la suite sont exécutées tant que la condition est différente de 0.
 
 ```c
 int a = 0;
-while (a < 5){
+while (a < 5) {
     a++;
 }
-
 // ici a = 5
 ```
+
+#### break et continue
 
 #### switch
 
 ### Opérateurs logiques non paresseux
 
-Il est possible de combiner deux valeurs ensembles pour pouvoir réaliser des conditions plus complexes avec les opérateurs `&&` et `||`.
+Il est possible de combiner deux conditions avec les opérateurs `&&` et `||`.
 
 Contrairement à GCC, les opérateurs `&&` et `||` ne sont pas paresseux avec IFCC. Cela signifie que les deux expressions seront exécutées dans tous les cas.
 
-#### ET &&
+#### ET logique
+
 `a && b` retournera 1 si et seulement si `a` et `b` sont différents de 0. Dans tous les autres cas, 0 sera retourné.
 
 ```c
 int a = 0;
-if (a > 5 && a < 5){
+if (a > 5 && a < 5) {
     a = 3;
 } 
 
@@ -204,13 +250,13 @@ if (b == 0 && b < 8) {
 // ici a = 0 et b = 5
 ```
 
+#### OU logique
 
-#### OU ||
 `a || b` retournera 1 si au moins `a` ou `b` est différent de 0. Dans le cas où a et b sont égaux à 0, 0 sera retourné.
 
 ```c
 int a = 0;
-if (a > 5 || a < 5){
+if (a > 5 || a < 5) {
     a = 3;
 } 
 
@@ -222,8 +268,19 @@ if (b == 0 || b < 8) {
 // ici a = 3 et b = 5
 ```
 
-### Optimisation
+### Fonctions
 
+TODO: Zeyang
+
+#### Définition de fonctions
+
+(return peut être mis n'importe où)
+
+#### Appel de fonctions
+
+#### Fonctions d'entrées sortie
+
+### Optimisation
 
 #### Propagation des constantes
 

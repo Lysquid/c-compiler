@@ -154,7 +154,7 @@ antlrcpp::Any TypeCheckVisitor::visitConst(ifccParser::ConstContext *ctx) {
     return Type(Type::INT);
 }
 
-antlrcpp::Any TypeCheckVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) {
+antlrcpp::Any TypeCheckVisitor::visitCallFunction(ifccParser::CallFunctionContext *ctx) {
     string name = ctx->VAR()->getText();
     for (ifccParser::ExprContext *expr: ctx->expr()) {
         this->visit(expr);
@@ -174,11 +174,11 @@ antlrcpp::Any TypeCheckVisitor::visitUnary(ifccParser::UnaryContext *ctx) {
     return this->visit(ctx->expr());
 }
 
-antlrcpp::Any TypeCheckVisitor::visitIncrementafter(ifccParser::IncrementafterContext *ctx) {
+antlrcpp::Any TypeCheckVisitor::visitIncrementAfter(ifccParser::IncrementAfterContext *ctx) {
     return var_types[ctx->VAR()->getText()];
 }
 
-antlrcpp::Any TypeCheckVisitor::visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx) {
+antlrcpp::Any TypeCheckVisitor::visitIncrementBefore(ifccParser::IncrementBeforeContext *ctx) {
     return var_types[ctx->VAR()->getText()];
 }
 

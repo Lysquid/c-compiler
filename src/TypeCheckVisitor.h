@@ -44,7 +44,7 @@ public:
 
     antlrcpp::Any visitExpression(ifccParser::ExpressionContext *ctx) override;
 
-    antlrcpp::Any visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) override;
+    antlrcpp::Any visitCallFunction(ifccParser::CallFunctionContext *ctx) override;
 
     antlrcpp::Any visitAssignment(ifccParser::AssignmentContext *ctx) override;
 
@@ -58,9 +58,9 @@ public:
 
     antlrcpp::Any visitUnary(ifccParser::UnaryContext *ctx) override;
 
-    antlrcpp::Any visitIncrementafter(ifccParser::IncrementafterContext *ctx) override;
+    antlrcpp::Any visitIncrementAfter(ifccParser::IncrementAfterContext *ctx) override;
 
-    antlrcpp::Any visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx) override;
+    antlrcpp::Any visitIncrementBefore(ifccParser::IncrementBeforeContext *ctx) override;
 
     antlrcpp::Any visitAddSub(ifccParser::AddSubContext *ctx) override;
 

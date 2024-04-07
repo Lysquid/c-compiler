@@ -24,33 +24,28 @@ statement
 
 declareAssign : VAR ('=' expr)? ;
 
-arrayDecl : VAR '[' CONST ']' ('=' '{' expr (',' expr)* '}')?;
+arrayDecl : VAR '[' CONST ']' ('=' '{' expr (',' expr)* '}')? ;
 
 expr
-    : ADD_SUB expr                      # sign
+    : '(' expr ')'                      # par
+    | VAR '['CONST']'                   # arrayAccess
+    | VAR INCREMENT                     # incrementAfter
+    | ADD_SUB expr                      # sign
     | UNARY_OP expr                     # unary
-    | increment                         # incr
-    | increment                         # incr
+    | INCREMENT VAR                     # incrementBefore
     | expr MUL_DIV expr                 # mulDiv
     | expr ADD_SUB expr                 # addSub
+    | expr COMP expr                    # comparison
     | expr BIT_AND expr                 # bitAnd
     | expr BIT_XOR expr                 # bitXor
     | expr BIT_OR expr                  # bitOr
-    | expr COMP expr                    # comparison
-    | expr LOGIC expr                   # logicop
-    | VAR '(' (expr (',' expr)*)? ')'   # callIntFunction
+    | expr LOGIC expr                   # logicOp
+    | VAR assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # assignment
+    | VAR '[' CONST ']'  assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # arrayAssignment
+    | VAR '(' (expr (',' expr)*)? ')'   # callFunction
     | CONST                             # const
     | CHAR                              # char
     | VAR                               # var
-    | VAR assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # assignment
-    | VAR '[' CONST ']'  assignmentop=('=' | '+=' | '-=' | '*=' | '/=') expr             # arrayAssignment
-    | '(' expr ')'                      # par
-    | VAR '['CONST']'                   # arrayAccess
-    ;
-
-increment
-    : VAR INCREMENT                     # incrementafter
-    | INCREMENT VAR                     # incrementbefore
     ;
 
 ADD_SUB : '+' | '-' ;

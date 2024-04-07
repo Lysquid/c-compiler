@@ -450,7 +450,7 @@ antlrcpp::Any ASTVisitor::visitConst(ifccParser::ConstContext *ctx)
     return addr;
 }
 
-antlrcpp::Any ASTVisitor::visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx)
+antlrcpp::Any ASTVisitor::visitCallFunction(ifccParser::CallFunctionContext *ctx)
 {
     string name = ctx->VAR()->getText();
     if (existsCFG(name))
@@ -528,7 +528,7 @@ antlrcpp::Any ASTVisitor::visitUnary(ifccParser::UnaryContext *ctx)
     return dest;
 }
 
-antlrcpp::Any ASTVisitor::visitIncrementafter(ifccParser::IncrementafterContext *ctx)
+antlrcpp::Any ASTVisitor::visitIncrementAfter(ifccParser::IncrementAfterContext *ctx)
 {
     int term = current_cfg->current_bb->get_var_index(ctx->VAR()->getText());
     int dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
@@ -544,7 +544,7 @@ antlrcpp::Any ASTVisitor::visitIncrementafter(ifccParser::IncrementafterContext 
     return dest;
 }
 
-antlrcpp::Any ASTVisitor::visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx)
+antlrcpp::Any ASTVisitor::visitIncrementBefore(ifccParser::IncrementBeforeContext *ctx)
 {
     int term = current_cfg->current_bb->get_var_index(ctx->VAR()->getText());
     int dest = current_cfg->current_bb->create_new_tempvar(current_cfg->get_next_free_symbol_index());
@@ -641,7 +641,7 @@ antlrcpp::Any ASTVisitor::visitComparison(ifccParser::ComparisonContext *ctx)
 }
 
 
-antlrcpp::Any ASTVisitor::visitLogicop(ifccParser::LogicopContext *ctx)
+antlrcpp::Any ASTVisitor::visitLogicOp(ifccParser::LogicOpContext *ctx)
 {
     int term1 = this->visit(ctx->expr(0));
     int term2 = this->visit(ctx->expr(1));

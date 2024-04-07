@@ -96,7 +96,7 @@ public:
     /**
      * Visite un appel de fonction
      */
-    antlrcpp::Any visitCallIntFunction(ifccParser::CallIntFunctionContext *ctx) override;
+    antlrcpp::Any visitCallFunction(ifccParser::CallFunctionContext *ctx) override;
 
     /**
      * Visite une affectation
@@ -131,12 +131,12 @@ public:
     /**
      * Visite une expression avec un opérateur unaire ++ ou -- après la variable
      */
-    antlrcpp::Any visitIncrementafter(ifccParser::IncrementafterContext *ctx) override;
+    antlrcpp::Any visitIncrementAfter(ifccParser::IncrementAfterContext *ctx) override;
 
     /**
      * Visite une expression avec un opérateur unaire ++ ou -- avant la variable
      */
-    antlrcpp::Any visitIncrementbefore(ifccParser::IncrementbeforeContext *ctx) override;
+    antlrcpp::Any visitIncrementBefore(ifccParser::IncrementBeforeContext *ctx) override;
 
     /**
      * Visite une expression avec un opérateur binaire + ou -
@@ -156,7 +156,7 @@ public:
     /**
      * Visite une expression avec un opérateur logique || ou &&
      */
-    antlrcpp::Any visitLogicop(ifccParser::LogicopContext *ctx) override;
+    antlrcpp::Any visitLogicOp(ifccParser::LogicOpContext *ctx) override;
 
     /**
      * Visite une expression avec un opérateur binaire &
