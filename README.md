@@ -82,6 +82,21 @@ Les caractère spéciaux tels que `\n` ne fonctionnent pas.
 
 ### Tableaux
 
+Le compilateur ifcc permet de manipuler des tableaux 1D de manière restreinte.
+
+Seules les constantes sont supportées lors de la déclaration d'un tableau et lors de l'accès à un élément d'un tableau. Autrement dit, seul `tab[CONST]` est accepté.
+
+L'affectation d'un tableau à un autre tableau `t1 = t2` n'est pas supportée.
+
+```c
+int x = 0;
+int t1[2]; //déclaration d'un tableau
+int t2[2] = {1,2}; //déclaration et initialisation d'un tableau
+
+x = t2[0]; //accès à un élément du tableau
+t1[0] = 2; //affectation d'une valeur à un élément du tableau 
+```
+
 ### Expressions arithmétiques
 
 Les opérateurs suivants sont supportés : `+` `-` `*` `/` `%` `|` `&` `^` `!`. Le moins unaire fonctionne aussi. Les opérateurs multiplicatif ont bien la priorité sur les opérateurs additif.
@@ -195,6 +210,31 @@ if (b == 0 || b < 8) {
 }
 
 // ici a = 3 et b = 5
+```
+
+### Optimisation
+
+
+#### Propagation des constantes
+
+Les expressions arithmétiques contenant exclusivement des constantes ont été optimisées et sont remplacées directement par leur résultat lors de la génération du code assembleur.
+
+```c
+int a = 0;
+a = 1 + 2 * 3;
+
+// ici, l'expression arithmétique '1 + 2 * 3' sera remplacée par la constante '9' dans le code assembleur
+// de manière plus précise, les instructions addl et imull sont remplacées par une seule instructions movl.
+```
+
+Les éléments neutres des opérateurs `+` `-` `*` sont supprimés lors de la génération du code assembleur.
+
+```c
+int a = 0;
+int b = 0 + a * 1:
+
+// ici, l'expression arithmétique '0 + a * 1' sera remplacée par la variable simple 'a' dans le code assembleur
+// de manière plus précise, les instructions addl et imull sont remplacées par des instructions movl.
 ```
 
 - Commentaires `/* */`
