@@ -284,7 +284,15 @@ int func1(int a, int b){
 }
 ```
 
-Le return peut être mis n'importe où.
+Le return peut être mis n'importe où. Pour une fonction qui retourne int/char, il faut définir au moins un return dans le bloc principal de cette fonction.
+
+Pour une fonction qui retourne void, return sans expression ou pas de return sont tous valides. Par exemple:
+
+```c
+void func2(int a, int b){
+    return; // cette instruction return peut être supprimée.
+}
+```
 
 #### Appel de fonctions
 
@@ -296,9 +304,12 @@ Par exemple:
 int b = 3;
 int a = func1(b, 5);
 // ici a = 3+5 = 8
+func2(a, b); // fonction void
 ```
 
 Notez qu'une variable ne peut pas être affectée à un appel de fonction qui retourne de type void.
+
+Le nombre des paramètres dans l'appel doit correspondre au nombre des paramètres de la fonction définie.
 
 #### Fonctions d'entrée/sortie
 
