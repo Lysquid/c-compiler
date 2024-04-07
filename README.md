@@ -234,7 +234,7 @@ int a = 0;
 a = 1 + 2 * 3;
 
 // ici, l'expression arithmétique '1 + 2 * 3' sera remplacée par la constante '9' dans le code assembleur
-// de manière plus précise, les instructions addl et imull sont remplacées par une seule instructions movl.
+// de manière plus précise, les instructions addl et imull sont remplacées par une seule instruction movl.
 ```
 
 Les éléments neutres des opérateurs `+` `-` `*` sont supprimés lors de la génération du code assembleur.
@@ -243,7 +243,7 @@ Les éléments neutres des opérateurs `+` `-` `*` sont supprimés lors de la g�
 int a = 0;
 int b = 0 + a * 1:
 
-// ici, l'expression arithmétique '0 + a * 1' sera remplacée par la variable simple 'a' dans le code assembleur
+// ici, l'expression arithmétique '0 + a * 1' sera remplacée par la valeur de la variable 'a' dans le code assembleur
 // de manière plus précise, les instructions addl et imull sont remplacées par des instructions movl.
 ```
 
