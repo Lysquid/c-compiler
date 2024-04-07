@@ -4,3 +4,4 @@ int main() {
     x=8;  /* test */
     return x;
 }
+/* ça marche ici ? */
