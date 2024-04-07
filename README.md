@@ -272,15 +272,42 @@ if (b == 0 || b < 8) {
 
 ### Fonctions
 
-TODO: Zeyang
+Le compilateur supporte la définition et l'utilisation des fonctions, qui retourne seulement une variable de type int/char/void.
 
 #### Définition de fonctions
 
-(return peut être mis n'importe où)
+La définition des fonctions sont comme dans le language C. Par exemple:
+
+```c
+int func1(int a, int b){
+    return a+b;
+}
+```
+
+Le return peut être mis n'importe où.
 
 #### Appel de fonctions
 
-#### Fonctions d'entrées sortie
+L'appel de fonctions doivent être mis après la définition de cette fonction. Dans le compilateur, on le considère comme une expression.
+
+Par exemple:
+
+```c
+int a = func1(b, 5);
+```
+
+Notez qu'une variable ne peut pas être affectée à un appel de fonction qui retourne de type void.
+
+#### Fonctions d'entrée/sortie
+
+Dans notre compilateur, nous avons prédéfini 2 fonctions d'entrée sortie: putchar et getchar. L'utilisateur peut directement l'utiliser.
+
+```c
+int a = getchar();
+putchar(a+1);
+```
+
+Notez que l'utilisateur ne peut pas redéfinir une fonction appelée putchar ou getchar.
 
 ---
 
