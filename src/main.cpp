@@ -49,7 +49,6 @@ int main(int argn, const char **argv) {
     ASTVisitor av;
     av.visit(tree);
 
-    //checking for unused variables
     av.IsThereUnusedVariables();
 
     if (av.getNumberOfErrors() > 0) {
@@ -63,7 +62,6 @@ int main(int argn, const char **argv) {
         co.optimization();
         co.divideOrModuloByZero();
     }
-
 
     x86Visitor xv(cout);
     vector <CFG*> optimizedCfgs = av.getCFGs();

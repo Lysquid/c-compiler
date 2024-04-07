@@ -280,6 +280,44 @@ TODO: Zeyang
 
 #### Fonctions d'entrées sortie
 
+## Manuel programmeur
+
+Antlr nous fourni l'AST, que nous visitons pour générer une **IR**, qui est elle même visitée pour générer le code assembleur.
+
+### Visiteurs de l'AST
+
+L'AST est actuellement visité par 2 visiteurs, héritant de la classe `BaseVisitor` générée par Antlr. Nous les avons séparez pour rendre le code plus clair, étant donnés que leurs fonctions sont relativement indépendantes.
+
+#### Visiteur de type checking
+
+Le premier est le `TypeCheckVisitor`, qui vérifie que les types  (définis dans `Types.h`) sont biens utilisés de façon cohérente.Voilà un exemple typique d'erreur à détecter :
+
+```c
+void f() {}
+
+int main() {
+    int a = f();    // retour void assigné à un int
+}
+```
+
+Ce visiteur ne tient pas compte des blocs, il peut donc par exemple levé une erreur de type pour une variable indéfinie dans un scope. Ce visiteur aurait été réellement utile si nous avions implémenté d'autres type, ce qui n'a pas été le cas. Nous n'avons pas eu le temps d'implémenter le check des tableaux.
+
+#### Visiteur de génération de l'IR
+
+Le code de génération de l'IR se trouve dans `ASTVisitor` (visiteur volumineux qui mériterait d'être décomposé).
+
+### IR
+
+Comme dans le template fourni, l'IR est composée d'instructions `Instr`, regroupées en `BasicBlock` au sein de *control flow graph* `CFG` pour chaque fonction. La différence est que chaque instruction est une classe héritant de `Instr`, avec ses attributs spécifiques.
+
+Chaque Basic Block contient un pointeur vers son `Scope`. C'est dans cette objet qu'est contenu la table des symboles, avec les méthodes permettant de manipuler les variables. Un scope contient un pointeur vers son scope parent : on a donc un arbre dans lequel on peut remonter pour *resolve* une variable.
+
+### Génération de l'assembleur
+
+Nous avons implémenté un design pattern visiteur pour parcourir l'IR, la classe `IRVisiteur` dans sa version abstraite. Le but est de découpler l'IR de la génération de code, et de donner une interface standard pour cette génération.
+
+L'implémentation concrète pour l'architecture x86, `x86Visitor`, visite chaque instruction des CFG et génère le code assembleur. On peut ainsi facilement rajouter un backend pour chaque architecture en écrivant le visiteur associé.
+
 ### Optimisation
 
 #### Propagation des constantes
@@ -304,35 +342,13 @@ int b = 0 + a * 1:
 // de manière plus précise, les instructions addl et imull sont remplacées par des instructions movl.
 ```
 
-- Commentaires `/* */`
-- Variables (sans les scopes)
-- Constantes entières et caractères
-- Tableaux 1D
-- Expressions avec les opérateurs `+` `-` `*` `/` `%` `|` `&` `^` `!`
-- Opérateurs d'incrémentation `i++` `i--` `++i` `--i`
-- Comparaisons avec `==` `!=` `<` `>` `<=` `>=`
-- Déclaration et affectation de variables
-- Vérification de la déclaration d'une variable avant son utilisation
-- Vérification de l'utilisation d'une variable déclarée
-- Structures conditionnelles `if`, `else`
-- Boucles `while`, avec `continue` et `break`
-- Opérateurs logiques NON pareseux `&&` `||`
-- `getchar` et `putchar`
-- Fonctions (version bêta/incomplète/potentiellement buggée)
-- Bonus (inutile, sauf pour nous, ça nous a fait gagner beaucoup de temps) : tests parallélisés
+Pour implémenter cette optimisation, il existe au moins 2 grandes architecture possibles symbolisés par une * dans le schéma suivant :
 
-## Architecture
+AST * visité par (ASTVisitor) -> CFG * visité par (x86Visitor)  -> code type assembleur
 
-Nous avons implémenté une **IR**. L'`ASTVisitor`, qui hérite du `BaseVisitor` généré par Antlr, visite l'AST et construit l'IR. Comme dans le template fourni, l'IR est composée d'instructions `Instr`, regroupées en `BasicBlock` au sein du *control flow graph* `CFG`. La différence est que chaque instruction est une classe héritant de `Instr`, avec ses attributs spécifiques.
+Nous avons privilégié la seconde option étant donné sa facilitation relative d'implémentation.
 
-Pour découpler l'IR de la génération d'assembleur et donc de l'architecture, nous avons mis en place un deuxième visiteur, `IRVisitor`. Son implémentation concrète pour l'architecture x86, `x86Visitor`, visite chaque instruction du CFG et génère le code assembleur. On peut ansi rajouter un backend pour chaque architecture en écrivant le visiteur associé, sans toucher à l'IR.
-
-Pour implémenter l'optimisation, il existe au moins 2 grandes architecture possibles symbolisés par une * dans le schéma suivant :
-
-AST * visité par (ASTVisitor) -> CFG * visité par (x86Visitor)  -> code type assembleur 
-
-Nous avons privilégié la seconde option étant donné sa facilitation relative d'implémentation. 
-On retrouvera ainsi dans `CFGOptimizer` un programme qui itére sur les instructions d'un CFG donné, identifie celles optimisables, supprime les anciennes et remplace par les nouvelles. Le résultat constitue un nouveau CFG, exploré à son tour par '`x86Visitor`'. L'optimiseur proposé rammène toute déclaration combinaison de constantes et d'opérateurs classiques (+, -, *, /, %, -, &, |, ^) à la simple déclaration de la constante qui en résulte et supprime les élements neutres des expressions variables. 
+On retrouvera ainsi dans `CFGOptimizer` un programme qui itére sur les instructions d'un CFG donné, identifie celles optimisables, supprime les anciennes et remplace par les nouvelles. Le résultat constitue un nouveau CFG, exploré à son tour par `x86Visitor`. L'optimiseur proposé rammène toute déclaration combinaison de constantes et d'opérateurs classiques (+, -, *, /, %, -, &, |, ^) à la simple déclaration de la constante qui en résulte et supprime les élements neutres des expressions variables.
 
 ## Gestion de projet
 
