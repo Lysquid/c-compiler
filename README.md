@@ -326,6 +326,14 @@ void func2(int a, int b){
 }
 ```
 
+Dans notre compilateur, le return avec une expression dans une fonction void n'est pas valide, mais dans le compilateur GCC c'est valide. 
+
+```c
+void func3(int a, int b){
+    return a; // Dans GCC c'est valide, et un warning est généré, mais dans notre compilateur nous le considère comme une erreur.
+}
+```
+
 #### Appel de fonctions
 
 L'appel de fonctions doivent être mis après la définition de cette fonction. Dans le compilateur, on le considère comme une expression.
