@@ -186,7 +186,7 @@ Ces blocs fonctionnent de la même manière dans les structures suivantes.
 
 ### Structures conditionnelles
 
-Le compilateur IFCC supporte les structures conditionnelles de C `if`, `while` et `switch?`.
+Le compilateur IFCC supporte les structures conditionnelles de C `if` et `while`.
 
 #### if
 
@@ -257,8 +257,6 @@ while (i < 5) {
 }
 // ici j = 3 parce qu'il y a 3 nombres impairs de 1 à 5.
 ```
-
-#### switch
 
 ### Opérateurs logiques non paresseux
 
