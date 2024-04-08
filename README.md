@@ -9,7 +9,7 @@
 - Mathis Nguyen
 - Zeyang Kong
 - Romain Benoit
-- Koch Florentin
+- Florentin Koch
 
 ## Utilisation
 
@@ -17,13 +17,13 @@
 
 Installez Antlr4, avec le gestionnaire de système, ou en exécutant le script `./install-antlr.sh`
 
-Dans le repertoire `makefile`, faites une copie du makefile pour votre platforme, et appelez le `config.mk`. Si vous avec utilisez le script d'installation, cette étape n'est pas nécessaire.
+Dans le repertoire `makefile`, faites une copie du makefile pour votre platform, et appelez le `config.mk`. Si vous avec uutilisé le script d'installation, cette étape n'est pas nécessaire.
 
 ### Utilisation
 
 Compilez le projet : `make -j` (le flag permet de compiler en parallèle)
 
-Vous pouvez maintenant compiler un programme de notre sous ensemble du C vers x86 avec `./ifcc program.c`
+Vous pouvez maintenant compiler un programme de notre sous ensemble du C vers de l'assembleur x86 avec `./ifcc program.c`
 
 ### Tests
 
@@ -37,7 +37,7 @@ Un test qui passe sera représenté dans la console par `.`, et un test qui ne p
 Un test passe si l'une des conditions suivantes est réunie :
 
 - Le programme donné en entrée est bien compilé par GCC et IFCC, et les valeurs de retour d'exécution sont les mêmes.
-- Le programme donné en entrée n'a pas pu être compilé par GCC et IFCC, et les deux compilateurs on retourné au moins une erreur.
+- Le programme donné en entrée n'a pas pu être compilé par GCC et IFCC, et les deux compilateurs ont retourné au moins une erreur.
 Dans tous les autres cas, le test ne passera pas.
 
 ### Documentation
@@ -71,9 +71,9 @@ Seul le type `int` est supporté. Le type `char` fonctionne, et est traité comm
 
 #### Déclaration et affectation
 
-Les déclarations de variables sont les mêmes qu'en C : on peut en déclarer plusieures.
+Les déclarations de variables sont les mêmes qu'en C : on peut en déclarer plusieurs.
 
-Il est possible d'affecter une valeur constante ou bien la valeur d'une autre variable à une variable. L'affection renvoyant la valeur affectée, on peut les enchaîner.
+Il est possible d'affecter à une variable une valeur constante ou une expression plus complexe dépendant d'autres variables. L'affection renvoyant la valeur affectée, on peut les enchaîner.
 
 ```c
 int a;
@@ -83,28 +83,26 @@ int x=1, y, z=3;
 int x = y = z = 2;
 ```
 
-Comme pour avec GCC, redéclarer une variable, utiliser une variable non déclarée ou avant sa déclaration lève une erreur.
+Comme avec GCC, redéclarer une variable, utiliser une variable non déclarée ou avant sa déclaration lève une erreur.
 
 Les variables déclarées et non utilisées affichent un warning.
 
 #### Caractères
 
-Un unique caractère peut être utilisé pour assigner une variable (la valeur ASCII corespondante est stockée).
+Un unique caractère peut être utilisé pour assigner une variable (la valeur ASCII correspondante est stockée). Les caractères spéciaux tels que `\n` ne fonctionnent pas.
 
 ```c
 int c1 = 'a';   // 97
 char c2 = 'b';  // 98
 ```
 
-Les caractères spéciaux tels que `\n` ne fonctionnent pas.
-
 ### Tableaux
 
-Le compilateur ifcc permet de manipuler des tableaux 1D de manière restreinte.
+Notre compilateur permet de manipuler des tableaux 1D de manière restreinte.
 
 Seules les constantes sont supportées lors de la déclaration d'un tableau et lors de l'accès à un élément d'un tableau. Autrement dit, seul `tab[CONST]` est accepté.
 
-L'affectation d'un tableau à un autre tableau `t1 = t2` n'est pas supportée.
+L'affectation d'un tableau à un autre tableau `t1 = t2` n'est pas supportée (les tableaux ne sont pas implémentés comme des pointeurs).
 
 ```c
 int x = 0;
@@ -125,7 +123,7 @@ La priorité des opérateurs arithmétiques est respectée : les opérateurs mul
 
 ```c
 int a = (2 + (13 % 10)) * -6 / 2 + (1+(+1(1+1)))
-int b = 8 & 1  //
+int b = 6 & 3  // 2
 ```
 
 #### Opérateurs d'incrémentation
@@ -154,7 +152,7 @@ int c = a == 1; // ici, c = 0, comme 0 n'est pas égal à 1
 
 ### Blocs avec portée
 
-Les accolades définissent un bloc. Cela crée une portée : on peut alors accéder à la variable déclarée à l'intérieur et l’extérieur, y compris en cas de blocs imbriqués, mais on ne peut plus utiliser les variables définies à l'intérieur du bloc après en être sorti.
+Les accolades définissent un bloc. Cela crée une portée (*scope*) : on peut alors accéder à la variable déclarée à l'intérieur et l’extérieur, y compris en cas de blocs imbriqués, mais on ne peut plus utiliser les variables définies à l'intérieur du bloc après en être sorti.
 
 ```c
 int a = 1;
@@ -200,7 +198,7 @@ if (42) {
 // a = 6 à la fin
 ```
 
-Il est aussi possible de d'indiquer des instructions à exécuter dans le cas où la condition est égale à 0 avec
+Il est aussi possible d'indiquer des instructions à exécuter dans le cas où la condition est égale à 0 avec
 `else`. À noter que les blocs ne sont pas nécessaires s'il n'y a qu'une seule ligne dans chaque branche.
 
 ```c
@@ -226,8 +224,7 @@ while (a < 5) {
 
 #### break et continue
 
-Les instruction `break` et `continue` sont comme dans le language C. Elles doivent seulement être mises dans le boucle `while`.
-L'instruction `break` permet de terminer prématurément l'exécution de la boucle `while` et de sortir de celle-ci. Par exemple:
+Les instructions `break` et `continue` sont comme dans le langage C. Elles doivent seulement être mises dans la boucle `while`. L'instruction `break` permet de terminer prématurément l'exécution de la boucle `while` et de sortir de celle-ci. Par exemple :
 
 ```c
 int i = 0;
@@ -242,7 +239,7 @@ while (i < 10) {
 // ici i = 5
 ```
 
-L'instruction `continue` permet de passer à l'itération suivante de la boucle `while` sans exécuter le reste du code à l'intérieur de la boucle pour l'itération actuelle. Par exemple: 
+L'instruction `continue` permet de passer à l'itération suivante de la boucle `while` sans exécuter le reste du code à l'intérieur de la boucle pour l'itération actuelle. Par exemple : 
 
 ```c
 int i = 0;
@@ -302,41 +299,39 @@ if (b == 0 || b < 8) {
 
 ### Fonctions
 
-Le compilateur supporte la définition et l'utilisation des fonctions, qui retourne seulement une variable de type int/char/void.
+Le compilateur supporte la définition et l'utilisation des fonctions, qui retourne seulement une variable de type `int`/`char`/`void`.
 
 #### Définition de fonctions
 
-La définition des fonctions est comme dans le language C. Par exemple:
+La définition des fonctions est comme dans le langage C. Par exemple :
 
 ```c
-int func1(int a, int b){
+int func1(int a, int b) {
     return a+b;
 }
 ```
 
 Le return peut être mis n'importe où. Pour une fonction qui retourne int/char, il faut définir au moins un return dans le bloc principal de cette fonction.
 
-Pour une fonction qui retourne void, return sans expression ou pas de return sont tous valides. Par exemple:
+Pour une fonction qui retourne void, return sans expression ou pas de return sont tous valides. Par exemple :
 
 ```c
-void func2(int a, int b){
-    return; // cette instruction return peut être supprimée.
+void func2(int a, int b) {
+    return; // cette instruction return peut être supprimée
 }
 ```
 
-Dans notre compilateur, le return avec une expression dans une fonction void n'est pas valide, mais dans le compilateur GCC c'est valide. 
+Dans notre compilateur, le return avec une expression dans une fonction void n'est pas valide, bien que ça le soit avec GCC.
 
 ```c
 void func3(int a, int b){
-    return a; // Dans GCC c'est valide, et un warning est généré, mais dans notre compilateur nous le considère comme une erreur.
+    return a; // erreur pour notre compilateur
 }
 ```
 
 #### Appel de fonctions
 
-L'appel de fonctions doivent être mis après la définition de cette fonction. Dans le compilateur, on le considère comme une expression.
-
-Par exemple:
+Les appels de fonctions doivent être mis après la définition de cette fonction. Dans le compilateur, on les considère comme n'importe quelle autre expression. Par exemple :
 
 ```c
 int b = 3;
@@ -351,17 +346,19 @@ Le nombre des paramètres dans l'appel doit correspondre au nombre des paramètr
 
 #### Fonctions d'entrée/sortie
 
-Dans notre compilateur, nous avons prédéfini 2 fonctions d'entrée sortie: putchar et getchar. L'utilisateur peut directement l'utiliser.
+Dans notre compilateur, nous avons prédéfini 2 fonctions d'entrée sortie : `putchar` et `getchar` (qui dervont être *link* après la compilation).
 
 ```c
 int a = getchar();
-// L'utilisateur peut saisir un caractère, et la variable a va être affectée au code ascii de ce caractère. 
-// Par exemple si on saisi le caractère 'a', alors a = 97.
-
-putchar(a+1);
-// Le programme affiche le caractère dont le code ascii est égale à la valeur de a+1.
-// Pour l'exemple au dessus, ici on affiche 'b'.
 ```
+
+L'utilisateur peut saisir un caractère, et la variable a va être affectée au code ASCII de ce caractère. Par exemple si on saisit le caractère `a`, alors `a = 97`.
+
+```c
+putchar(a+1);
+```
+
+Le programme affiche le caractère dont le code ASCII est égale à la valeur de `a+1`. Pour l'exemple ci-dessus, on affiche `b`.
 
 Notez que l'utilisateur ne peut pas redéfinir une fonction appelée putchar ou getchar.
 
@@ -369,7 +366,7 @@ Notez que l'utilisateur ne peut pas redéfinir une fonction appelée putchar ou 
 
 ## Manuel programmeur
 
-Antlr nous fourni l'AST, que nous visitons pour générer une **IR**, qui est elle même visitée pour générer le code assembleur.
+Antlr nous fourni l'AST, que nous visitons pour générer une **IR**, qui est elle-même visitée pour générer le code assembleur.
 
 ### Visiteurs de l'AST
 
@@ -397,7 +394,7 @@ Le code de génération de l'IR se trouve dans `ASTVisitor`. Le plus gros du cod
 
 Comme dans le template fourni, l'IR est composée d'instructions `Instr`, regroupées en `BasicBlock` au sein de *control flow graph* `CFG` pour chaque fonction. La différence est que chaque instruction est une classe héritant de `Instr`, avec ses attributs spécifiques.
 
-Chaque Basic Block contient un pointeur vers son `Scope`. C'est dans cet objet qu'est contenu la table des symboles, avec les méthodes permettant de manipuler les variables. Un scope contient un pointeur vers son scope parent : on a donc un arbre dans lequel on peut remonter pour *resolve* une variable.
+Chaque Basic Block contient un pointeur vers son `Scope`. C'est dans cet objet qu'est contenue la table des symboles, avec les méthodes permettant de manipuler les variables. Un scope contient un pointeur vers son scope parent : on a donc un arbre dans lequel on peut remonter pour *resolve* une variable.
 
 ### Génération de l'assembleur
 
@@ -431,7 +428,7 @@ AST * visité par (ASTVisitor) -> CFG * visité par (x86Visitor)  -> code type a
 
 Nous avons privilégié la seconde option étant donné sa relative facilité d'implémentation.
 
-On retrouvera ainsi dans `CFGOptimizer` un programme qui itére sur les instructions d'un CFG donné, identifie celles optimisables, supprime les anciennes et remplace par les nouvelles. Le résultat constitue un nouveau CFG, exploré à son tour par `x86Visitor`. L'optimiseur proposé ramène toute déclaration combinaison de constantes et d'opérateurs classiques (`+` `-` `*` `/` `%` `-` `&` `|` `^`) à la simple déclaration de la constante qui en résulte et supprime les elements neutres des expressions variables.
+On retrouvera ainsi dans `CFGOptimizer` un programme qui itère sur les instructions d'un CFG donné, identifie celles optimisables, supprime les anciennes et remplace par les nouvelles. Le résultat constitue un nouveau CFG, exploré à son tour par `x86Visitor`. L'optimiseur proposé ramène toute déclaration combinaison de constantes et d'opérateurs classiques (`+` `-` `*` `/` `%` `-` `&` `|` `^`) à la simple déclaration de la constante qui en résulte et supprime les elements neutres des expressions variables.
 
 ### Tests
 
@@ -443,7 +440,7 @@ Le framework de tests a été modifié pour exécuter les tests en parallèle. B
 
 Nous sommes partis sur une base de code commune à l'hexanome au cours la 3ème séance, partant de la version plus avancée. Nous avons en même temps fait la transition vers l'IR, ce qui n'a pas forcément été simple.
 
-Les séances suivantes, nous avons pu travailler efficacement en parallèle avec un workflow centré autour de GitLab : des issues pour lister les tâches à faire, développées sur des branches de features, que l'on merge ensuite sur la branche main après avoir eu une revue de code.
+Les séances suivantes, nous avons pu travailler efficacement en parallèle avec un workflow centré autour de GitLab : des issues pour lister les tâches à faire, développées sur des branches de features, que l'on merge ensuite sur la branche main après une éventuelle revue de code.
 
 Les refactors importants (qui ne peuvent pas se faire en parallèle), comme le visiteur d'IR, se font hors séance. Certaines features complexes telles que l'optimisation et les tableaux ont été codées en peer coding pour limiter les erreurs.
 
