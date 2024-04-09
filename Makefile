@@ -15,7 +15,8 @@ LDFLAGS=-g
 SRC_DIR = src
 BUILD_DIR = build
 GENERATED_DIR = $(SRC_DIR)/generated
-TEST_OUTPUT = ifcc-test-output
+TEST_OUTPUT = tests-output
+DOC_DIR = doc
 EXE = ifcc
 
 default: all
@@ -89,11 +90,11 @@ test: $(EXE)
 ##########################################
 # delete all machine-generated files
 clean:
-	rm -rf $(BUILD_DIR) $(GENERATED_DIR) $(TEST_OUTPUT)
+	rm -rf $(BUILD_DIR) $(GENERATED_DIR) $(TEST_OUTPUT) $(DOC_DIR)
 	rm -f $(EXE)
 
 ##########################################
 # documentation
 doc:
 	doxygen
-	xdg-open html/index.html
+	xdg-open $(DOC_DIR)/index.html
