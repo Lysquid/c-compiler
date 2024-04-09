@@ -44,7 +44,7 @@ Dans tous les autres cas, le test ne passera pas.
 
 Générez la documentation avec doxygen : `make doc`
 
-La documentation est au format HTML. Pour la consulter, ouvrez le fichier `html/index.html`
+La documentation est au format HTML. Pour la consulter, ouvrez le fichier `doc/index.html`
 
 ---
 
