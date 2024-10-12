@@ -8,8 +8,6 @@ int factorial(int n) {
 int main() {
     int num = 5;
 
-    
-
     return factorial(5);
 
 }
